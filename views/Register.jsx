@@ -1,179 +1,267 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 // Components Imports
 import {
-    NativeBaseProvider,
-    ScrollView,
-    Box,
-    Heading,
-    VStack,
-    FormControl,
-    Input,
-    Button,
-    View,
-    WarningOutlineIcon,
-    Icon,
-    Pressable
-} from "native-base"
+  NativeBaseProvider,
+  ScrollView,
+  Box,
+  Heading,
+  VStack,
+  FormControl,
+  Input,
+  Button,
+  View,
+  WarningOutlineIcon,
+  Icon,
+  Pressable,
+} from "native-base";
+
+
+//ProgressBar
+import * as Progress from 'react-native-progress';
 
 // Validation Imports
-import * as yup from 'yup';
-import { Formik } from 'formik';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as yup from "yup";
+import { Formik } from "formik";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 // Firebase Auth
-import { auth } from '../config/firebase'
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from "../config/firebase";
+import {
+  createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
+  sendEmailVerification,
+  signOut
+} from "firebase/auth";
 
+//Firebase FireStore
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Register({ navigation }) {
 
-    const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false);
 
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            if (user) {
-                navigation.replace("AdminPets");
-            }
-        })
+  //Function that check is email is linked to another account in the app
+  const checkAuthUser = (email, password) => {
+    fetchSignInMethodsForEmail(auth, email)
+      .then(async (signInMethods) => {
+        signInMethods.length === 0
+          ? await createAuthUser(email, password)
+          : alert("Ya existe una cuenta vinculada a este correo electronico");
+      })
+      .catch((error) =>alert("Ocurrio un error al verificar su correo electronico"));
+  };
 
-        return unsubscribe
-    }, [])
+  //Function that is responsible for creating the user with email and password and executes the function of sending mail
+  const createAuthUser = (email, password) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        await sendEmail(userCredential.user);
+      })
+      .catch((error) => alert("Ocurrio un error al registrar su correo electronico"));
+  };
 
+  //Function that is responsible for send verification email, also execute the function of create Veterinario Doc
+  const sendEmail = (user) => {
+    sendEmailVerification(user)
+      .then(async () => {
+        await createVetDoc(user.uid);
+      })
+      .catch((error) => alert("Ocurrio un error al enviar el correo de verificacion"));
+  };
 
-    const sendData = async (values) => {
-        const { email, password } = values;
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((response) => {
-                console.log(response);
-                alert("Usuario Creado Correctamente");
-            })
-            .catch((error) => {
-                console.log(error);
-                alert("Error al crear el usuario");
-            })
-    }
-    return (
-        <NativeBaseProvider>
-            <ScrollView>
-                <Box w={"95%"} mt={8} flex={1} p={1} marginLeft={1}>
-                    <Heading size="lg" color="coolGray.800" _dark={{
-                        color: "warmGray.50"
-                    }} fontWeight="semibold">
-                        Bienvenido
-                    </Heading>
-                    <Heading mt="1" color="coolGray.600" _dark={{
-                        color: "warmGray.200"
-                    }} fontWeight="medium" size="xs">
-                        ¡Registrate para Continuar!
-                    </Heading>
-                    <Formik
-                        initialValues={{
-                            email: '',
-                            password: '',
-                            passwordConfirm: '',
-                            name: '',
-                        }}
-                        onSubmit={values => sendData(values)}
-                        validationSchema={yup.object().shape({
-                            email: yup
-                                .string()
-                                .email('Ingrese un email válido.')
-                                .required('Email requerido.'),
-                            name: yup
-                                .string()
-                                .required('Nombre requerido.'),
-                            password: yup
-                                .string()
-                                .min(6, "La contraseña debe tener al menos 6 caracteres.")
-                                .required('Contraseña requerida.'),
-                            passwordConfirm: yup
-                                .string()
-                                .oneOf([yup.ref('password'), null], 'Las contraseñas deben coincidir.')
-                        })}>
-                        {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
-                            <View>
-                                <VStack space={4} mt="5">
-                                    <FormControl isInvalid={'email' in errors}>
-                                        <FormControl.Label _text={styles.labelInput}>Email</FormControl.Label>
-                                        <Input _focus={styles.inputSeleccionado} placeholder='Escriba su Email'
-                                            InputLeftElement={<Icon as={<MaterialCommunityIcons name="gmail" />} size={5} ml="2" color="muted.400" />}
-                                            value={values.email}
-                                            keyboardType={'email-address'}
-                                            onChangeText={handleChange('email')}
-                                            onBlur={() => setFieldTouched('email')} />
-                                        {touched.email && errors.email &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-                                                {errors.email}
-                                            </FormControl.ErrorMessage>
-                                        }
-                                    </FormControl>
-                                    <FormControl isInvalid={'name' in errors}>
-                                        <FormControl.Label _text={styles.labelInput}>Nombre</FormControl.Label>
-                                        <Input _focus={styles.inputSeleccionado} placeholder='Escriba su Nombre'
-                                            InputLeftElement={<Icon as={<MaterialCommunityIcons name="account-cowboy-hat" />} size={5} ml="2" color="muted.400" />}
-                                            value={values.name}
-                                            onChangeText={handleChange('name')}
-                                            onBlur={() => setFieldTouched('name')} />
-                                        {touched.name && errors.name &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-                                                {errors.name}
-                                            </FormControl.ErrorMessage>
-                                        }
-                                    </FormControl>
-                                    <FormControl isInvalid={'password' in errors}>
-                                        <FormControl.Label _text={styles.labelInput}>Password</FormControl.Label>
-                                        <Input _focus={styles.inputSeleccionado} placeholder='Escriba su Password'
-                                            type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}>
-                                                <Icon as={<MaterialCommunityIcons name={show ? "eye-outline" : "eye-off-outline"} />} size={5} mr="2" color="muted.400" />
-                                            </Pressable>}
-                                            value={values.password}
-                                            onChangeText={handleChange('password')}
-                                            onBlur={() => setFieldTouched('password')} />
-                                        {touched.password && errors.password &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-                                                {errors.password}
-                                            </FormControl.ErrorMessage>
-                                        }
-                                    </FormControl>
-                                    <FormControl isInvalid={'passwordConfirm' in errors}>
-                                        <FormControl.Label _text={styles.labelInput}>Confirm Password</FormControl.Label>
-                                        <Input _focus={styles.inputSeleccionado} placeholder='Repita su Password'
-                                            value={values.passwordConfirm}
-                                            type={show ? "text" : "password"}
-                                            onChangeText={handleChange('passwordConfirm')}
-                                            onBlur={() => setFieldTouched('passwordConfirm')} />
-                                        {touched.passwordConfirm && errors.passwordConfirm &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-                                                {errors.passwordConfirm}
-                                            </FormControl.ErrorMessage>
-                                        }
-                                    </FormControl>
-                                    <Button mt="2" colorScheme="indigo" onPress={handleSubmit} _disabled={styles.botonDisabled}>
-                                        Sign up
-                                    </Button>
-                                </VStack>
-                            </View>
-                        )}
-                    </Formik>
-                </Box>
-            </ScrollView>
-        </NativeBaseProvider>
-    )
+  //Function that is responsible for create a Veterinario Doc
+  const createVetDoc = async (uid) => {
+    setDoc(doc(db, "veterinarios", uid), {
+      nombres: null,
+      apellidos: null,
+      clinica: {
+        nombre: null,
+        direccion: null,
+      },
+      perfilCompleto: false,
+    })
+      .then(() =>alert("Se registro con exito, hemos enviado un correo de verificacion"))
+      .catch((error) =>alert("Ocurrio un error al registrar su perfil"));
+  };
+
+  //Execute all process
+  const createUser = async (values) => {
+    const { email, password } = values;
+    await checkAuthUser(email, password);
+  };
+  
+
+  return (
+    <NativeBaseProvider>
+      <ScrollView>
+        <Box  mt={8} flex={1} p={1}>
+          <Heading
+            size="lg"
+            color="coolGray.800"
+            _dark={{
+              color: "warmGray.50",
+            }}
+            fontWeight="semibold"
+          >
+            Bienvenido
+          </Heading>
+          <Heading
+            mt="1"
+            color="coolGray.600"
+            _dark={{
+              color: "warmGray.200",
+            }}
+            fontWeight="medium"
+            size="xs"
+          >
+            ¡Registrate para Continuar!
+          </Heading>
+          <Formik
+            initialValues={{
+              email: "",
+              password: "",
+              passwordConfirm: "",
+            }}
+            onSubmit={(values) => createUser(values)}
+            validationSchema={yup.object().shape({
+              email: yup
+                .string()
+                .email("Ingrese un email válido.")
+                .required("Email requerido."),
+              password: yup
+                .string()
+                .min(6, "La contraseña debe tener al menos 6 caracteres.")
+                .required("Contraseña requerida."),
+              passwordConfirm: yup
+                .string()
+                .required("Debe ingresar su contraseña nuevamente")
+                .oneOf(
+                  [yup.ref("password")],
+                  "Las contraseñas deben coincidir."
+                ),
+            })}
+          >
+            {({
+              values,
+              handleChange,
+              errors,
+              touched,
+              isValid,
+              handleSubmit,
+            }) => (
+              <View>
+                <VStack space={4} mt="5">
+                  <FormControl isInvalid={"email" in errors}>
+                    <FormControl.Label _text={styles.labelInput}>
+                      Email
+                    </FormControl.Label>
+                    <Input
+                      _focus={styles.inputSeleccionado}
+                      placeholder="Escriba su Email"
+                      InputLeftElement={
+                        <Icon
+                          as={<MaterialCommunityIcons name="gmail" />}
+                          size={5}
+                          ml="2"
+                          color="muted.400"
+                        />
+                      }
+                      value={values.email}
+                      keyboardType={"email-address"}
+                      onChangeText={handleChange("email")}
+                    />
+                    {touched.email && errors.email && (
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}
+                      >
+                        {errors.email}
+                      </FormControl.ErrorMessage>
+                    )}
+                  </FormControl>
+                  <FormControl isInvalid={"password" in errors}>
+                    <FormControl.Label _text={styles.labelInput}>
+                      Contraseña
+                    </FormControl.Label>
+                    <Input
+                      _focus={styles.inputSeleccionado}
+                      placeholder="Escriba su contraseña"
+                      type={show ? "text" : "password"}
+                      InputRightElement={
+                        <Pressable onPress={() => setShow(!show)}>
+                          <Icon
+                            as={
+                              <MaterialCommunityIcons
+                                name={show ? "eye-outline" : "eye-off-outline"}
+                              />
+                            }
+                            size={5}
+                            mr="2"
+                            color="muted.400"
+                          />
+                        </Pressable>
+                      }
+                      value={values.password}
+                      onChangeText={handleChange("password")}
+                    />
+                    {touched.password && errors.password && (
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}
+                      >
+                        {errors.password}
+                      </FormControl.ErrorMessage>
+                    )}
+                  </FormControl>
+                  <FormControl isInvalid={"passwordConfirm" in errors}>
+                    <FormControl.Label _text={styles.labelInput}>
+                      Confirmar contraseña
+                    </FormControl.Label>
+                    <Input
+                      _focus={styles.inputSeleccionado}
+                      placeholder="Repita su contraseña"
+                      value={values.passwordConfirm}
+                      type={show ? "text" : "password"}
+                      onChangeText={handleChange("passwordConfirm")}
+                    />
+                    {touched.passwordConfirm && errors.passwordConfirm && (
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}
+                      >
+                        {errors.passwordConfirm}
+                      </FormControl.ErrorMessage>
+                    )}
+                  </FormControl>
+                  <Button
+                    mt="2"
+                    colorScheme="indigo"
+                    onPress={handleSubmit}
+                    _disabled={styles.botonDisabled}
+                  >
+                    Sign up
+                  </Button>
+                </VStack>
+              </View>
+            )}
+          </Formik>
+        </Box>
+      </ScrollView>
+    </NativeBaseProvider>
+  );
 }
 
 const styles = {
-    inputSeleccionado: {
-        bg: "coolGray.200:alpha.100"
-    },
-    botonDisabled: {
-        backgroundColor: '#00aeef'
-    },
-    labelInput: {
-        color: 'black',
-        fontSize: 'sm',
-        fontWeight: 'bold'
-    },
-    tituloForm: {
-        color: '#8796FF'
-    }
-}
+  inputSeleccionado: {
+    bg: "coolGray.200:alpha.100",
+  },
+  botonDisabled: {
+    backgroundColor: "#00aeef",
+  },
+  labelInput: {
+    color: "black",
+    fontSize: "sm",
+    fontWeight: "bold",
+  },
+  tituloForm: {
+    color: "#8796FF",
+  },
+
+};

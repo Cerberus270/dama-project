@@ -3,7 +3,7 @@ import {
     NativeBaseProvider, Box, Heading, Input, Text, Stack, extendTheme, Icon,
     VStack, FormControl, Button, HStack, Link, Center, ScrollView, Pressable
 } from 'native-base'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../config/firebase'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -27,16 +27,6 @@ export default function Login({ navigation }) {
         }
         return listaErrores[errores] ?? defecto;
     }
-
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            if (user) {
-                navigation.replace("AdminPets");
-            }
-        })
-
-        return unsubscribe
-    }, [])
 
     const sendRegister = () => {
         navigation.navigate("Register")
