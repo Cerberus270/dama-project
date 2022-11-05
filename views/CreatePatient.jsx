@@ -8,6 +8,7 @@ import {
     VStack,
     FormControl,
     Input,
+    Text,
     Button,
     View,
     WarningOutlineIcon,
@@ -18,16 +19,27 @@ import {
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 // Other Components
-import DateTimePicker from '@react-native-community/datetimepicker';
-
-
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 // Firebase Auth
 import { auth } from '../config/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
+
 const CreatePatient = () => {
+    //datepicker
+   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const showDatePicker = () => {
+      setDatePickerVisibility(true);
+    };
+    const hideDatePicker = () => {
+      setDatePickerVisibility(false);
+    };
+    const handleConfirm = (date) => {
+      console.warn("Ha elegido una fecha: ", date);
+      hideDatePicker();
+    };
+    
     const sendData = (data) => {
         console.log(data)
     }
@@ -39,12 +51,13 @@ const CreatePatient = () => {
                     <Heading mt="1" color="coolGray.600" _dark={{
                         color: "warmGray.200"
                     }} fontWeight="medium" size="xs">
-                        Ingrese los datos de la mascota
+                   <Text style={styles.tituloForm}>Ingrese los datos del Paciente</Text>     
                     </Heading>
                     <Formik
                         initialValues={{
                             namePet: '',
                             ownerName: '',
+                            ownerEmail: '',
                             fechaAlta: '',
                             sintomas: '',
                         }}
@@ -52,13 +65,17 @@ const CreatePatient = () => {
                         validationSchema={yup.object().shape({
                             namePet: yup
                                 .string()
-                                .required('Email requerido.'),
+                                .required('Nombre mascota requerido.'),
                             ownerName: yup
                                 .string()
-                                .required('Contraseña requerida.'),
+                                .required('Nombre requerido.'),
+                            ownerEmail: yup
+                                .string()
+                                .email()
+                                .required('Email requerido.'),
                             fechaAlta: yup
                                 .string()
-                                .required('Nombre requerido.'),
+                                .required('Fecha requerido.'),
                             sintomas: yup
                                 .string()
                                 .required("Campo Requerido")
@@ -67,8 +84,8 @@ const CreatePatient = () => {
                             <View>
                                 <VStack space={4} mt="5">
                                     <FormControl isInvalid={'namePet' in errors}>
-                                        <FormControl.Label _text={styles.labelInput}>Nombre de la Mascota</FormControl.Label>
-                                        <Input _focus={styles.inputSeleccionado} placeholder='Escriba el nombre de la Mascota'
+                                        <FormControl.Label _text={styles.labelInput}>NOMBRE:</FormControl.Label>
+                                        <Input _focus={styles.inputSeleccionado} placeholder='Digite el nombre de la Mascota'
                                             InputLeftElement={<Icon as={<MaterialCommunityIcons name="dog" />} size={5} ml="2" color="muted.400" />}
                                             value={values.namePet}
                                             onChangeText={handleChange('namePet')}
@@ -80,8 +97,8 @@ const CreatePatient = () => {
                                         }
                                     </FormControl>
                                     <FormControl isInvalid={'ownerName' in errors}>
-                                        <FormControl.Label _text={styles.labelInput}>Nombre del Dueño</FormControl.Label>
-                                        <Input _focus={styles.inputSeleccionado} placeholder='Escriba el nombre del dueño'
+                                        <FormControl.Label _text={styles.labelInput}>DUEÑO:</FormControl.Label>
+                                        <Input _focus={styles.inputSeleccionado} placeholder='Digite el nombre del dueño'
                                             InputLeftElement={<Icon as={<MaterialCommunityIcons name="account-cowboy-hat" />} size={5} ml="2" color="muted.400" />}
                                             value={values.ownerName}
                                             onChangeText={handleChange('ownerName')}
@@ -92,29 +109,55 @@ const CreatePatient = () => {
                                             </FormControl.ErrorMessage>
                                         }
                                     </FormControl>
+                                    <FormControl isInvalid={'ownerEmail' in errors}>
+                                        <FormControl.Label _text={styles.labelInput}>CORREO:</FormControl.Label>
+                                        <Input _focus={styles.inputSeleccionado} placeholder='Digite el Correo Electronico'
+                                            InputLeftElement={<Icon as={<MaterialCommunityIcons name="email" />} size={5} ml="2" color="muted.400" />}
+                                            value={values.ownerEmail}
+                                            onChangeText={handleChange('ownerEmail')}
+                                            onBlur={() => setFieldTouched('ownerEmail')} />
+                                        {touched.ownerEmail && errors.ownerEmail &&
+                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
+                                                {errors.ownerEmail}
+                                            </FormControl.ErrorMessage>
+                                        }
+                                    </FormControl>
                                     <FormControl isInvalid={'fechaAlta' in errors}>
-                                        <FormControl.Label _text={styles.labelInput}>Fecha Cita</FormControl.Label>
-                                        
-                                        <DateTimePicker value={new Date()} />
-
-                                        {/*<Input _focus={styles.inputSeleccionado} placeholder='Ingrese la fecha de la cita'
-                                            InputLeftElement={<Icon as={<MaterialCommunityIcons name="calendar" />} size={5} ml="2" color="muted.400" />}
-                                            value={values.fechaAlta}
-                                            onChangeText={handleChange('fechaAlta')}
-                                    onBlur={() => setFieldTouched('fechaAlta')} />*/}
+                                        <FormControl.Label _text={styles.labelInput}>FECHA DE ALTA:</FormControl.Label>
+                                            <Input 
+                                                _focus={styles.inputSeleccionado} placeholder='Sin fecha'
+                                                InputLeftElement={<Icon as={<MaterialCommunityIcons name="calendar" />} size={5} ml="2" color="muted.400" />}
+                                                value={values.fechaAlta}
+                                                onChangeText={handleChange('fechaAlta')}
+                                                onBlur={() => setFieldTouched('fechaAlta')} 
+                                                editable={false}
+                                                
+                                            />
+                                            <DateTimePickerModal
+                                                isVisible={isDatePickerVisible}
+                                                mode="date"
+                                                onConfirm={handleConfirm}
+                                                onCancel={hideDatePicker} 
+                                            /> 
                                         {touched.fechaAlta && errors.fechaAlta &&
                                             <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {errors.fechaAlta}
                                             </FormControl.ErrorMessage>
                                         }
                                     </FormControl>
+                                        <View>
+                                            <Button mt="2" colorScheme="indigo" onPress={showDatePicker} >
+                                                Elegir fecha
+                                            </Button>
+                                        </View>
                                     <FormControl isInvalid={'sintomas' in errors}>
-                                        <FormControl.Label _text={styles.labelInput}>Sintomas</FormControl.Label>
-                                        <Input _focus={styles.inputSeleccionado} placeholder='Sintomas'
+                                        <FormControl.Label _text={styles.labelInput}>SINTOMAS:</FormControl.Label>
+                                        <Input _focus={styles.inputSeleccionado} 
                                             InputLeftElement={<Icon as={<MaterialCommunityIcons name="clipboard-list-outline" />} size={5} ml="2" color="muted.400" />}
                                             value={values.sintomas}
                                             onChangeText={handleChange('sintomas')}
-                                            onBlur={() => setFieldTouched('sintomas')} />
+                                            onBlur={() => setFieldTouched('sintomas')} 
+                                            multiline={true} />
                                         {touched.sintomas && errors.sintomas &&
                                             <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {errors.sintomas}
@@ -147,7 +190,9 @@ const styles = {
         fontWeight: 'bold'
     },
     tituloForm: {
-        color: '#8796FF'
+        color: 'indigo',
+        fontSize: 18,
+        fontWeight: 'bold'
     }
 }
 
