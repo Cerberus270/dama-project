@@ -26,9 +26,11 @@ import { auth } from '../config/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 
+
 const CreatePatient = () => {
     //datepicker
    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
     const showDatePicker = () => {
       setDatePickerVisibility(true);
     };
@@ -36,7 +38,7 @@ const CreatePatient = () => {
       setDatePickerVisibility(false);
     };
     const handleConfirm = (date) => {
-      console.warn("Ha elegido una fecha: ", date);
+        console.warm(date);
       hideDatePicker();
     };
     
@@ -131,13 +133,13 @@ const CreatePatient = () => {
                                                 onChangeText={handleChange('fechaAlta')}
                                                 onBlur={() => setFieldTouched('fechaAlta')} 
                                                 editable={false}
-                                                
                                             />
                                             <DateTimePickerModal
                                                 isVisible={isDatePickerVisible}
                                                 mode="date"
                                                 onConfirm={handleConfirm}
-                                                onCancel={hideDatePicker} 
+                                                onCancel={hideDatePicker}
+                                               
                                             /> 
                                         {touched.fechaAlta && errors.fechaAlta &&
                                             <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
@@ -146,7 +148,9 @@ const CreatePatient = () => {
                                         }
                                     </FormControl>
                                         <View>
-                                            <Button mt="2" colorScheme="indigo" onPress={showDatePicker} >
+                                            <Button style={{width: 150}} 
+                                            colorScheme="indigo" 
+                                            onPress={showDatePicker} >
                                                 Elegir fecha
                                             </Button>
                                         </View>
