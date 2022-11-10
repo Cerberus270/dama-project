@@ -82,50 +82,31 @@ export default function Login({ navigation }) {
     navigation.navigate("ResetPassword");
   };
 
-  const login = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        if (user.emailVerified) {
-          getVeterinarioDoc(user.uid);
-        } else {
-          Alert.alert(
-            "Verificacion",
-            "Su cuenta aun no ha sido verificada, revise su correo electronico"
-          );
-          signOut(auth);
-        }
-      })
-      .catch((error) => {
-        console.log(error.code);
-        alert(erroresLogin(error.code));
-      });
-  };
-  return (
-    <NativeBaseProvider>
-      <ScrollView>
-        <Box w={"95%"} mt={8} flex={1} p={1} marginLeft={1}>
-          <Heading
-            size="lg"
-            fontWeight="600"
-            color="coolGray.800"
-            _dark={{
-              color: "warmGray.50",
-            }}
-          >
-            Bienvenido
-          </Heading>
-          <Heading
-            mt="1"
-            _dark={{
-              color: "warmGray.200",
-            }}
-            color="coolGray.600"
-            fontWeight="medium"
-            size="xs"
-          >
-            ¡Inicia sesión para continuar!
-          </Heading>
+    const login = () => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then(userCredentials => {
+                const user = userCredentials.user;
+                console.log('Logged in with:', user.email);
+            })
+            .catch(error => {
+                console.log(error.code);
+                alert(erroresLogin(error.code));
+            });
+    }
+    return (
+        <NativeBaseProvider>
+            <ScrollView>
+                <Box w={"95%"} mt={8} flex={1} p={1} marginLeft={1}>
+                    <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{
+                        color: "warmGray.50"
+                    }}>
+                        Bienvenido
+                    </Heading>
+                    <Heading mt="1" _dark={{
+                        color: "warmGray.200"
+                    }} color="coolGray.600" fontWeight="medium" size="xs">
+                        ¡Inicia sesión para continuar!
+                    </Heading>
 
           <VStack space={3} mt="5">
             <FormControl>
