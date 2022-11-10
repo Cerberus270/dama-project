@@ -15,9 +15,10 @@ import {
   Pressable,
 } from "native-base";
 
+import { ActivityIndicator, Alert } from "react-native";
 
 //ProgressBar
-import * as Progress from 'react-native-progress';
+import * as Progress from "react-native-progress";
 
 // Validation Imports
 import * as yup from "yup";
@@ -30,25 +31,38 @@ import {
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
   sendEmailVerification,
-  signOut
+  signOut,
 } from "firebase/auth";
 
 //Firebase FireStore
 import { doc, setDoc } from "firebase/firestore";
 
 export default function Register({ navigation }) {
-
   const [show, setShow] = useState(false);
+  const [isUpload, setUpload] = useState(false);
 
   //Function that check is email is linked to another account in the app
-  const checkAuthUser = (email, password) => {
-    fetchSignInMethodsForEmail(auth, email)
+  const checkAuthUser = async (email, password) => {
+    setUpload(true);
+    await fetchSignInMethodsForEmail(auth, email)
       .then(async (signInMethods) => {
-        signInMethods.length === 0
-          ? await createAuthUser(email, password)
-          : alert("Ya existe una cuenta vinculada a este correo electronico");
+        if (signInMethods.length === 0) {
+          await createAuthUser(email, password);
+        } else {
+          Alert.alert(
+            "Advertencia",
+            "Ya existe una cuenta vinculada a este correo electronico"
+          );
+          setUpload(false);
+        }
       })
-      .catch((error) =>alert("Ocurrio un error al verificar su correo electronico"));
+      .catch((error) => {
+        Alert.alert(
+          "Error",
+          "Ocurrio un error al verificar su correo electronico"
+        );
+        setUpload(false);
+      });
   };
 
   //Function that is responsible for creating the user with email and password and executes the function of sending mail
@@ -57,7 +71,13 @@ export default function Register({ navigation }) {
       .then(async (userCredential) => {
         await sendEmail(userCredential.user);
       })
-      .catch((error) => alert("Ocurrio un error al registrar su correo electronico"));
+      .catch((error) => {
+        Alert.alert(
+          "Error",
+          "Ocurrio un error al registrar su correo electronico"
+        );
+        setUpload(false);
+      });
   };
 
   //Function that is responsible for send verification email, also execute the function of create Veterinario Doc
@@ -66,12 +86,18 @@ export default function Register({ navigation }) {
       .then(async () => {
         await createVetDoc(user.uid);
       })
-      .catch((error) => alert("Ocurrio un error al enviar el correo de verificacion"));
+      .catch((error) => {
+        Alert.alert(
+          "Error",
+          "Ocurrio un error al enviar el correo de verificacion"
+        );
+        setUpload(false);
+      });
   };
 
   //Function that is responsible for create a Veterinario Doc
   const createVetDoc = async (uid) => {
-    setDoc(doc(db, "veterinarios", uid), {
+    await setDoc(doc(db, "veterinarios", uid), {
       nombres: null,
       apellidos: null,
       clinica: {
@@ -80,21 +106,49 @@ export default function Register({ navigation }) {
       },
       perfilCompleto: false,
     })
-      .then(() =>alert("Se registro con exito, hemos enviado un correo de verificacion"))
-      .catch((error) =>alert("Ocurrio un error al registrar su perfil"));
+      .then(() => {
+        Alert.alert(
+          "Exito",
+          "Se registro con exito, hemos enviado un correo de verificacion",
+          [
+            {
+              text: "Aceptar",
+              onPress: () => navigation.goBack(),
+            },
+          ],{
+            cancelable:false
+          }
+        );
+        setUpload(false);
+      })
+      .catch((error) => {
+        Alert.alert("Error", "Ocurrio un error al registrar su perfil");
+        setUpload(false);
+      });
   };
 
   //Execute all process
   const createUser = async (values) => {
     const { email, password } = values;
-    await checkAuthUser(email, password);
+    checkAuthUser(email, password);
   };
-  
 
   return (
     <NativeBaseProvider>
       <ScrollView>
-        <Box  mt={8} flex={1} p={1}>
+        {isUpload ? (
+          <ActivityIndicator
+            style={styles.indicador}
+            size="large"
+            color="indigo"
+          />
+        ) : null}
+        <Box
+          style={isUpload ? { opacity: 0.5 } : { opacity: 1 }}
+          mt={8}
+          flex={1}
+          p={1}
+        >
           <Heading
             size="lg"
             color="coolGray.800"
@@ -102,6 +156,7 @@ export default function Register({ navigation }) {
               color: "warmGray.50",
             }}
             fontWeight="semibold"
+            alignSelf="center"
           >
             Bienvenido
           </Heading>
@@ -113,6 +168,7 @@ export default function Register({ navigation }) {
             }}
             fontWeight="medium"
             size="xs"
+            alignSelf="center"
           >
             ¡Registrate para Continuar!
           </Heading>
@@ -234,6 +290,7 @@ export default function Register({ navigation }) {
                     mt="2"
                     colorScheme="indigo"
                     onPress={handleSubmit}
+                    disabled={isUpload ? true : false}
                     _disabled={styles.botonDisabled}
                   >
                     Sign up
@@ -263,5 +320,10 @@ const styles = {
   tituloForm: {
     color: "#8796FF",
   },
-
+  indicador: {
+    position: "absolute",
+    top: "50%",
+    left: "25%",
+    right: "25%",
+  },
 };
