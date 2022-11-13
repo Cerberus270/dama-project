@@ -14,9 +14,7 @@ import {
   ScrollView,
   Pressable,
 } from "native-base";
-import {
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../config/firebase";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Alert } from "react-native";
@@ -26,7 +24,7 @@ export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getVeterinarioDoc = async (uid) => {
     const veterinarioRef = doc(db, "veterinarios", uid);
@@ -36,18 +34,22 @@ export default function Login({ navigation }) {
       setLoading(false);
       if (veterinario.perfilCompleto) {
         navigation.reset({
-          index:0,
-          routes:[{
-            name:"AppMain"
-          }]
-        })
+          index: 0,
+          routes: [
+            {
+              name: "AppMain",
+            },
+          ],
+        });
       } else {
         navigation.reset({
-          index:0,
-          routes:[{
-            name:"CompleteProfile"
-          }]
-        })
+          index: 0,
+          routes: [
+            {
+              name: "CompleteProfile",
+            },
+          ],
+        });
       }
     }
   };
@@ -57,7 +59,6 @@ export default function Login({ navigation }) {
     if (auth.currentUser) {
       //Check veterinario document
       getVeterinarioDoc(auth.currentUser.uid);
-
     }
   }, []);
 
@@ -84,33 +85,44 @@ export default function Login({ navigation }) {
     navigation.navigate("ResetPassword");
   };
 
-    const login = () => {
-      setLoading(true)
-        signInWithEmailAndPassword(auth, email, password)
-            .then(userCredentials => {
-                const user = userCredentials.user;
-                console.log(user)
-                getVeterinarioDoc(user.uid)
-            })
-            .catch(error => {
-              setLoading(false);
-                Alert.alert("Error",erroresLogin(error.code));
-            });
-    }
-    return (
-        <NativeBaseProvider>
-            <ScrollView>
-                <Box w={"95%"} mt={8} flex={1} p={1} marginLeft={1}>
-                    <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{
-                        color: "warmGray.50"
-                    }}>
-                        Bienvenido
-                    </Heading>
-                    <Heading mt="1" _dark={{
-                        color: "warmGray.200"
-                    }} color="coolGray.600" fontWeight="medium" size="xs">
-                        ¡Inicia sesión para continuar!
-                    </Heading>
+  const login = () => {
+    setLoading(true);
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+        console.log(user);
+        getVeterinarioDoc(user.uid);
+      })
+      .catch((error) => {
+        setLoading(false);
+        Alert.alert("Error", erroresLogin(error.code));
+      });
+  };
+  return (
+    <NativeBaseProvider>
+      <ScrollView>
+        <Box mt={8} flex={1} p={1}>
+          <Heading
+            size="lg"
+            fontWeight="600"
+            color="coolGray.800"
+            _dark={{
+              color: "warmGray.50",
+            }}
+          >
+            Bienvenido
+          </Heading>
+          <Heading
+            mt="1"
+            _dark={{
+              color: "warmGray.200",
+            }}
+            color="coolGray.600"
+            fontWeight="medium"
+            size="xs"
+          >
+            ¡Inicia sesión para continuar!
+          </Heading>
 
           <VStack space={3} mt="5">
             <FormControl>

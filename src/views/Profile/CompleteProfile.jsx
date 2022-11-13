@@ -1,8 +1,7 @@
 import { NativeBaseProvider, ScrollView } from "native-base";
 import React from "react";
-import { Text,View } from "react-native";
 
-function CompleteProfile({ navigation }) {
+export default function CompleteProfile({ navigation }) {
   return (
     <NativeBaseProvider>
       <ScrollView>
@@ -11,5 +10,3 @@ function CompleteProfile({ navigation }) {
     </NativeBaseProvider>
   );
 }
-
-export default CompleteProfile;

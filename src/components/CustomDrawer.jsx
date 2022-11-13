@@ -15,7 +15,7 @@ import {
 
 //Para obtener el correo del usuario iniciado
 import { auth } from "../../config/firebase";
-import { Button, NativeBaseProvider } from "native-base";
+import { NativeBaseProvider } from "native-base";
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { signOut } from "firebase/auth";
