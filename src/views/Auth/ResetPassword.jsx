@@ -20,7 +20,7 @@ import { Formik } from 'formik';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Firebase Auth
-import { auth } from '../config/firebase'
+import { auth } from "../../../config/firebase"
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 

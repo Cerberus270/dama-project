@@ -5,24 +5,19 @@ import {
   Heading,
   Input,
   Text,
-  Stack,
-  extendTheme,
   Icon,
   VStack,
   FormControl,
   Button,
   HStack,
   Link,
-  Center,
   ScrollView,
   Pressable,
 } from "native-base";
 import {
   signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
 } from "firebase/auth";
-import { auth, db } from "../config/firebase";
+import { auth, db } from "../../../config/firebase";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Alert } from "react-native";
 import { doc, getDoc } from "firebase/firestore";
@@ -31,12 +26,14 @@ export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [loading,setLoading]=useState(false);
 
   const getVeterinarioDoc = async (uid) => {
     const veterinarioRef = doc(db, "veterinarios", uid);
     const veterinarioSnap = await getDoc(veterinarioRef);
     if (veterinarioSnap.exists()) {
       const veterinario = veterinarioSnap.data();
+      setLoading(false);
       if (veterinario.perfilCompleto) {
         navigation.reset({
           index:0,
@@ -60,6 +57,7 @@ export default function Login({ navigation }) {
     if (auth.currentUser) {
       //Check veterinario document
       getVeterinarioDoc(auth.currentUser.uid);
+
     }
   }, []);
 
@@ -87,13 +85,16 @@ export default function Login({ navigation }) {
   };
 
     const login = () => {
+      setLoading(true)
         signInWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
+                console.log(user)
                 getVeterinarioDoc(user.uid)
             })
             .catch(error => {
-                alert(erroresLogin(error.code));
+              setLoading(false);
+                Alert.alert("Error",erroresLogin(error.code));
             });
     }
     return (

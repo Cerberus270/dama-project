@@ -1,11 +1,14 @@
+import { NativeBaseProvider, ScrollView } from "native-base";
 import React from "react";
 import { Text,View } from "react-native";
 
 function CompleteProfile({ navigation }) {
   return (
-    <View>
-      <Text>Completar registro</Text>
-    </View>
+    <NativeBaseProvider>
+      <ScrollView>
+        
+      </ScrollView>
+    </NativeBaseProvider>
   );
 }
 
