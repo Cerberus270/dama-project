@@ -9,13 +9,21 @@ import Register from "./src/views/Auth/Register";
 import ResetPassword from "./src/views/Auth/ResetPassword";
 import CompleteProfile from "./src/views/Profile/CompleteProfile";
 
+import { View } from "react-native";
+
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 import AppDrawer from "./src/navigation/DrawerNavigation";
 
+import { signOut } from "firebase/auth";
+import { auth } from "./config/firebase";
+
 const Stack = createNativeStackNavigator();
+const navigationRef = React.createRef();
 
 export default function App() {
   return (
-    <NavigationContainer initialRouteName="Login">
+    <NavigationContainer ref={navigationRef} initialRouteName="Login">
       <Stack.Navigator>
         <Stack.Screen
           name="Login"
@@ -39,7 +47,38 @@ export default function App() {
         <Stack.Screen
           name="CompleteProfile"
           component={CompleteProfile}
-          options={{ title: "Completar Registro", headerBackVisible: false }}
+          options={{
+            title: "Completar Registro",
+            headerBackVisible: false,
+            headerRight: () => (
+              <View
+                style={{
+                  justiftyContent: "center",
+                  alignItems: "center",
+                  margin:10
+                }}
+              >
+                <Ionicons.Button
+                  backgroundColor={"rgba(56, 109, 255, 0.58)"}
+                  name="exit"
+                  size={22}
+                  onPress={() => {
+                    signOut(auth);
+                    navigationRef.current?.reset({
+                      index: 0,
+                      routes: [
+                        {
+                          name: "Login",
+                        },
+                      ],
+                    });
+                  }}
+                >
+                  Cerrar sesion
+                </Ionicons.Button>
+              </View>
+            ),
+          }}
         />
         <Stack.Screen
           name="AppMain"
