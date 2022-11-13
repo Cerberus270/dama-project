@@ -4,7 +4,7 @@ import { Text,View } from "react-native";
 function CompleteProfile({ navigation }) {
   return (
     <View>
-      <Text>Home</Text>
+      <Text>Completar registro</Text>
     </View>
   );
 }

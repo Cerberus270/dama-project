@@ -36,9 +36,14 @@ export default function Login({ navigation }) {
     const veterinarioRef = doc(db, "veterinarios", uid);
     const veterinarioSnap = await getDoc(veterinarioRef);
     if (veterinarioSnap.exists()) {
-      const veterinario = veterinarioSnap.data;
+      const veterinario = veterinarioSnap.data();
       if (veterinario.perfilCompleto) {
-        //Redirect to Home
+        navigation.reset({
+          index:0,
+          routes:[{
+            name:"AppMain"
+          }]
+        })
       } else {
         navigation.reset({
           index:0,
@@ -59,7 +64,6 @@ export default function Login({ navigation }) {
   }, []);
 
   const erroresLogin = (errores) => {
-    console.log("ea ", errores);
     const defecto = "Otro tipo de error";
     const listaErrores = {
       "auth/invalid-email":
@@ -86,10 +90,9 @@ export default function Login({ navigation }) {
         signInWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
-                console.log('Logged in with:', user.email);
+                getVeterinarioDoc(user.uid)
             })
             .catch(error => {
-                console.log(error.code);
                 alert(erroresLogin(error.code));
             });
     }
@@ -110,7 +113,7 @@ export default function Login({ navigation }) {
 
           <VStack space={3} mt="5">
             <FormControl>
-              <FormControl.Label>Email ID</FormControl.Label>
+              <FormControl.Label>Correo Electronico</FormControl.Label>
               <Input
                 placeholder="Escriba su Email"
                 value={email}
