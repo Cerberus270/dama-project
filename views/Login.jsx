@@ -38,7 +38,7 @@ export default function Login({ navigation }) {
     if (veterinarioSnap.exists()) {
       const veterinario = veterinarioSnap.data;
       if (veterinario.perfilCompleto) {
-        //Redirect to Main Menu
+        //Redirect to Home
       } else {
         navigation.reset({
           index:0,

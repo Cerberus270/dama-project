@@ -37,7 +37,7 @@ import {
 //Firebase FireStore
 import { doc, setDoc } from "firebase/firestore";
 
-export default function Register({ navigation }) {
+export default function Register({ navigation}) {
   const [show, setShow] = useState(false);
   const [isUpload, setUpload] = useState(false);
 
@@ -119,6 +119,7 @@ export default function Register({ navigation }) {
             cancelable:false
           }
         );
+        signOut(auth);
         setUpload(false);
       })
       .catch((error) => {
