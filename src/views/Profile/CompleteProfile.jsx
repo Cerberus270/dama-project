@@ -41,30 +41,36 @@ export default function CompleteProfile({ navigation }) {
         nombre: nombreClinica,
         direccion: direccionClinica,
       },
-    }).then((message) => {
-      Alert.alert(
-        "Exito",
-        "Se completo su registro, ahora puedes disfrutar de todos los beneficios de la aplicacion",
-        [
-          {
-            text: "Aceptar",
-            onPress: () => {
-              navigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: "AppMain",
-                  },
-                ],
-              });
+    })
+      .then((message) => {
+        Alert.alert(
+          "Exito",
+          "Se completo su registro, ahora puedes disfrutar de todos los beneficios de la aplicacion",
+          [
+            {
+              text: "Aceptar",
+              onPress: () => {
+                setLoading(false);
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: "AppMain",
+                    },
+                  ],
+                });
+              },
             },
-          },
-        ],
-        {
-          cancelable: false,
-        }
-      );
-    });
+          ],
+          {
+            cancelable: false,
+          }
+        );
+      })
+      .catch((error) => {
+        setLoading(false);
+        Alert.alert("Error", "Ocurrio un error al completar su perfil");
+      });
   };
 
   return (
@@ -77,7 +83,12 @@ export default function CompleteProfile({ navigation }) {
             color="indigo"
           />
         ) : null}
-        <Box mt={8} flex={1} p={1}>
+        <Box
+          mt={8}
+          flex={1}
+          p={1}
+          style={isLoading ? { opacity: 0.5 } : { opacity: 1 }}
+        >
           <Heading
             size="lg"
             color="coolGray.800"
@@ -113,15 +124,15 @@ export default function CompleteProfile({ navigation }) {
               nombres: yup
                 .string()
                 .min(
-                  6,
-                  "Consideramos que su nombre es muy corto, ingrese mas de 6 caracteres"
+                  4,
+                  "Consideramos que su nombre es muy corto, ingrese mas de 4 caracteres"
                 )
                 .required("Necesitamos su nombre"),
               apellidos: yup
                 .string()
                 .min(
-                  6,
-                  "Consideramos que su apellido es muy corto, ingrese mas de 6 caracteres"
+                  4,
+                  "Consideramos que su apellido es muy corto, ingrese mas de 4 caracteres"
                 )
                 .required("Necesitamos su apellido"),
               nombreClinica: yup
@@ -293,6 +304,7 @@ export default function CompleteProfile({ navigation }) {
                     }}
                   >
                     <Ionicons.Button
+                      disabled={isLoading ? true : false}
                       backgroundColor={"rgba(56, 109, 255, 0.58)"}
                       size={22}
                       onPress={handleSubmit}
