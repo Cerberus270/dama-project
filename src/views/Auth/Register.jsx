@@ -173,7 +173,7 @@ export default function Register({ navigation }) {
             fontWeight="medium"
             size="xs"
             alignSelf="center"
-          >
+          > 
             ¡Registrate para Continuar!
           </Heading>
           <Formik

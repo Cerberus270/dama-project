@@ -18,26 +18,32 @@ import { auth, db } from "../../config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { ActivityIndicator } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Home() {
   const [veterinario, setVeterinario] = useState(null);
 
-  const getVeterinario = async (uid) => {
-    try {
-      const veterinarioRef = doc(db, "veterinarios", uid);
-      const veterinarioSnap = await getDoc(veterinarioRef);
-      if (veterinarioSnap.exists()) {
-        const veterinario = await veterinarioSnap.data();
-        setVeterinario(veterinario);
-      }
-    } catch (error) {
-      Alert.alert("Error", error.toString());
-    }
-  };
+  useFocusEffect(
+    React.useCallback(() => {
+      const getVeterinario = async (uid) => {
+        try {
+          const veterinarioRef = doc(db, "veterinarios", uid);
+          const veterinarioSnap = await getDoc(veterinarioRef);
+          if (veterinarioSnap.exists()) {
+            const veterinario = await veterinarioSnap.data();
+            setVeterinario(veterinario);
+          }
+        } catch (error) {
+          Alert.alert("Error", error.toString());
+        }
+      };
+      getVeterinario(auth.currentUser.uid)
 
-  useEffect(async () => {
-    await getVeterinario(auth.currentUser.uid);
-  }, []);
+      return()=>{
+        setVeterinario(null);
+      }
+    }, [])
+  );
 
   return (
     <NativeBaseProvider>
@@ -113,7 +119,7 @@ export default function Home() {
         <ActivityIndicator
           style={styles.indicador}
           size="large"
-          color="rgba(56, 109, 255, 0.58)"
+          color="rgba(117, 140, 255, 1)"
         />
       )}
     </NativeBaseProvider>
