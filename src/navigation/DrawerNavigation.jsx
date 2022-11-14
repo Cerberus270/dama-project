@@ -6,7 +6,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 
 //Importamos los componentes que seran las pestañas de la barra
 import Profile from "../views/Profile";
-import Pacientes from "../views/Pacientes";
+import Pacientes from "../views/Paciente/Pacientes";
 import Home from "../views/Home";
 
 //Importacione necesarias para asignarle icono a cada pestaña
