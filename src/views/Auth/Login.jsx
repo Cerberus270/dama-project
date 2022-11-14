@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ActivityIndicator } from "react-native";
 import {
   NativeBaseProvider,
   Box,
@@ -57,6 +58,7 @@ export default function Login({ navigation }) {
   useEffect(() => {
     //Check is exist user log in app when component are rendered the first time
     if (auth.currentUser) {
+      setLoading(true);
       //Check veterinario document
       getVeterinarioDoc(auth.currentUser.uid);
     }
@@ -101,7 +103,19 @@ export default function Login({ navigation }) {
   return (
     <NativeBaseProvider>
       <ScrollView>
-        <Box mt={8} flex={1} p={1}>
+        {loading ? (
+          <ActivityIndicator
+            style={styles.indicador}
+            size="large"
+            color="rgba(56, 109, 255, 0.58)"
+          />
+        ) : null}
+        <Box
+          mt={8}
+          flex={1}
+          p={1}
+          style={loading ? { opacity: 0.5 } : { opacity: 1 }}
+        >
           <Heading
             size="lg"
             fontWeight="600"
@@ -176,7 +190,12 @@ export default function Login({ navigation }) {
                 ¿Olvido la contraseña?
               </Link>
             </FormControl>
-            <Button mt="2" colorScheme="indigo" onPress={login}>
+            <Button
+              disabled={loading ? true : false}
+              mt="2"
+              colorScheme="indigo"
+              onPress={login}
+            >
               Sign in
             </Button>
             <HStack mt="6" justifyContent="center">
@@ -206,3 +225,26 @@ export default function Login({ navigation }) {
     </NativeBaseProvider>
   );
 }
+
+const styles = {
+  inputSeleccionado: {
+    bg: "coolGray.200:alpha.100",
+  },
+  botonDisabled: {
+    backgroundColor: "#00aeef",
+  },
+  labelInput: {
+    color: "black",
+    fontSize: "sm",
+    fontWeight: "bold",
+  },
+  tituloForm: {
+    color: "#8796FF",
+  },
+  indicador: {
+    position: "absolute",
+    top: "50%",
+    left: "25%",
+    right: "25%",
+  },
+};

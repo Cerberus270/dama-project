@@ -142,7 +142,7 @@ export default function Register({ navigation }) {
           <ActivityIndicator
             style={styles.indicador}
             size="large"
-            color="indigo"
+            color="rgba(56, 109, 255, 0.58)"
           />
         ) : null}
         <Box
