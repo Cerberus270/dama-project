@@ -36,7 +36,7 @@ function MyTabs() {
             initialRouteName="Feed"
             activeColor="white"
             barStyle={{
-                backgroundColor: '#386dff',
+                backgroundColor: 'rgba(117, 140, 255, 1)',
             }}>
             <Tab.Screen
                 name="AddPaciente"

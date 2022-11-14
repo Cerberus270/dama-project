@@ -59,7 +59,7 @@ export default function CustomDrawer(props) {
         style={{ margin: 10, justiftyContent: "center", alignItems: "center" }}
       >
         <Ionicons.Button
-          backgroundColor={"rgba(56, 109, 255, 0.58)"}
+          backgroundColor={"rrgba(117, 140, 255, 1)"}
           name="exit"
           size={22}
           onPress={()=>{

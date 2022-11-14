@@ -20,6 +20,7 @@ import { auth, db } from "../../../config/firebase";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Alert } from "react-native";
 import { doc, getDoc } from "firebase/firestore";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -107,7 +108,7 @@ export default function Login({ navigation }) {
           <ActivityIndicator
             style={styles.indicador}
             size="large"
-            color="rgba(56, 109, 255, 0.58)"
+            color="rgba(117, 140, 255, 1)"
           />
         ) : null}
         <Box
@@ -190,14 +191,20 @@ export default function Login({ navigation }) {
                 ¿Olvido la contraseña?
               </Link>
             </FormControl>
-            <Button
+            <Ionicons.Button
               disabled={loading ? true : false}
-              mt="2"
-              colorScheme="indigo"
+              backgroundColor={"rgba(117, 140, 255, 1)"}
+              size={22}
               onPress={login}
+              style={{
+                alignSelf: "stretch",
+                justifyContent: "center",
+              }}
+              name="log-in-outline"
+              _disabled={styles.botonDisabled}
             >
-              Sign in
-            </Button>
+              Iniciar sesion
+            </Ionicons.Button>
             <HStack mt="6" justifyContent="center">
               <Text
                 fontSize="sm"

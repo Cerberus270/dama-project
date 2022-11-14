@@ -5,7 +5,7 @@ import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
 //Importamos los componentes que seran las pestañas de la barra
-import Profile from "../views/Profile";
+import Profile from "../views/Profile/Profile";
 import Pacientes from "../views/Paciente/Pacientes";
 import Home from "../views/Home";
 
@@ -26,7 +26,7 @@ export default function AppDrawer() {
       initialRouteName="Home"
       screenOptions={{
         headerShown: true,
-        drawerActiveBackgroundColor: "rgba(56, 109, 255, 0.58)",
+        drawerActiveBackgroundColor: "rgba(117, 140, 255, 1)",
         drawerActiveTintColor: "#fff",
         drawerInactiveTintColor: "#333",
         drawerLabelStyle: {

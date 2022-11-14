@@ -15,6 +15,8 @@ import {
   Pressable,
 } from "native-base";
 
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 import { ActivityIndicator, Alert } from "react-native";
 
 //ProgressBar
@@ -142,7 +144,7 @@ export default function Register({ navigation }) {
           <ActivityIndicator
             style={styles.indicador}
             size="large"
-            color="rgba(56, 109, 255, 0.58)"
+            color="rgba(117, 140, 255, 1)"
           />
         ) : null}
         <Box
@@ -288,15 +290,21 @@ export default function Register({ navigation }) {
                       </FormControl.ErrorMessage>
                     )}
                   </FormControl>
-                  <Button
-                    mt="2"
-                    colorScheme="indigo"
-                    onPress={handleSubmit}
+
+                  <Ionicons.Button
                     disabled={isUpload ? true : false}
+                    backgroundColor={"rgba(117, 140, 255, 1)"}
+                    size={22}
+                    onPress={handleSubmit}
+                    style={{
+                      alignSelf: "stretch",
+                      justifyContent:'center'
+                    }}
+                    name="create-outline"
                     _disabled={styles.botonDisabled}
                   >
-                    Sign up
-                  </Button>
+                    Registrarme
+                  </Ionicons.Button>
                 </VStack>
               </View>
             )}

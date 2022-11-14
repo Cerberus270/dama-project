@@ -305,7 +305,7 @@ export default function CompleteProfile({ navigation }) {
                   >
                     <Ionicons.Button
                       disabled={isLoading ? true : false}
-                      backgroundColor={"rgba(56, 109, 255, 0.58)"}
+                      backgroundColor={"rgba(117, 140, 255, 1)"}
                       size={22}
                       onPress={handleSubmit}
                       style={{
