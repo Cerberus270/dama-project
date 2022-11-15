@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {Alert} from 'react-native';
+import React, { useEffect, useState } from 'react'
+import { Alert } from 'react-native';
 // Components Imports
 import {
     NativeBaseProvider,
@@ -16,19 +16,21 @@ import {
     WarningOutlineIcon,
     Icon,
     Radio,
+    Select,
+    CheckIcon,
     Pressable
 } from "native-base"
 // Validation Imports
 import * as yup from 'yup';
-import {Formik, getIn} from 'formik';
-import {MaterialCommunityIcons} from '@expo/vector-icons';
+import { Formik, getIn } from 'formik';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 // Other Components
 //import DateTimePickerModal from "react-native-modal-datetime-picker";
 // Firebase Auth and Firestore
-import {auth, db} from '../../../config/firebase'
-import {addDoc, collection} from "firebase/firestore";
-import {createUserWithEmailAndPassword} from 'firebase/auth';
-import {Platform} from 'react-native';
+import { auth, db } from '../../../config/firebase'
+import { addDoc, collection } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -50,7 +52,6 @@ const CreatePaciente = () => {
             .required('Nombre mascota requerido.'),
         tipo: yup
             .string()
-            .min(4, 'Minimo 4 caracteres')
             .required('Tipo de Paciente requerido'),
         raza: yup
             .string()
@@ -97,12 +98,13 @@ const CreatePaciente = () => {
         setShow(Platform.OS === 'ios');
         setDate(currentDate);
 
-        let tempDate = new Date(currentDate);
-        let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
-        setFecNac(tempDate);
-        setText(fDate);
-
-        console.log(fDate)
+        if (event.type == "set") {
+            let tempDate = new Date(currentDate);
+            let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+            setFecNac(tempDate);
+            setText(fDate);
+            console.log(fDate);
+        }
     }
 
     const sendData = (data) => {
@@ -154,38 +156,38 @@ const CreatePaciente = () => {
                     </Heading>
                     <Formik
                         initialValues={valoresIniciales}
-                        onSubmit={(values, {resetForm}) => {
+                        onSubmit={(values, { resetForm }) => {
                             if (sendData(values)) {
-                                resetForm({values: valoresIniciales});
+                                resetForm({ values: valoresIniciales });
                                 setText('');
                             }
                         }
                         }
                         validationSchema={formularioValidacion}>
                         {({
-                              values,
-                              handleChange,
-                              errors,
-                              setFieldTouched,
-                              touched,
-                              isValid,
-                              handleSubmit,
-                              resetForm
-                          }) => (
+                            values,
+                            handleChange,
+                            errors,
+                            setFieldTouched,
+                            touched,
+                            isValid,
+                            handleSubmit,
+                            resetForm
+                        }) => (
                             <View>
                                 <VStack space={4} mt="5">
                                     <FormControl isInvalid={'nombre' in errors}>
                                         <FormControl.Label _text={styles.labelInput}>Nombre
                                             Paciente:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
-                                               placeholder='Digite el nombre del paciente'
-                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="dog"/>}
-                                                                       size={5} ml="2" color="muted.400"/>}
-                                               value={values.nombre}
-                                               onChangeText={handleChange('nombre')}
-                                               onBlur={() => setFieldTouched('nombre')}/>
+                                            placeholder='Digite el nombre del paciente'
+                                            InputLeftElement={<Icon as={<MaterialCommunityIcons name="dog" />}
+                                                size={5} ml="2" color="muted.400" />}
+                                            value={values.nombre}
+                                            onChangeText={handleChange('nombre')}
+                                            onBlur={() => setFieldTouched('nombre')} />
                                         {touched.nombre && errors.nombre &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
+                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {errors.nombre}
                                             </FormControl.ErrorMessage>
                                         }
@@ -193,15 +195,29 @@ const CreatePaciente = () => {
 
                                     <FormControl isInvalid={'tipo' in errors}>
                                         <FormControl.Label _text={styles.labelInput}>Tipo Paciente:</FormControl.Label>
-                                        <Input _focus={styles.inputSeleccionado}
+                                        {/* <Input _focus={styles.inputSeleccionado}
                                                placeholder='Digite el tipo del paciente'
                                                InputLeftElement={<Icon as={<MaterialCommunityIcons name="cat"/>}
                                                                        size={5} ml="2" color="muted.400"/>}
                                                value={values.tipo}
                                                onChangeText={handleChange('tipo')}
-                                               onBlur={() => setFieldTouched('tipo')}/>
+                                               onBlur={() => setFieldTouched('tipo')}/> */}
+                                        <Select minWidth="200" accessibilityLabel="Tipo de Paciente" placeholder="Tipo de Paciente" onValueChange={handleChange('tipo')}
+                                            selectedValue={values.tipo}
+                                            _selectedItem={{
+                                                bg: "teal.600",
+                                                endIcon: <CheckIcon size={5} />
+                                            }} mt="1">
+                                            <Select.Item label="Canino" value="Canino" />
+                                            <Select.Item label="Felino" value="Felino" />
+                                            <Select.Item label="Ave" value="Ave" />
+                                            <Select.Item label="Roedor" value="Roedor" />
+                                            <Select.Item label="Reptil" value="Reptil" />
+                                            <Select.Item label="Anfibio" value="Anfibio" />
+                                            <Select.Item label="Insecto" value="Insecto" />
+                                        </Select>
                                         {touched.tipo && errors.tipo &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
+                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {errors.tipo}
                                             </FormControl.ErrorMessage>
                                         }
@@ -209,14 +225,14 @@ const CreatePaciente = () => {
                                     <FormControl isInvalid={'raza' in errors}>
                                         <FormControl.Label _text={styles.labelInput}>Raza Paciente:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
-                                               placeholder='Digite la raza del paciente'
-                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="dog-side"/>}
-                                                                       size={5} ml="2" color="muted.400"/>}
-                                               value={values.raza}
-                                               onChangeText={handleChange('raza')}
-                                               onBlur={() => setFieldTouched('raza')}/>
+                                            placeholder='Digite la raza del paciente'
+                                            InputLeftElement={<Icon as={<MaterialCommunityIcons name="dog-side" />}
+                                                size={5} ml="2" color="muted.400" />}
+                                            value={values.raza}
+                                            onChangeText={handleChange('raza')}
+                                            onBlur={() => setFieldTouched('raza')} />
                                         {touched.raza && errors.raza &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
+                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {errors.raza}
                                             </FormControl.ErrorMessage>
                                         }
@@ -237,7 +253,7 @@ const CreatePaciente = () => {
                                             </Radio>
                                         </Radio.Group>
                                         {touched.sexo && errors.sexo &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
+                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {errors.sexo}
                                             </FormControl.ErrorMessage>
                                         }
@@ -246,16 +262,16 @@ const CreatePaciente = () => {
                                     <FormControl isInvalid={'peso' in errors}>
                                         <FormControl.Label _text={styles.labelInput}>Peso Paciente:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
-                                               placeholder='Digite el peso del Paciente'
-                                               InputLeftElement={<Icon
-                                                   as={<MaterialCommunityIcons name="weight-pound"/>} size={5} ml="2"
-                                                   color="muted.400"/>}
-                                               value={values.peso}
-                                               keyboardType={"decimal-pad"}
-                                               onChangeText={handleChange('peso')}
-                                               onBlur={() => setFieldTouched('peso')}/>
+                                            placeholder='Digite el peso del Paciente'
+                                            InputLeftElement={<Icon
+                                                as={<MaterialCommunityIcons name="weight-pound" />} size={5} ml="2"
+                                                color="muted.400" />}
+                                            value={values.peso}
+                                            keyboardType={"decimal-pad"}
+                                            onChangeText={handleChange('peso')}
+                                            onBlur={() => setFieldTouched('peso')} />
                                         {touched.peso && errors.peso &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
+                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {errors.peso}
                                             </FormControl.ErrorMessage>
                                         }
@@ -263,7 +279,7 @@ const CreatePaciente = () => {
                                     <FormControl onTouchStart={() => showMode('date')}>
                                         <FormControl.Label _text={styles.labelInput}>Fecha de Nacimiento:</FormControl.Label>
                                         <Button size="sm" variant="outline" leftIcon={<Icon as={MaterialCommunityIcons} name="calendar" size="sm" />} onLongPress={() => showMode('date')}>
-                                            {text.length > 1 ? text : 'Seleccione una Fecha' }
+                                            {text.length > 1 ? text : 'Seleccione una Fecha'}
                                         </Button>
                                     </FormControl>
                                     {show && (
@@ -281,15 +297,15 @@ const CreatePaciente = () => {
                                         <FormControl.Label _text={styles.labelInput}>Nombre
                                             Propietario:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
-                                               placeholder='Digite el nombre del propietario'
-                                               InputLeftElement={<Icon
-                                                   as={<MaterialCommunityIcons name="account-cowboy-hat"/>} size={5}
-                                                   ml="2" color="muted.400"/>}
-                                               value={values.propietario.nombre}
-                                               onChangeText={handleChange('propietario.nombre')}
-                                               onBlur={() => setFieldTouched('propietario.nombre')}/>
+                                            placeholder='Digite el nombre del propietario'
+                                            InputLeftElement={<Icon
+                                                as={<MaterialCommunityIcons name="account-cowboy-hat" />} size={5}
+                                                ml="2" color="muted.400" />}
+                                            value={values.propietario.nombre}
+                                            onChangeText={handleChange('propietario.nombre')}
+                                            onBlur={() => setFieldTouched('propietario.nombre')} />
                                         {getIn(touched, 'propietario.nombre') && getIn(errors, 'propietario.nombre') &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
+                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {getIn(errors, 'propietario.nombre')}
                                             </FormControl.ErrorMessage>
                                         }
@@ -298,15 +314,15 @@ const CreatePaciente = () => {
                                         <FormControl.Label _text={styles.labelInput}>Telefono
                                             Propietario:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
-                                               placeholder='Digite Telefono del Propietario'
-                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="phone"/>}
-                                                                       size={5} ml="2" color="muted.400"/>}
-                                               value={values.propietario.telefono}
-                                               keyboardType={"number-pad"}
-                                               onChangeText={handleChange('propietario.telefono')}
-                                               onBlur={() => setFieldTouched('propietario.telefono')}/>
+                                            placeholder='Digite Telefono del Propietario'
+                                            InputLeftElement={<Icon as={<MaterialCommunityIcons name="phone" />}
+                                                size={5} ml="2" color="muted.400" />}
+                                            value={values.propietario.telefono}
+                                            keyboardType={"number-pad"}
+                                            onChangeText={handleChange('propietario.telefono')}
+                                            onBlur={() => setFieldTouched('propietario.telefono')} />
                                         {getIn(touched, 'propietario.telefono') && getIn(errors, 'propietario.telefono') &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
+                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {getIn(errors, 'propietario.telefono')}
                                             </FormControl.ErrorMessage>
                                         }
@@ -315,15 +331,15 @@ const CreatePaciente = () => {
                                         <FormControl.Label _text={styles.labelInput}>Direccion
                                             Propietario:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
-                                               placeholder='Digite la direccion del Propietario'
-                                               InputLeftElement={<Icon
-                                                   as={<MaterialCommunityIcons name="home-map-marker"/>} size={5} ml="2"
-                                                   color="muted.400"/>}
-                                               value={values.propietario.direccion}
-                                               onChangeText={handleChange('propietario.direccion')}
-                                               onBlur={() => setFieldTouched('propietario.direccion')}/>
+                                            placeholder='Digite la direccion del Propietario'
+                                            InputLeftElement={<Icon
+                                                as={<MaterialCommunityIcons name="home-map-marker" />} size={5} ml="2"
+                                                color="muted.400" />}
+                                            value={values.propietario.direccion}
+                                            onChangeText={handleChange('propietario.direccion')}
+                                            onBlur={() => setFieldTouched('propietario.direccion')} />
                                         {getIn(touched, 'propietario.direccion') && getIn(errors, 'propietario.direccion') &&
-                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
+                                            <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                                 {getIn(errors, 'propietario.direccion')}
                                             </FormControl.ErrorMessage>
                                         }
