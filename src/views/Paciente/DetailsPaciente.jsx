@@ -10,17 +10,13 @@ import { useNavigation } from '@react-navigation/native';
 
 
 export default function DetailsPaciente({ navigation, route }) {
-    const {nombre} = route.params
-    useEffect(() => {
-        console.log(route.params);
-    })
 
     return (
             <NativeBaseProvider>
                 <ScrollView>
                     <Box mt={5} flex={1} p={1} w="95%" mx='auto' justifyContent={'center'}>
                         <VStack space={2} px="2" alignItems="center" bg={'amber.100'} rounded='50' justifyContent="center">
-                            <Heading size="md" pt={'3'}>Detalles Paciente {nombre}</Heading>
+                            <Heading size="md" pt={'3'}>Detalles Paciente</Heading>
                             <Stack mb="2.5" mt="1.5" direction={{
                                 base: "column",
                                 md: "row"
@@ -28,10 +24,10 @@ export default function DetailsPaciente({ navigation, route }) {
                                 base: "auto",
                                 md: "0"
                             }}>
-                                <Button size="lg" variant="outline" onPress={() => navigation.navigate('VacunasPaciente')}>
+                                <Button size="lg" variant="outline">
                                     Vacunas Paciente
                                 </Button>
-                                <Button size="lg" variant="outline" onPress={() => navigation.navigate('DesparasitantePaciente')}>
+                                <Button size="lg" variant="outline">
                                     Desparasitante Paciente
                                 </Button>
                                 <Text mt={5}>

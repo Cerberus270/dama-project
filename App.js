@@ -14,6 +14,8 @@ import { View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import AppDrawer from "./src/navigation/DrawerNavigation";
+import TabNavigator from "./src/navigation/TabNavigator";
+import TopTabNavigator from "./src/navigation/TopTabNavigator";
 
 import { signOut } from "firebase/auth";
 import { auth } from "./config/firebase";
@@ -55,7 +57,7 @@ export default function App() {
                 style={{
                   justiftyContent: "center",
                   alignItems: "center",
-                  margin:10
+                  margin: 10,
                 }}
               >
                 <Ionicons.Button
@@ -84,6 +86,17 @@ export default function App() {
           name="AppMain"
           component={AppDrawer}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Paciente"
+          component={TabNavigator}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="TabPaciente"
+          component={TopTabNavigator}
+          options={{ headerShown: true,title:"Historial del paciente" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

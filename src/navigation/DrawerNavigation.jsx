@@ -6,7 +6,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 
 //Importamos los componentes que seran las pestañas de la barra
 import Profile from "../views/Profile/Profile";
-import Pacientes from "../views/Paciente/Pacientes";
+import TabNavigator from "./TabNavigator";
 import Home from "../views/Home";
 
 //Importacione necesarias para asignarle icono a cada pestaña
@@ -47,7 +47,7 @@ export default function AppDrawer() {
       />
       <Drawer.Screen
         name="Pacientes"
-        component={Pacientes}
+        component={TabNavigator}
         options={{
           drawerIcon: ({ color }) => (
             <MaterialIcons name="pets" size={22} color={color} />

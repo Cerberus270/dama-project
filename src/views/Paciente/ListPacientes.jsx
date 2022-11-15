@@ -73,8 +73,7 @@ export default function ListPacientes({ navigation }) {
                                     key={paciente.id}
                                     bottomDivider
                                     onPress={() => {
-                                        console.log("Hola", paciente);
-                                        //navigation.navigate('DetailsPaciente', paciente);
+                                        navigation.navigate('TabPaciente');
                                     }}
                                     rightContent={
                                         <Button
