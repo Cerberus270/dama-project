@@ -34,7 +34,7 @@ export default function Home() {
             setVeterinario(veterinario);
           }
         } catch (error) {
-          Alert.alert("Error", error.toString());
+          Alert.alert("Error", "Ocurrio un error al obtener su informacion");
         }
       };
       getVeterinario(auth.currentUser.uid)
