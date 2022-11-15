@@ -1,30 +1,29 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import {Text, View} from 'react-native';
+import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 
 import CreatePaciente from './CreatePaciente';
+import ListPacientes from "./ListPacientes";
+
 
 function AddPaciente() {
     return (
-        <CreatePaciente />
+        <CreatePaciente/>
     );
 }
 
 function Profile() {
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Text>Aqui no se que putas poner</Text>
         </View>
     );
 }
 
-function Notifications() {
+function ListarPacientes() {
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Aqui va la lista de pacientes</Text>
-        </View>
+        <ListPacientes/>
     );
 }
 
@@ -43,18 +42,18 @@ function MyTabs() {
                 component={AddPaciente}
                 options={{
                     tabBarLabel: 'Agregar',
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="plus" size={26} color={color} />
+                    tabBarIcon: ({color}) => (
+                        <MaterialCommunityIcons name="plus" size={26} color={color}/>
                     ),
                 }}
             />
             <Tab.Screen
-                name="Notifications"
-                component={Notifications}
+                name="ListarPacientes"
+                component={ListarPacientes}
                 options={{
                     tabBarLabel: 'Pacientes',
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="clipboard-list" color={color} size={26} />
+                    tabBarIcon: ({color}) => (
+                        <MaterialCommunityIcons name="clipboard-list" color={color} size={26}/>
                     ),
                 }}
             />
@@ -63,8 +62,8 @@ function MyTabs() {
                 component={Profile}
                 options={{
                     tabBarLabel: 'Ni Idea',
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="account" color={color} size={26} />
+                    tabBarIcon: ({color}) => (
+                        <MaterialCommunityIcons name="account" color={color} size={26}/>
                     ),
                 }}
             />
@@ -74,6 +73,6 @@ function MyTabs() {
 
 export default function Pacientes() {
     return (
-        <MyTabs />
+        <MyTabs/>
     );
 }
