@@ -34,7 +34,6 @@ import { Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-
 const CreatePaciente = () => {
     //Date Picker
     const [date, setDate] = useState(new Date());
