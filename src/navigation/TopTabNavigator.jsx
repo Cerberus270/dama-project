@@ -21,6 +21,14 @@ export default function TopTabNavigator() {
         }}
       />
       <Tab.Screen
+        name="Atenciones"
+        component={Atenciones}
+        options={{
+          tabBarLabel: "Atenciones",
+          tabBarScrollEnabled:true
+        }}
+      />
+      <Tab.Screen
         name="Vacunas"
         component={Vacunas}
         options={{
@@ -37,14 +45,7 @@ export default function TopTabNavigator() {
           tabBarLabel: "Desparasitacion",
         }}
       />
-      <Tab.Screen
-        name="Atenciones"
-        component={Atenciones}
-        options={{
-          tabBarLabel: "Atenciones",
-          tabBarScrollEnabled:true
-        }}
-      />
+
     </Tab.Navigator>
   );
 }
