@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 
 
 export default function DetailsPaciente({ navigation, route }) {
+    const {id, nombre} = route.params;
 
     return (
             <NativeBaseProvider>
