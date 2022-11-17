@@ -20,6 +20,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { ActivityIndicator } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { signOut } from "firebase/auth";
+import { ListItem,Avatar } from "react-native-elements";
 
 export default function Home({ navigation }) {
   const [veterinario, setVeterinario] = useState(null);
@@ -67,7 +68,7 @@ export default function Home({ navigation }) {
     <NativeBaseProvider>
       {veterinario ? (
         <ScrollView>
-          <Box flex={1} p={1}>
+          <Box flex={1} p={1} mb={5}>
             <Heading
               mt={5}
               size="lg"
@@ -91,7 +92,10 @@ export default function Home({ navigation }) {
               alignSelf="center"
             >
               {veterinario
-                ?(veterinario.sexo==="Masculino"?"Dr. ":"Dra. ")+ veterinario.nombres + " " + veterinario.apellidos
+                ? (veterinario.sexo === "Masculino" ? "Dr. " : "Dra. ") +
+                  veterinario.nombres +
+                  " " +
+                  veterinario.apellidos
                 : null}
             </Heading>
             <View style={{ alignItems: "center" }} mt={5}>
@@ -120,6 +124,7 @@ export default function Home({ navigation }) {
             <Heading
               style={{ flex: 1, textAlign: "center" }}
               mt={1}
+              mb={5}
               size="md"
               color="coolGray.800"
               _dark={{
@@ -131,6 +136,44 @@ export default function Home({ navigation }) {
               Conoce los beneficios para ti y los pacientes de{" "}
               {veterinario ? veterinario.clinica.nombre : "Tu clinica"}
             </Heading>
+            <View m={2}>
+              <ListItem style={{marginBottom:5}}>
+              <Avatar source={require("../../assets/veterinario.png")} />
+                <ListItem.Content>
+                  <ListItem.Title>
+                    <Text>Gestion de pacientes</Text>
+                  </ListItem.Title>
+                  <Text>Registra y gestiona a todos tus pacientes de forma rapida y sencilla</Text>
+                </ListItem.Content>
+              </ListItem>
+              <ListItem style={{marginBottom:5}}>
+              <Avatar source={require("../../assets/vacuna.png")} />
+                <ListItem.Content>
+                  <ListItem.Title>
+                    <Text>Control de vacunacion</Text>
+                  </ListItem.Title>
+                  <Text>Acceso rapido y sencillo al historial de vacunacion de tus pacientes</Text>
+                </ListItem.Content>
+              </ListItem>
+              <ListItem style={{marginBottom:5}}>
+              <Avatar source={require("../../assets/plato-de-perro.png")} />
+                <ListItem.Content>
+                  <ListItem.Title>
+                    <Text>Control de desparasitacion</Text>
+                  </ListItem.Title>
+                  <Text>Acceso rapido y sencillo al historial de desparasitacion de tus pacientes</Text>
+                </ListItem.Content>
+              </ListItem>
+              <ListItem style={{marginBottom:5}}>
+              <Avatar source={require("../../assets/chequeo-medico.png")} />
+                <ListItem.Content>
+                  <ListItem.Title>
+                    <Text>Historial de atenciones</Text>
+                  </ListItem.Title>
+                  <Text>Accede al historial de atenciones brindadas a tus pacientes, ademas de registrar nuevas atenciones</Text>
+                </ListItem.Content>
+              </ListItem>
+            </View>
           </Box>
         </ScrollView>
       ) : (
