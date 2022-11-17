@@ -97,17 +97,18 @@ export default function ListPacientes({ navigation }) {
         />
       ) : (
         <ScrollView>
-          <Box m={5} mt={8} flex={1} p={1}>
+          <Box m={2} flex={1} p={1}>
             <Heading
               size="lg"
               color="coolGray.800"
               _dark={{
                 color: "warmGray.50",
               }}
-              fontWeight="semibold"
+              fontWeight="bold"
               alignSelf="center"
+              mb={2}
             >
-              Gestion de Pacientes
+              Mis pacientes
             </Heading>
             <View style={styles.container}>
               {pacientes.map((paciente) => {
