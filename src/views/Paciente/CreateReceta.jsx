@@ -16,12 +16,13 @@ import {
     Icon,
     HStack,
     Radio,
-    resetForm,
+    Select,
+    CheckIcon,
     Pressable
 } from "native-base"
 // Validation Imports
 import * as yup from 'yup';
-import {Formik, getIn} from 'formik';
+import {Formik} from 'formik';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 // Other Components
 // Firebase Auth and Firestore
@@ -29,17 +30,10 @@ import {auth, db} from '../../../config/firebase'
 import {addDoc, collection} from "firebase/firestore";
 import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {Platform} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateRecetas = ({navigation}) => {
-    //Date Picker
-    const [date, setDate] = useState(new Date());
-    const [show, setShow] = useState(false);
-    const [mode, setMode] = useState('date');
+const CreateReceta = ({navigation}) => {
     const [text, setText] = useState('');
-    const [proximaCita, setProximaCita] = useState(new Date());
-
     const formularioValidacion = yup.object().shape({
              nombreProducto: yup
             .string()
@@ -54,6 +48,7 @@ const CreateRecetas = ({navigation}) => {
             .required('Elija tipo de Atención brindada'),
             indicaciones: yup
             .string()
+            .min(6, 'Minimo 6 caracteres')
             .required('Brinde indicaciones del Producto'),
     });
 
@@ -64,30 +59,16 @@ const CreateRecetas = ({navigation}) => {
         indicaciones: '',
     }
 
-    const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShow(Platform.OS === 'ios');
-        setDate(currentDate);
-
-        let tempDate = new Date(currentDate);
-        let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
-        setProximaCita(tempDate);
-        setText(fDate);
-
-        console.log(fDate)
-    }
-
     const sendData = (data) => {
         if (text === '') {
             if (Platform.OS === "web") {
-                alert("Debe Ingresar una Fecha Valida");
+                alert("Debe Ingresar un nombre de producto");
             } else {
-                Alert.alert("Deber Ingresar una Fecha Valida")
+                Alert.alert("Deber Ingresar un nombre de producto")
             }
             return false;
         } else {
-            data.fechaReceta = new Date();
-            addDoc(collection(db, "atenciones/receta"), data)
+            addDoc(collection(db, "receta"), data)
                 .then((ocRef) => {
                     Alert.alert("Exito", "Se agregó Receta correctamente", [
                         {
@@ -105,13 +86,8 @@ const CreateRecetas = ({navigation}) => {
                         alert("Ocurrio un error al agregar Receta");
                     }
                 });
-
+            return true;
         }
-    }
-
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode)
     }
 
     return (
@@ -133,13 +109,15 @@ const CreateRecetas = ({navigation}) => {
                         }
                         }
                         validationSchema={formularioValidacion}>
-                        {({values, 
+                        {({
+                        values, 
                         handleChange, 
                         errors, 
                         setFieldTouched,
                         touched,
                         isValid,
-                        handleSubmit
+                        handleSubmit,
+                        resetForm
                     }) => (
                             <View>
                                 <VStack space={4} mt="5">
@@ -147,7 +125,7 @@ const CreateRecetas = ({navigation}) => {
                                         <FormControl.Label _text={styles.labelInput}>Producto</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
                                                placeholder='Digite nombre de producto'
-                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="dog"/>}
+                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="pill"/>}
                                                                        size={5} ml="2" color="muted.400"/>}
                                                value={values.nombreProducto}
                                                onChangeText={handleChange('nombreProducto')}
@@ -162,7 +140,7 @@ const CreateRecetas = ({navigation}) => {
                                         <FormControl.Label _text={styles.labelInput}>Marca:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
                                                placeholder='Digite marca de producto'
-                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="dog"/>}
+                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="bone"/>}
                                                                        size={5} ml="2" color="muted.400"/>}
                                                value={values.marcaProducto}
                                                onChangeText={handleChange('marcaProducto')}
@@ -175,30 +153,19 @@ const CreateRecetas = ({navigation}) => {
                                     </FormControl>
                                      <FormControl isInvalid={'tipo' in errors}>
                                         <FormControl.Label _text={styles.labelInput}>Tipo de Producto:</FormControl.Label>
-                                        <Radio.Group
-                                            name="tipo"
-                                            accessibilityLabel="Tipo Atencion"
-                                            value={values.tipo}
-                                            onChange={handleChange('tipo')}>
-                                            <Radio value="Desparasitantes" my={1}>
-                                                Desparasitantes
-                                            </Radio>
-                                            <Radio value="Vacunas" my={1}>
-                                                Vacunas
-                                            </Radio>
-                                            <Radio value="Suplementos" my={1}>
-                                                Suplementos
-                                            </Radio>
-                                            <Radio value="Antibióticos" my={1}>
-                                                Antibióticos
-                                            </Radio>
-                                            <Radio value="Antiinflamatorios" my={1}>
-                                                Antiinflamatorios
-                                            </Radio>
-                                            <Radio value="Estética" my={1}>
-                                                Estética
-                                            </Radio>
-                                        </Radio.Group>
+                                        <Select minWidth="200" accessibilityLabel="Tipo de Producto Recetado" placeholder="Seleccione tipo de producto recetado" onValueChange={handleChange('tipo')}
+                                            selectedValue={values.tipo}
+                                            _selectedItem={{
+                                                bg: "teal.600",
+                                                endIcon: <CheckIcon size={5} />
+                                            }} mt="1">
+                                            <Select.Item label="Desparasitantes" value="Desparasitantes" />
+                                            <Select.Item label="Vacunas" value="Vacunas" />
+                                            <Select.Item label="Suplementos" value="Suplementos" />
+                                            <Select.Item label="Antibióticos" value="Antibióticos" />
+                                            <Select.Item label="Antiinflamatorios" value="Antiinflamatorios" />
+                                            <Select.Item label="Estética" value="Estética" />
+                                        </Select>
                                         {touched.tipo && errors.tipo &&
                                             <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
                                                 {errors.tipo}
@@ -207,11 +174,11 @@ const CreateRecetas = ({navigation}) => {
                                     </FormControl>
                                              
                                     <FormControl isInvalid={'indicaciones' in errors}>
-                                        <FormControl.Label _text={styles.labelInput}>Indicaciones</FormControl.Label>
+                                        <FormControl.Label _text={styles.labelInput}>Indicaciones:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
                                                height={85}
-                                               placeholder='sin datos'
-                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="dog"/>}
+                                               placeholder='Escriba aquí'
+                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="file-edit-outline"/>}
                                                                        size={5} ml="2" color="muted.400"/>}
                                                value={values.indicaciones}
                                                onChangeText={handleChange('indicaciones')}
@@ -282,4 +249,4 @@ const styles = {
     }
 }
 
-export default CreateRecetas
+export default CreateReceta

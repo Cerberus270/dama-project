@@ -40,7 +40,7 @@ const CreateDesparasitacion = () => {
                     <Heading mt="1" color="coolGray.600" _dark={{
                         color: "warmGray.200"
                     }} fontWeight="medium" size="xs">
-                        <Text style={styles.tituloForm}>Ingrese los Datos de la Nueva Vacuna</Text>
+                        <Text style={styles.tituloForm}>Control de Desparasitación</Text>
                     </Heading>
                     
                 </Box>

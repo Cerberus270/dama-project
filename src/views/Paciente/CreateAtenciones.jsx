@@ -15,13 +15,13 @@ import {
     WarningOutlineIcon,
     Icon,
     HStack,
-    Radio,
-    resetForm,
+    Select,
+    CheckIcon,
     Pressable
 } from "native-base"
 // Validation Imports
 import * as yup from 'yup';
-import {Formik, getIn} from 'formik';
+import {Formik} from 'formik';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 // Other Components
 // Firebase Auth and Firestore
@@ -50,6 +50,7 @@ const CreateAtenciones = ({navigation}) => {
             .required('Elija tipo Atención brindada'),
             descripcion: yup
             .string()
+            .min(4, 'Minimo 4 caracteres')
             .required('Descripción requerida'),
     });
 
@@ -64,12 +65,13 @@ const CreateAtenciones = ({navigation}) => {
         setShow(Platform.OS === 'ios');
         setDate(currentDate);
 
-        let tempDate = new Date(currentDate);
-        let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
-        setProximaCita(tempDate);
-        setText(fDate);
-
-        console.log(fDate)
+        if (event.type == "set") {
+            let tempDate = new Date(currentDate);
+            let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+            setProximaCita(tempDate);
+            setText(fDate);
+            console.log(fDate);
+        }
     }
 
     const sendData = (data) => {
@@ -100,7 +102,7 @@ const CreateAtenciones = ({navigation}) => {
                         alert("Ocurrio un error al agregar atención");
                     }
                 });
-
+             return true;
         }
     }
 
@@ -116,7 +118,7 @@ const CreateAtenciones = ({navigation}) => {
                     <Heading mt="1" color="coolGray.600" _dark={{
                         color: "warmGray.200"
                     }} fontWeight="medium" size="xs">
-                        <Text style={styles.tituloForm}>Nueva Atención</Text>
+                        <Text style={styles.tituloForm}>Ingrese Nueva Atención</Text>
                     </Heading>
                     <Formik
                         initialValues={valoresIniciales}
@@ -128,13 +130,15 @@ const CreateAtenciones = ({navigation}) => {
                         }
                         }
                         validationSchema={formularioValidacion}>
-                        {({values, 
-                        handleChange, 
-                        errors, 
-                        setFieldTouched,
-                        touched,
-                        isValid,
-                        handleSubmit
+                        {({
+                            values, 
+                            handleChange, 
+                            errors, 
+                            setFieldTouched,
+                            touched,
+                            isValid,
+                            handleSubmit,
+                            resetForm
                     }) => (
                             <View>
                                 <VStack space={4} mt="5">
@@ -156,21 +160,17 @@ const CreateAtenciones = ({navigation}) => {
 
                                      <FormControl isInvalid={'tipo' in errors}>
                                         <FormControl.Label _text={styles.labelInput}>Tipo de Atención:</FormControl.Label>
-                                        <Radio.Group
-                                            name="tipoAtencion"
-                                            accessibilityLabel="Tipo Atencion"
-                                            value={values.tipo}
-                                            onChange={handleChange('tipo')}>
-                                            <Radio value="Consulta" my={1}>
-                                                Consulta
-                                            </Radio>
-                                            <Radio value="Emergencia" my={1}>
-                                                Emergencia
-                                            </Radio>
-                                            <Radio value="Grooming" my={1}>
-                                                Grooming
-                                            </Radio>
-                                        </Radio.Group>
+                                        <Select minWidth="200" accessibilityLabel="Seleccione tipo de Paciente" placeholder="Seleccione tipo de Paciente" onValueChange={handleChange('tipo')}
+                                            selectedValue={values.tipo}
+                                            _selectedItem={{
+                                                bg: "teal.600",
+                                                endIcon: <CheckIcon size={5} />
+                                            }} mt="1">
+                                            <Select.Item label="Consulta" value="Consulta" />
+                                            <Select.Item label="Emergencia" value="Emergencia" />
+                                            <Select.Item label="Grooming" value="Grooming" />
+                                        </Select>
+                                        
                                         {touched.tipo && errors.tipo &&
                                             <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs"/>}>
                                                 {errors.tipo}
@@ -199,8 +199,8 @@ const CreateAtenciones = ({navigation}) => {
                                     <FormControl isInvalid={'descripcion' in errors}>
                                         <FormControl.Label _text={styles.labelInput}>Descripcion:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
-                                               placeholder='sin datos'
-                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="dog"/>}
+                                               placeholder='Escriba aquí'
+                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="file-edit-outline"/>}
                                                                        size={5} ml="2" color="muted.400"/>}
                                                value={values.descripcion}
                                                onChangeText={handleChange('descripcion')}
@@ -211,6 +211,7 @@ const CreateAtenciones = ({navigation}) => {
                                             </FormControl.ErrorMessage>
                                         }
                                     </FormControl>
+
                                     <Button mt="2" mb="2" colorScheme="indigo" variant="subtle"
                                             onPress={() => {
                                                 navigation.navigate('CreateReceta');
@@ -220,6 +221,7 @@ const CreateAtenciones = ({navigation}) => {
                                                             size="sm"/>}>
                                         Crear Receta
                                     </Button>
+
                                     <HStack space={2} justifyContent="center">
                                         <Ionicons.Button
                                             backgroundColor={"rgba(117, 140, 255, 1)"}
