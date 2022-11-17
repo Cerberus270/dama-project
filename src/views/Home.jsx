@@ -15,33 +15,51 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import { auth, db } from "../../config/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { ActivityIndicator } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { signOut } from "firebase/auth";
 
-export default function Home() {
+export default function Home({ navigation }) {
   const [veterinario, setVeterinario] = useState(null);
 
   useFocusEffect(
     React.useCallback(() => {
-      const getVeterinario = async (uid) => {
-        try {
-          const veterinarioRef = doc(db, "veterinarios", uid);
-          const veterinarioSnap = await getDoc(veterinarioRef);
-          if (veterinarioSnap.exists()) {
-            const veterinario = await veterinarioSnap.data();
-            setVeterinario(veterinario);
+      const unsuscribe = onSnapshot(
+        doc(db, "veterinarios", auth.currentUser.uid),
+        (doc) => {
+          if (doc.exists()) {
+            setVeterinario(doc.data());
+          } else {
+            setVeterinario(null);
+            Alert.alert(
+              "Error",
+              "No hemos podido localizar su perfil, contacte con soporte",
+              [
+                {
+                  text: "Aceptar",
+                  onPress: () => {
+                    navigation.reset({
+                      index: 0,
+                      routes: [
+                        {
+                          name: "Login",
+                        },
+                      ],
+                    });
+                  },
+                },
+              ]
+            );
           }
-        } catch (error) {
-          Alert.alert("Error", "Ocurrio un error al obtener su informacion");
         }
-      };
-      getVeterinario(auth.currentUser.uid)
+      );
 
-      return()=>{
+      return () => {
+        unsuscribe();
         setVeterinario(null);
-      }
+      };
     }, [])
   );
 
@@ -73,7 +91,7 @@ export default function Home() {
               alignSelf="center"
             >
               {veterinario
-                ? veterinario.nombres + " " + veterinario.apellidos
+                ?(veterinario.sexo==="Masculino"?"Dr. ":"Dra. ")+ veterinario.nombres + " " + veterinario.apellidos
                 : null}
             </Heading>
             <View style={{ alignItems: "center" }} mt={5}>

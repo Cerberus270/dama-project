@@ -72,7 +72,7 @@ export default function App() {
                 }}
               >
                 <Ionicons.Button
-                  backgroundColor={"argb(117, 140, 255, 1)"}
+                  backgroundColor={"rgba(117, 140, 255, 1)"}
                   name="exit"
                   size={22}
                   onPress={() => {

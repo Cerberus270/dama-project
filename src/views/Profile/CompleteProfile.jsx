@@ -15,6 +15,7 @@ import {
 import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { Radio } from "native-base";
 
 import { ActivityIndicator, Alert } from "react-native";
 import { useState } from "react";
@@ -32,11 +33,13 @@ export default function CompleteProfile({ navigation }) {
       perfilCompleto,
       nombreClinica,
       direccionClinica,
+      sexo,
     } = values;
     setDoc(doc(db, "veterinarios", auth.currentUser.uid), {
       nombres: nombres,
       apellidos: apellidos,
       perfilCompleto: perfilCompleto,
+      sexo: sexo,
       clinica: {
         nombre: nombreClinica,
         direccion: direccionClinica,
@@ -118,6 +121,7 @@ export default function CompleteProfile({ navigation }) {
               apellidos: "",
               nombreClinica: "",
               direccionClinica: "",
+              sexo: "",
               perfilCompleto: true,
             }}
             validationSchema={yup.object().shape({
@@ -135,6 +139,7 @@ export default function CompleteProfile({ navigation }) {
                   "Consideramos que su apellido es muy corto, ingrese mas de 4 caracteres"
                 )
                 .required("Necesitamos su apellido"),
+              sexo: yup.string().required("Seleccione una opcion"),
               nombreClinica: yup
                 .string()
                 .min(
@@ -154,14 +159,7 @@ export default function CompleteProfile({ navigation }) {
               updateDocVeterinario(values);
             }}
           >
-            {({
-              values,
-              handleChange,
-              errors,
-              touched,
-              isValid,
-              handleSubmit,
-            }) => (
+            {({ values, handleChange, errors, touched, handleSubmit }) => (
               <View style={{ marginHorizontal: 5 }}>
                 <VStack mt={5} space={2}>
                   <FormControl isInvalid={"nombres" in errors}>
@@ -213,6 +211,32 @@ export default function CompleteProfile({ navigation }) {
                         leftIcon={<WarningOutlineIcon size="xs" />}
                       >
                         {errors.apellidos}
+                      </FormControl.ErrorMessage>
+                    )}
+                  </FormControl>
+
+                  <FormControl isInvalid={"sexo" in errors}>
+                    <FormControl.Label _text={styles.labelInput}>
+                      Sexo:
+                    </FormControl.Label>
+                    <Radio.Group
+                      name="rSexo"
+                      accessibilityLabel="Sexo"
+                      value={values.sexo}
+                      onChange={handleChange("sexo")}
+                    >
+                      <Radio value="Masculino" my={1}>
+                        Masculino
+                      </Radio>
+                      <Radio value="Femenino" my={1}>
+                        Femenino
+                      </Radio>
+                    </Radio.Group>
+                    {touched.sexo && errors.sexo && (
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}
+                      >
+                        {errors.sexo}
                       </FormControl.ErrorMessage>
                     )}
                   </FormControl>

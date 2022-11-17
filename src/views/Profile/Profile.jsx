@@ -16,13 +16,15 @@ import {
 } from "native-base";
 import { useState } from "react";
 import { auth, db } from "../../../config/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { Formik } from "formik";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { Radio } from "native-base";
 import { useRef } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Profile({ navigation }) {
   const [veterinario, setVeterinario] = useState(null);
@@ -36,11 +38,13 @@ export default function Profile({ navigation }) {
       perfilCompleto,
       nombreClinica,
       direccionClinica,
+      sexo,
     } = values;
     setDoc(doc(db, "veterinarios", auth.currentUser.uid), {
       nombres: nombres,
       apellidos: apellidos,
       perfilCompleto: perfilCompleto,
+      sexo: sexo,
       clinica: {
         nombre: nombreClinica,
         direccion: direccionClinica,
@@ -49,7 +53,6 @@ export default function Profile({ navigation }) {
       .then((message) => {
         Alert.alert("Exito", "Se perfil fue actualizado correctamente");
         setLoading(false);
-        getVeterinarioDoc(auth.currentUser.uid);
       })
       .catch((error) => {
         setLoading(false);
@@ -57,20 +60,46 @@ export default function Profile({ navigation }) {
       });
   };
 
-  const getVeterinarioDoc = async (uid) => {
-    setLoading(true);
-    const veterinarioRef = doc(db, "veterinarios", uid);
-    const veterinarioSnap = await getDoc(veterinarioRef);
-    if (veterinarioSnap.exists()) {
-      const veterinario = veterinarioSnap.data();
-      setLoading(false);
-      setVeterinario(veterinario);
-    }
-  };
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true);
+      const unsuscribe = onSnapshot(
+        doc(db, "veterinarios", auth.currentUser.uid),
+        (doc) => {
+          if (doc.exists()) {
+            setVeterinario(doc.data());
+            setLoading(false);
+          } else {
+            setVeterinario(null);
+            Alert.alert(
+              "Error",
+              "No hemos podido localizar su perfil, contacte con soporte",
+              [
+                {
+                  text: "Aceptar",
+                  onPress: () => {
+                    navigation.reset({
+                      index: 0,
+                      routes: [
+                        {
+                          name: "Login",
+                        },
+                      ],
+                    });
+                  },
+                },
+              ]
+            );
+          }
+        }
+      );
 
-  useEffect(async () => {
-    await getVeterinarioDoc(auth.currentUser.uid);
-  }, []);
+      return () => {
+        unsuscribe();
+        setVeterinario(null);
+      };
+    }, [])
+  );
 
   const formikRef = useRef();
 
@@ -85,7 +114,7 @@ export default function Profile({ navigation }) {
       ) : null}
       {veterinario ? (
         <ScrollView style={loading ? { opacity: 0.5 } : { opacity: 1 }}>
-          <Box style={{marginHorizontal:5}} mt={4} flex={1} p={1}>
+          <Box style={{ marginHorizontal: 5 }} mt={4} flex={1} p={1}>
             <Heading
               size="xl"
               color="coolGray.800"
@@ -98,7 +127,9 @@ export default function Profile({ navigation }) {
               Gestiona tu perfil
             </Heading>
             <HStack mt={5} flex={1} space={2}>
-              <Heading size='md' alignSelf='center' flex={1}>{auth.currentUser.email}</Heading>
+              <Heading size="md" alignSelf="center" flex={1}>
+                {auth.currentUser.email}
+              </Heading>
               <Avatar
                 source={{
                   uri: "https://us.123rf.com/450wm/yupiramos/yupiramos1804/yupiramos180421545/100217337-m%C3%A9dico-veterinario-con-perro-avatar-ilustraci%C3%B3n-vectorial-character-design.jpg?ver=6",
@@ -117,6 +148,7 @@ export default function Profile({ navigation }) {
                 apellidos: veterinario.apellidos,
                 nombreClinica: veterinario.clinica.nombre,
                 direccionClinica: veterinario.clinica.direccion,
+                sexo: veterinario.sexo,
                 perfilCompleto: true,
               }}
               validationSchema={yup.object().shape({
@@ -134,6 +166,7 @@ export default function Profile({ navigation }) {
                     "Consideramos que su apellido es muy corto, ingrese mas de 4 caracteres"
                   )
                   .required("Necesitamos su apellido"),
+                sexo: yup.string().required("Seleccione una opcion"),
                 nombreClinica: yup
                   .string()
                   .min(
@@ -212,6 +245,31 @@ export default function Profile({ navigation }) {
                           leftIcon={<WarningOutlineIcon size="xs" />}
                         >
                           {errors.apellidos}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
+                    <FormControl isInvalid={"sexo" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Sexo:
+                      </FormControl.Label>
+                      <Radio.Group
+                        name="rSexo"
+                        accessibilityLabel="Sexo"
+                        value={values.sexo}
+                        onChange={handleChange("sexo")}
+                      >
+                        <Radio value="Masculino" my={1}>
+                          Masculino
+                        </Radio>
+                        <Radio value="Femenino" my={1}>
+                          Femenino
+                        </Radio>
+                      </Radio.Group>
+                      {touched.sexo && errors.sexo && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.sexo}
                         </FormControl.ErrorMessage>
                       )}
                     </FormControl>
@@ -315,7 +373,6 @@ export default function Profile({ navigation }) {
                           size={22}
                           onPress={async () => {
                             formikRef.current?.resetForm();
-                            getVeterinarioDoc(auth.currentUser.uid);
                           }}
                           style={{
                             alignSelf: "center",
