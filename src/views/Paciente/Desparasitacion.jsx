@@ -8,7 +8,7 @@ import * as yup from 'yup';
 import { Formik } from 'formik';
 import { useNavigation } from '@react-navigation/native';
 
-export default function Vacunas({navigation}){
+export default function Desparasitacion({navigation}){
     return (
       <NativeBaseProvider>
                 <ScrollView>
@@ -24,7 +24,7 @@ export default function Vacunas({navigation}){
                                 <Button 
                                backgroundColor= {"rgba(117, 140, 255, 1)"}
                                 size="lg" variant="outline" onPress={() => {
-                                        navigation.navigate('CreateVacunas');
+                                        navigation.navigate('CreateDesparasitacion');
                                     }}>
                                    <Text style={{color:'white'}}>  
                                     Nueva Fecha de Desparasitación
