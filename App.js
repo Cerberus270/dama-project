@@ -8,6 +8,7 @@ import Login from "./src/views/Auth/Login";
 import Register from "./src/views/Auth/Register";
 import ResetPassword from "./src/views/Auth/ResetPassword";
 import CompleteProfile from "./src/views/Profile/CompleteProfile";
+import UpdatePaciente from "./src/views/Paciente/UpdatePaciente";
 
 import { View } from "react-native";
 
@@ -16,6 +17,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import AppDrawer from "./src/navigation/DrawerNavigation";
 import TabNavigator from "./src/navigation/TabNavigator";
 import TopTabNavigator from "./src/navigation/TopTabNavigator";
+
 
 import { signOut } from "firebase/auth";
 import { auth } from "./config/firebase";
@@ -45,6 +47,11 @@ export default function App() {
           name="ResetPassword"
           component={ResetPassword}
           options={{ title: "Resetear Password" }}
+        />
+        <Stack.Screen
+          name="UpdatePaciente"
+          component={UpdatePaciente}
+          options={{ title: "Actualizar paciente" }}
         />
         <Stack.Screen
           name="CompleteProfile"
@@ -96,7 +103,7 @@ export default function App() {
         <Stack.Screen
           name="TabPaciente"
           component={TopTabNavigator}
-          options={{ headerShown: true,title:"Historial del paciente" }}
+          options={{ headerShown: true, title: "Historial del paciente" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

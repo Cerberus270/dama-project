@@ -20,9 +20,8 @@ export default function ListPacientes({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const actualizarEmpleado = (paciente) => {
-    // AQUI VA EL DE ACTUALIZAR
-    //navigation.navigate('DetailsPaciente');
-    console.log("Hola", paciente);
+    console.log(paciente);
+    navigation.navigate("UpdatePaciente")
   };
 
   const getPacientes = async () => {
@@ -102,7 +101,7 @@ export default function ListPacientes({ navigation }) {
                     key={paciente.id}
                     bottomDivider
                     onPress={() => {
-                      navigation.navigate("TabPaciente");
+                      navigation.navigate("TabPaciente",{nombre:"C mamo"});
                     }}
                     rightContent={
                       <Button

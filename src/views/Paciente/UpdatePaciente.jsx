@@ -1,10 +1,10 @@
 import { Text, View } from 'react-native'
 import React, { Component } from 'react'
 
-export default function Atenciones({route,navigation}){
+export default function UpdatePaciente({navigation}){
     return (
       <View>
-        <Text>Aqui atencions</Text>
+        <Text>UpdatePaciente</Text>
       </View>
     )
 }

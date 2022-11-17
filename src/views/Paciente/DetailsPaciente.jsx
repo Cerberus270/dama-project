@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 
 
 export default function DetailsPaciente({ navigation, route }) {
-
+    console.log(route)
     return (
             <NativeBaseProvider>
                 <ScrollView>

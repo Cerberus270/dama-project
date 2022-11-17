@@ -9,7 +9,8 @@ import Desparasitacion from "../views/Paciente/Desparasitacion";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function TopTabNavigator() {
+export default function TopTabNavigator({navigation,route}) {
+  const{nombre}=route.params
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -19,6 +20,7 @@ export default function TopTabNavigator() {
           tabBarLabel: "Detalles",
           tabBarScrollEnabled:true
         }}
+        initialParams={{nombre:nombre}}
       />
       <Tab.Screen
         name="Vacunas"
