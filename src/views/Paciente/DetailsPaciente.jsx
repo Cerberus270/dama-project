@@ -29,28 +29,8 @@ export default function DetailsPaciente({ navigation, route }) {
   return (
     <NativeBaseProvider>
       <ScrollView>
-        <Box mt={5} flex={1} p={1} w="95%" mx="auto" justifyContent={"center"}>
-          <VStack
-            space={2}
-            px="2"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Stack
-              mb="2.5"
-              mt="1.5"
-              direction={{
-                base: "column",
-                md: "row",
-              }}
-              space={2}
-              mx={{
-                base: "auto",
-                md: "0",
-              }}
-            >
-            </Stack>
-          </VStack>
+        <Box mt={5} flex={1} p={1}>
+          
         </Box>
       </ScrollView>
     </NativeBaseProvider>
