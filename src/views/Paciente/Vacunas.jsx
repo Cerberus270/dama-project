@@ -100,9 +100,11 @@ export default function Vacunas({ navigation, route }) {
 
               <Divider my={4} />
               {vacunas.length === 0 ? (
-                <View style={{alignSelf:'center'}}>
-                  <Text style={{alignSelf:'center'}}>El paciente no presenta vacunas.</Text>
-                  <Text style={{alignSelf:'center'}} bold>
+                <View style={{ alignSelf: "center" }}>
+                  <Text style={{ alignSelf: "center" }}>
+                    El paciente no presenta vacunas.
+                  </Text>
+                  <Text style={{ alignSelf: "center" }} bold>
                     Recuerdele al dueño la importancia de las vacunas
                   </Text>
                 </View>
