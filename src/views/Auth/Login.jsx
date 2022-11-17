@@ -21,6 +21,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Alert } from "react-native";
 import { doc, getDoc } from "firebase/firestore";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -157,9 +158,9 @@ export default function Login({ navigation }) {
               />
             </FormControl>
             <FormControl>
-              <FormControl.Label>Password</FormControl.Label>
+              <FormControl.Label>Contraseña</FormControl.Label>
               <Input
-                placeholder="Escriba su Password"
+                placeholder="Escriba su contraseña"
                 value={password}
                 onChangeText={(e) => setPassword(e)}
                 type={show ? "text" : "password"}
