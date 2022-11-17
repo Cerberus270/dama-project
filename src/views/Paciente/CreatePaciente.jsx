@@ -34,7 +34,6 @@ import { Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-
 const CreatePaciente = () => {
     //Date Picker
     const [date, setDate] = useState(new Date());
@@ -195,13 +194,6 @@ const CreatePaciente = () => {
 
                                     <FormControl isInvalid={'tipo' in errors}>
                                         <FormControl.Label _text={styles.labelInput}>Tipo Paciente:</FormControl.Label>
-                                        {/* <Input _focus={styles.inputSeleccionado}
-                                               placeholder='Digite el tipo del paciente'
-                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="cat"/>}
-                                                                       size={5} ml="2" color="muted.400"/>}
-                                               value={values.tipo}
-                                               onChangeText={handleChange('tipo')}
-                                               onBlur={() => setFieldTouched('tipo')}/> */}
                                         <Select minWidth="200" accessibilityLabel="Tipo de Paciente" placeholder="Tipo de Paciente" onValueChange={handleChange('tipo')}
                                             selectedValue={values.tipo}
                                             _selectedItem={{

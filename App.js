@@ -21,6 +21,10 @@ import TopTabNavigator from "./src/navigation/TopTabNavigator";
 
 import { signOut } from "firebase/auth";
 import { auth } from "./config/firebase";
+import CreateAtenciones from "./src/views/Paciente/CreateAtenciones";
+import CreateVacunas from "./src/views/Paciente/CreateVacunas";
+import CreateDesparasitacion from "./src/views/Paciente/CreateDesparasitacion";
+import CreateReceta from "./src/views/Paciente/CreateReceta";
 
 const Stack = createNativeStackNavigator();
 const navigationRef = React.createRef();
@@ -68,7 +72,7 @@ export default function App() {
                 }}
               >
                 <Ionicons.Button
-                  backgroundColor={"rgba(117, 140, 255, 1)"}
+                  backgroundColor={"argb(117, 140, 255, 1)"}
                   name="exit"
                   size={22}
                   onPress={() => {
@@ -99,11 +103,30 @@ export default function App() {
           component={TabNavigator}
           options={{ headerShown: false }}
         />
-
+        <Stack.Screen
+          name="CreateAtenciones"
+          component={CreateAtenciones}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="TabPaciente"
           component={TopTabNavigator}
           options={{ headerShown: true, title: "Historial del paciente" }}
+        />
+         <Stack.Screen
+          name="CreateVacunas"
+          component={CreateVacunas}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CreateDesparasitacion"
+          component={CreateDesparasitacion}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CreateReceta"
+          component={CreateReceta}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
