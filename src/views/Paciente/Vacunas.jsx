@@ -1,41 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet as StyleSheetReact } from "react-native";
 import {
   NativeBaseProvider,
   VStack,
-  HStack,
-  ZStack,
-  Stack,
-  Center,
   Box,
-  Heading,
   Divider,
-  StyleSheet,
   Button as ButtonNative,
   Text,
   View,
+  Heading,
+  Icon,
   ScrollView,
-  FormControl,
-  InputGroup,
-  InputLeftAddon,
-  WarningOutlineIcon,
-  Input,
-  Spacer,
 } from "native-base";
-import { ListItem, Button, Avatar, Badge } from "react-native-elements";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { ListItem, Button } from "react-native-elements";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   collection,
-  getDocs,
-  query,
-  where,
   deleteDoc,
   onSnapshot,
   doc,
 } from "firebase/firestore";
-import { db, auth } from "../../../config/firebase";
+import { db } from "../../../config/firebase";
 import { ActivityIndicator } from "react-native";
 import { Alert } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function Vacunas({ navigation, route }) {
   const { id } = route.params;
@@ -109,12 +97,13 @@ export default function Vacunas({ navigation, route }) {
           ) : null}
           <Box flex={1} p={1} w="95%" mx="auto">
             <VStack mt={15} mb={15} space={2} px="2">
-              <ButtonNative
+              <Heading size="md" marginY={1} bold alignSelf={'center'}>Menu Vacunas</Heading>
+              <ButtonNative leftIcon={<Icon as={FontAwesome5} name="syringe" size="sm" color={"white"} />}
                 backgroundColor={"rgba(117, 140, 255, 1)"}
                 size="lg"
                 variant="outline"
                 onPress={() => {
-                  navigation.navigate("CreateVacunas");
+                  navigation.navigate("CreateVacunas", route.params);
                 }}
               >
                 <Text style={{ color: "white" }}>Agregar Nueva Vacuna</Text>

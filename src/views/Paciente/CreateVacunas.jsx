@@ -98,7 +98,7 @@ const CreateVacunas = ({navigation,route}) => {
     }
   };
 
-  const sendData = (data) => {
+  const sendData = (data, idVacuna) => {
     if (text === "") {
       if (Platform.OS === "web") {
         alert("Debe Ingresar una Fecha Valida");
@@ -110,7 +110,7 @@ const CreateVacunas = ({navigation,route}) => {
       setUploading(true);
       data.proximaDosis = proxD;
       data.fecha = new Date();
-      addDoc(collection(db, "patients", id, "vacunas", idVacuna), data)
+      addDoc(doc(db, "patients", id, "vacunas", idVacuna))
         .then((ocRef) => {
           setUploading(false);
           Alert.alert("Exito", "Se registro vacuna correctamente", [

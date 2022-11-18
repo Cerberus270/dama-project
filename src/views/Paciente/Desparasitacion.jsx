@@ -1,39 +1,243 @@
-import React, {useEffect} from 'react';
+import React, { useState } from "react";
+import { StyleSheet as StyleSheetReact } from "react-native";
 import {
-    NativeBaseProvider, VStack, HStack, ZStack, Stack, Center, Box, Heading,
-    Divider, StyleSheet, Text, View, Button, ScrollView, FormControl
-    , InputGroup, InputLeftAddon, WarningOutlineIcon, Input
-} from 'native-base';
-import * as yup from 'yup';
-import { Formik } from 'formik';
-import { useNavigation } from '@react-navigation/native';
+    NativeBaseProvider,
+    VStack,
+    Box,
+    Divider,
+    Button as ButtonNative,
+    Text,
+    View,
+    ScrollView,
+    Icon,
+    Heading
+} from "native-base";
+import { ListItem, Button } from "react-native-elements";
+import { useFocusEffect } from "@react-navigation/native";
+import {
+    collection,
+    deleteDoc,
+    onSnapshot,
+    doc,
+} from "firebase/firestore";
+import { db } from "../../../config/firebase";
+import { ActivityIndicator } from "react-native";
+import { Alert } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
 
-export default function Desparasitacion({navigation}){
+export default function Desparasitacion({ navigation, route }) {
+    const { id } = route.params;
+    const [desparasitacion, setVacunas] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
+
+    const timestampToDate = (valorTimestamp) => {
+        return new Date(valorTimestamp * 1000).toLocaleDateString("en-US")
+    };
+
+    const deleteVacuna = (idDesparasitante) => {
+        setUploading(true);
+        deleteDoc(doc(db, "patients", id, "desparasitacion", idDesparasitante))
+            .then((result) => {
+                setUploading(false);
+                Alert.alert("Exito", "La Desparasitación fue eliminada exitosamente");
+            })
+            .catch((error) => {
+                setUploading(false);
+                Alert.alert("Error", "Ocurrio un error al intentar eliminar la Desparasitación");
+            });
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            setLoading(true);
+            const unsuscribe = onSnapshot(
+                collection(db, "patients", id, "desparasitacion"),
+                (desparasitacion) => {
+                    let listaDesparasitaciones = [];
+                    desparasitacion.forEach((doc) => {
+                        console.log(doc.data());
+                        const { fecha, marca, proximaDosis } =
+                            doc.data();
+                        listaDesparasitaciones.push({
+                            id: doc.id,
+                            fecha, marca, proximaDosis
+                        });
+                    });
+                    setLoading(false);
+                    setVacunas(listaDesparasitaciones);
+                }
+            );
+
+            return () => {
+                unsuscribe();
+                setLoading(false);
+                setVacunas([]);
+            };
+        }, [])
+    );
+
     return (
-      <NativeBaseProvider>
-                <ScrollView>
-                    <Box flex={1} p={1} w="95%" mx='auto' justifyContent={'center'}>
-                        <VStack  mt={450} space={2} px="2" alignItems="center" rounded='50' justifyContent="center">          
-                            <Stack mb="2.5" mt="1.5" direction={{
-                                base: "column",
-                                md: "row"
-                            }} space={2} mx={{
-                                base: "auto",
-                                md: "0"
-                            }}>
-                                <Button 
-                               backgroundColor= {"rgba(117, 140, 255, 1)"}
-                                size="lg" variant="outline" onPress={() => {
-                                        navigation.navigate('CreateDesparasitacion');
-                                    }}>
-                                   <Text style={{color:'white'}}>  
-                                    Nueva Fecha de Desparasitación
-                                  </Text>
-                                </Button>
-                            </Stack>
+        <NativeBaseProvider>
+            {loading ? (
+                <ActivityIndicator
+                    style={styles.indicador}
+                    size="large"
+                    color="rgba(117, 140, 255, 1)"
+                />
+            ) : (
+                <ScrollView style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
+                    {uploading ? (
+                        <ActivityIndicator
+                            style={styles.indicador}
+                            size="large"
+                            color="rgba(117, 140, 255, 1)"
+                        />
+                    ) : null}
+                    <Box flex={1} p={1} w="95%" mx="auto">
+                        <VStack mt={15} mb={15} space={2} px="2">
+                            <Heading size="md" marginY={1} bold alignSelf={'center'}>Menu Desparasitación</Heading>
+                            <ButtonNative leftIcon={<Icon as={FontAwesome5} name="bacteria" size="sm" color={"white"} />}
+                                backgroundColor={"rgba(117, 140, 255, 1)"}
+                                size="lg"
+                                variant="outline"
+                                onPress={() => {
+                                    navigation.navigate("CreateDesparasitacion", route.params);
+                                }}
+                            >
+                                <Text style={{ color: "white" }}>Agregar Nueva Desparasitación</Text>
+                            </ButtonNative>
+
+                            <Divider my={4} />
+                            {desparasitacion.length === 0 ? (
+                                <View style={{ alignSelf: "center" }}>
+                                    <Text style={{ alignSelf: "center" }}>
+                                        El paciente no presenta desparasitación.
+                                    </Text>
+                                    <Text style={{ alignSelf: "center" }} bold>
+                                        Recuerdele al dueño la importancia de la desparasitación
+                                    </Text>
+                                </View>
+                            ) : (
+                                desparasitacion.map((desparasitante) => {
+                                    return (
+                                        <ListItem.Swipeable
+                                            key={desparasitante.id}
+                                            bottomDivider
+                                            onPress={() => {
+                                                console.log("Detalles");
+                                            }}
+                                            leftContent={
+                                                <Button
+                                                    disabled={uploading ? true : false}
+                                                    title="Eliminar"
+                                                    onPress={() => {
+                                                        Alert.alert(
+                                                            "Confirmación",
+                                                            "¿Desea eliminar la desparasitación seleccionada?",
+                                                            [
+                                                                {
+                                                                    text: "Eliminar",
+                                                                    onPress: () => {
+                                                                        deleteVacuna(desparasitante.id);
+                                                                    },
+                                                                },
+                                                                {
+                                                                    text: "Cancelar",
+                                                                },
+                                                            ]
+                                                        );
+                                                    }}
+                                                    icon={{ name: "delete", color: "white" }}
+                                                    buttonStyle={{
+                                                        minHeight: "100%",
+                                                        backgroundColor: "red",
+                                                    }}
+                                                />
+                                            }
+                                        >
+                                            <ListItem.Content>
+                                                <ListItem.Title>
+                                                    <Text>Marca: {desparasitante.marca}</Text>
+                                                </ListItem.Title>
+                                                <View>
+                                                    <Text style={styles.ratingText}>
+                                                        Fecha Aplicación: {timestampToDate(desparasitante.fecha.seconds)}
+                                                    </Text>
+                                                    <Text style={styles.ratingText}>
+                                                        Próxima Dosis: {timestampToDate(desparasitante.proximaDosis.seconds)}
+                                                    </Text>
+                                                </View>
+                                            </ListItem.Content>
+                                            <ListItem.Chevron />
+                                        </ListItem.Swipeable>
+                                    );
+                                })
+                            )}
                         </VStack>
                     </Box>
                 </ScrollView>
-            </NativeBaseProvider>
-    )
+            )}
+        </NativeBaseProvider>
+    );
 }
+
+const styles = StyleSheetReact.create({
+    container: {
+        flex: 1,
+        padding: 5,
+    },
+    title: {
+        fontSize: 25,
+        fontWeight: "bold",
+        marginVertical: 30,
+        textAlign: "center",
+    },
+    subtitleView: {
+        flexDirection: "row",
+        paddingLeft: 10,
+        paddingTop: 5,
+    },
+    ratingText: {
+        paddingLeft: 10,
+        color: "grey",
+    },
+    nombrePropietario: {
+        paddingLeft: 10,
+        color: "black",
+    },
+    btn1: {
+        backgroundColor: "orange",
+        padding: 10,
+        margin: 10,
+        width: "95%",
+    },
+    btn2: {
+        backgroundColor: "blue",
+        padding: 10,
+        margin: 10,
+        width: "95%",
+    },
+    btn3: {
+        backgroundColor: "rgb(77, 103, 145)",
+        padding: 10,
+        margin: 10,
+        width: "95%",
+    },
+    pageName: {
+        margin: 10,
+        fontWeight: "bold",
+        color: "#000",
+        textAlign: "center",
+    },
+    btnText: {
+        color: "#fff",
+        fontWeight: "bold",
+    },
+    indicador: {
+        position: "absolute",
+        top: "50%",
+        left: "25%",
+        right: "25%",
+    },
+});
