@@ -112,7 +112,7 @@ export default function ListPacientes({ navigation }) {
             Mis pacientes
           </Heading>
           <View style={styles.container}>
-            <ScrollView ref={scrollRef}>
+            <ScrollView showsVerticalScrollIndicator={false} ref={scrollRef}>
               {pacientes.map((paciente) => {
                 return (
                   <ListItem.Swipeable
