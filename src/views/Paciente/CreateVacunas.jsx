@@ -32,7 +32,6 @@ import { auth, db } from "../../../config/firebase";
 import { 
     addDoc,
     collection,
-    getDocs,
     query,
     where,
     onSnapshot,
@@ -43,14 +42,14 @@ import { Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateVacunas = ({navigation,route}) => {
-  const { id } = route.params;
+const CreateVacunas = ({route}) => {
+  const {id} = route.params;
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState("date");
   const [text, setText] = useState("");
   const [proxD, setProxD] = useState(new Date());
-  const [uploading, setUploading] = useState(false);
+ 
 
   const form = useRef();
 
@@ -98,7 +97,7 @@ const CreateVacunas = ({navigation,route}) => {
     }
   };
 
-  const sendData = (data, idVacuna) => {
+  const sendData = (data) => {
     if (text === "") {
       if (Platform.OS === "web") {
         alert("Debe Ingresar una Fecha Valida");
@@ -107,12 +106,11 @@ const CreateVacunas = ({navigation,route}) => {
       }
       return false;
     } else {
-      setUploading(true);
       data.proximaDosis = proxD;
       data.fecha = new Date();
-      addDoc(doc(db, "patients", id, "vacunas", idVacuna))
+      addDoc(collection(db, "patients", id, "vacunas"), data)
         .then((ocRef) => {
-          setUploading(false);
+      
           Alert.alert("Exito", "Se registro vacuna correctamente", [
             {
               text: "Aceptar",
@@ -123,7 +121,7 @@ const CreateVacunas = ({navigation,route}) => {
           }
         })
         .catch((error) => {
-          setUploading(false);
+         
           Alert.alert("Error", "Ocurrio un error al registrar vacuna");
           if (Platform.OS === "web") {
             alert("Ocurrio un error al registrar vacuna");
@@ -159,7 +157,7 @@ const CreateVacunas = ({navigation,route}) => {
             color="coolGray.800"
             _dark={{
               color: "warmGray.50",
-            }}
+            }} 
             fontWeight="bold"
             alignSelf="center"
           >
