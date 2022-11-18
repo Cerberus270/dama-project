@@ -34,7 +34,9 @@ import { Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateVacunas = () => {
+const CreateVacunas = ({ navigation, route }) => {
+  const { id } = route.params;
+  console.log(id);
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState("date");

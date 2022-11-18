@@ -94,7 +94,7 @@ const CreatePaciente = () => {
     setShow(Platform.OS === "ios");
     setDate(currentDate);
 
-    if (event.type == "set") {
+    if (event.type === "set") {
       let tempDate = new Date(currentDate);
       let fDate =
         tempDate.getDate() +
