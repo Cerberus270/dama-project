@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 // Components Imports
 import {
@@ -20,6 +20,7 @@ import {
   CheckIcon,
   Pressable,
 } from "native-base";
+import { useFocusEffect } from "@react-navigation/native";
 // Validation Imports
 import * as yup from "yup";
 import { Formik, getIn } from "formik";
@@ -28,18 +29,30 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 //import DateTimePickerModal from "react-native-modal-datetime-picker";
 // Firebase Auth and Firestore
 import { auth, db } from "../../../config/firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { 
+    addDoc,
+    collection,
+    getDocs,
+    query,
+    where,
+    onSnapshot,
+    doc,
+} from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateVacunas = () => {
+const CreateVacunas = ({navigation,route}) => {
+  const { id } = route.params;
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState("date");
   const [text, setText] = useState("");
   const [proxD, setProxD] = useState(new Date());
+  const [uploading, setUploading] = useState(false);
+
+  const form = useRef();
 
   const formularioValidacion = yup.object().shape({
     nombre: yup
@@ -94,10 +107,12 @@ const CreateVacunas = () => {
       }
       return false;
     } else {
+      setUploading(true);
       data.proximaDosis = proxD;
       data.fecha = new Date();
-      addDoc(collection(db, "vacunas"), data)
+      addDoc(collection(db, "patients", id, "vacunas", idVacuna), data)
         .then((ocRef) => {
+          setUploading(false);
           Alert.alert("Exito", "Se registro vacuna correctamente", [
             {
               text: "Aceptar",
@@ -108,6 +123,7 @@ const CreateVacunas = () => {
           }
         })
         .catch((error) => {
+          setUploading(false);
           Alert.alert("Error", "Ocurrio un error al registrar vacuna");
           if (Platform.OS === "web") {
             alert("Ocurrio un error al registrar vacuna");
@@ -120,24 +136,37 @@ const CreateVacunas = () => {
   const showMode = (currentMode) => {
     setShow(true);
     setMode(currentMode);
+    form.reset;
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        form.current?.resetForm();
+        setShow(false)
+        setText("")
+      };
+    }, [])
+  );
 
   return (
     <NativeBaseProvider>
       <ScrollView>
-        <Box w={"95%"} mt={8} flex={1} p={1} marginLeft={1}>
-          <Heading
-            mt="1"
-            color="coolGray.600"
+        <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
+        <Heading
+            mt={5}
+            size="lg"
+            color="coolGray.800"
             _dark={{
-              color: "warmGray.200",
+              color: "warmGray.50",
             }}
-            fontWeight="medium"
-            size="xs"
+            fontWeight="bold"
+            alignSelf="center"
           >
-            <Text style={styles.tituloForm}>Ingrese Datos de Nueva Vacuna</Text>
+            Registro de vacuna
           </Heading>
           <Formik
+            innerRef={form}
             initialValues={valoresIniciales}
             onSubmit={(values, { resetForm }) => {
               if (sendData(values)) {
@@ -195,7 +224,7 @@ const CreateVacunas = () => {
                       placeholder="Digite Marca de Vacuna"
                       InputLeftElement={
                         <Icon
-                          as={<MaterialCommunityIcons name="dog-side" />}
+                          as={<MaterialCommunityIcons name="registered-trademark" />}
                           size={5}
                           ml="2"
                           color="muted.400"
@@ -235,14 +264,8 @@ const CreateVacunas = () => {
                       />
                       <Select.Item label="Rabia" value="Rabia" />
                       <Select.Item label="Parvovirus" value="Parvovirus" />
-                      <Select.Item
-                        label="Leptospirosis"
-                        value="Leptospirosis"
-                      />
-                      <Select.Item
-                        label="Hepatitis Infecciosa Canina"
-                        value="Hepatitis"
-                      />
+                      <Select.Item label="Leptospirosis" value="Leptospirosis"/>
+                      <Select.Item label="Hepatitis Infecciosa Canina" value="Hepatitis"/>
                     </Select>
                     {touched.tipo && errors.tipo && (
                       <FormControl.ErrorMessage
@@ -252,7 +275,7 @@ const CreateVacunas = () => {
                       </FormControl.ErrorMessage>
                     )}
                   </FormControl>
-                  <FormControl isInvalid={"raza" in errors}>
+                  <FormControl isInvalid={"dosis" in errors}>
                     <FormControl.Label _text={styles.labelInput}>
                       Dosis:
                     </FormControl.Label>
@@ -267,15 +290,15 @@ const CreateVacunas = () => {
                           color="muted.400"
                         />
                       }
-                      value={values.raza}
-                      onChangeText={handleChange("raza")}
-                      onBlur={() => setFieldTouched("raza")}
+                      value={values.dosis}
+                      onChangeText={handleChange("dosis")}
+                      onBlur={() => setFieldTouched("dosis")}
                     />
-                    {touched.raza && errors.raza && (
+                    {touched.dosis && errors.dosis && (
                       <FormControl.ErrorMessage
                         leftIcon={<WarningOutlineIcon size="xs" />}
                       >
-                        {errors.raza}
+                        {errors.dosis}
                       </FormControl.ErrorMessage>
                     )}
                   </FormControl>
@@ -336,10 +359,10 @@ const CreateVacunas = () => {
                       onChange={onChangeDate}
                     />
                   )}
-                  <HStack space={2} justifyContent="center" paddingTop={5}>
+                  <HStack mb={5} space={2} justifyContent="center">
                     <Ionicons.Button
                       backgroundColor={"rgba(117, 140, 255, 1)"}
-                      size={10}
+                      size={22}
                       onPress={handleSubmit}
                       style={{
                         alignSelf: "stretch",
@@ -352,7 +375,7 @@ const CreateVacunas = () => {
                     </Ionicons.Button>
                     <Ionicons.Button
                       backgroundColor={"rgba(117, 140, 255, 1)"}
-                      size={10}
+                      size={22}
                       onPress={() => {
                         resetForm();
                         setText("");
@@ -361,10 +384,10 @@ const CreateVacunas = () => {
                         alignSelf: "stretch",
                         justifyContent: "center",
                       }}
-                      name="backspace"
+                      name="refresh-outline"
                       _disabled={styles.botonDisabled}
                     >
-                      Reset
+                      Reestablecer
                     </Ionicons.Button>
                   </HStack>
                 </VStack>
