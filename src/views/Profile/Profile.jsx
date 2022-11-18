@@ -12,8 +12,8 @@ import {
   Icon,
   VStack,
   HStack,
-  Avatar,
 } from "native-base";
+import { Avatar } from "react-native-elements";
 import { useState } from "react";
 import { auth, db } from "../../../config/firebase";
 import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
@@ -29,6 +29,14 @@ import { useFocusEffect } from "@react-navigation/native";
 export default function Profile({ navigation }) {
   const [veterinario, setVeterinario] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const avatarSexo = (sexo) => {
+    const avatar = {
+      Masculino: require("../../../assets/veterinario-masculino.png"),
+      Femenino: require("../../../assets/veterinario-femenino.png"),
+    };
+    return avatar[sexo];
+  };
 
   const updateDocVeterinario = (values) => {
     setLoading(true);
@@ -98,6 +106,7 @@ export default function Profile({ navigation }) {
       return () => {
         unsuscribe();
         setVeterinario(null);
+        setLoading(false);
       };
     }, [])
   );
@@ -128,17 +137,15 @@ export default function Profile({ navigation }) {
               Gestiona tu perfil
             </Heading>
             <HStack mt={5} flex={1} space={2}>
-              <Heading size="md" alignSelf="center" flex={1}>
+              <Heading size="sm" alignSelf="center" flex={1}>
                 {auth.currentUser.email}
               </Heading>
               <Avatar
-                source={{
-                  uri: "https://us.123rf.com/450wm/yupiramos/yupiramos1804/yupiramos180421545/100217337-m%C3%A9dico-veterinario-con-perro-avatar-ilustraci%C3%B3n-vectorial-character-design.jpg?ver=6",
-                }}
-                size="xl"
+                source={avatarSexo(veterinario.sexo)}
+                size="large"
                 justifyContent="center"
+
               >
-                <Avatar.Badge bg={"green.500"} />
               </Avatar>
             </HStack>
             <Formik
@@ -216,7 +223,7 @@ export default function Profile({ navigation }) {
                         placeholder="Digite su nombre"
                         InputLeftElement={
                           <Icon
-                            as={<MaterialCommunityIcons name="face-profile" />}
+                            as={<MaterialCommunityIcons name="account" />}
                             size={5}
                             ml="2"
                             color="muted.400"

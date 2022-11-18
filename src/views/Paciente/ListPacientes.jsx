@@ -83,7 +83,7 @@ export default function ListPacientes({ navigation }) {
 
       return () => {
         unsuscribe();
-        setLoading(false);
+        setLoading(true);
         setPacientes([]);
       };
     }, [])

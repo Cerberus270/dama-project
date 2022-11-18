@@ -71,7 +71,7 @@ export default function Desparasitacion({ navigation, route }) {
 
             return () => {
                 unsuscribe();
-                setLoading(false);
+                setLoading(true);
                 setVacunas([]);
             };
         }, [])
