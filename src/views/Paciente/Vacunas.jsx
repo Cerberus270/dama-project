@@ -12,7 +12,7 @@ import {
   Icon,
   ScrollView,
 } from "native-base";
-import { ListItem, Button } from "react-native-elements";
+import { ListItem, Button, SpeedDial } from "react-native-elements";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   collection,
@@ -24,12 +24,21 @@ import { db } from "../../../config/firebase";
 import { ActivityIndicator } from "react-native";
 import { Alert } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import {
+  Menu,
+  MenuProvider,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
+import { Entypo } from "@expo/vector-icons";
 
 export default function Vacunas({ navigation, route }) {
   const { id } = route.params;
   const [vacunas, setVacunas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const deleteVacuna = (idVacuna) => {
     setUploading(true);
@@ -80,22 +89,22 @@ export default function Vacunas({ navigation, route }) {
 
   return (
     <NativeBaseProvider>
-      {loading ? (
-        <ActivityIndicator
-          style={styles.indicador}
-          size="large"
-          color="rgba(117, 140, 255, 1)"
-        />
-      ) : (
-        <ScrollView flex={1} style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
-          {uploading ? (
-            <ActivityIndicator
-              style={styles.indicador}
-              size="large"
-              color="rgba(117, 140, 255, 1)"
-            />
-          ) : null}
+      <MenuProvider style={styles.containerMenu}>
+        {loading ? (
+          <ActivityIndicator
+            style={styles.indicador}
+            size="large"
+            color="rgba(117, 140, 255, 1)"
+          />
+        ) : (
           <Box flex={1} p={1} w="95%" mx="auto">
+            {uploading ? (
+              <ActivityIndicator
+                style={styles.indicador}
+                size="large"
+                color="rgba(117, 140, 255, 1)"
+              />
+            ) : null}
             <VStack mt={15} mb={15} space={2} px="2">
               <Heading size="md" marginY={1} bold alignSelf={'center'}>Menu Vacunas</Heading>
               <ButtonNative leftIcon={<Icon as={FontAwesome5} name="syringe" size="sm" color={"white"} />}
@@ -110,75 +119,63 @@ export default function Vacunas({ navigation, route }) {
               </ButtonNative>
 
               <Divider my={4} />
-              {vacunas.length === 0 ? (
-                <View style={{ alignSelf: "center" }}>
-                  <Text style={{ alignSelf: "center" }}>
-                    El paciente no presenta vacunas.
-                  </Text>
-                  <Text style={{ alignSelf: "center" }} bold>
-                    Recuerdele al dueño la importancia de las vacunas
-                  </Text>
-                </View>
-              ) : (
-                vacunas.map((vacuna) => {
-                  return (
-                    <ListItem.Swipeable flex={1}
-                      key={vacuna.id}
-                      bottomDivider
-                      onPress={() => {
-                        console.log("Detalles");
-                      }}
-                      leftContent={
-                        <Button
-                          disabled={uploading ? true : false}
-                          title="Eliminar"
-                          onPress={() => {
-                            Alert.alert(
-                              "Confirmacion",
-                              "Desea eliminar la vacuna seleccionada?",
-                              [
-                                {
-                                  text: "Eliminar",
-                                  onPress: () => {
-                                    deleteVacuna(vacuna.id);
-                                  },
-                                },
-                                {
-                                  text: "Cancelar",
-                                },
-                              ]
-                            );
-                          }}
-                          icon={{ name: "delete", color: "white" }}
-                          buttonStyle={{
-                            minHeight: "100%",
-                            backgroundColor: "red",
-                          }}
-                        />
-                      }
-                    >
-                      <ListItem.Content>
-                        <ListItem.Title>
-                          <Text>Nombre Vacuna: {vacuna.nombre}</Text>
-                        </ListItem.Title>
-                        <View>
-                          <Text style={styles.ratingText}>
-                            Marca Vacuna: {vacuna.marca}
-                          </Text>
-                          <Text style={styles.ratingText}>
-                            Tipo Vacuna: {vacuna.tipo}
-                          </Text>
-                        </View>
-                      </ListItem.Content>
-                      <ListItem.Chevron />
-                    </ListItem.Swipeable>
-                  );
-                })
-              )}
+              <ScrollView>
+                {vacunas.length === 0 ? (
+                  <View style={{ alignSelf: "center" }}>
+                    <Text style={{ alignSelf: "center" }}>
+                      El paciente no presenta vacunas.
+                    </Text>
+                    <Text style={{ alignSelf: "center" }} bold>
+                      Recuerdele al dueño la importancia de las vacunas
+                    </Text>
+                  </View>
+                ) : (
+                  vacunas.map((vacuna) => {
+                    return (
+                      <ListItem flex={1}
+                        key={vacuna.id}
+                        bottomDivider
+                        onPress={() => {
+                          console.log("Detalles");
+                        }}>
+                        <ListItem.Content>
+                          <ListItem.Title>
+                            <Text>Nombre Vacuna: {vacuna.nombre}</Text>
+                          </ListItem.Title>
+                          <View>
+                            <Text style={styles.ratingText}>
+                              Marca Vacuna: {vacuna.marca}
+                            </Text>
+                            <Text style={styles.ratingText}>
+                              Tipo Vacuna: {vacuna.tipo}
+                            </Text>
+                          </View>
+                        </ListItem.Content>
+                        <Menu>
+                          <MenuTrigger
+                            customStyles={{
+                              triggerWrapper: {
+                                top: -20,
+                              },
+                            }}
+                          >
+                            <Entypo name="dots-three-vertical" size={24} color="black" />
+                          </MenuTrigger>
+                          <MenuOptions>
+                            <MenuOption onSelect={() => console.log(`Save`)} text="Save" />
+                            <MenuOption onSelect={() => console.log(`Delete`)} text="Delete" />
+                          </MenuOptions>
+                        </Menu>
+
+                      </ListItem>
+                    );
+                  })
+                )}
+              </ScrollView>
             </VStack>
           </Box>
-        </ScrollView>
-      )}
+        )}
+      </MenuProvider>
     </NativeBaseProvider>
   );
 }
@@ -241,4 +238,10 @@ const styles = StyleSheetReact.create({
     left: "25%",
     right: "25%",
   },
+  containerMenu: {
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+  }
 });
