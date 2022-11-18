@@ -89,11 +89,13 @@ export default function DetailsPaciente({ navigation, route }) {
       ) : null}
       {paciente ? (
         <ScrollView>
-          <Box style={{ marginHorizontal: 5 }} mt={5} flex={1} p={1}>
+          <Box style={{ marginHorizontal: 5 }} mt={5} mb={5} flex={1} p={1}>
             <View m={2}>
               <ListItem>
                 <ListItem.Content>
-                  <ListItem.Title style={{textAlign:'center',alignSelf:'center'}}>
+                  <ListItem.Title
+                    style={{ textAlign: "center", alignSelf: "center" }}
+                  >
                     <Heading
                       textAlign={"center"}
                       size="xl"
@@ -110,7 +112,7 @@ export default function DetailsPaciente({ navigation, route }) {
                   justifyContent="center"
                 />
               </ListItem>
-              <Divider/>
+              <Divider />
               <ListItem>
                 <Avatar
                   source={require("../../../assets/chequeo-medico.png")}
@@ -160,6 +162,44 @@ export default function DetailsPaciente({ navigation, route }) {
                   <Text>{paciente.sexo}</Text>
                 </ListItem.Content>
               </ListItem>
+              <ListItem>
+                <Avatar source={require("../../../assets/weight.png")} />
+                <ListItem.Content>
+                  <ListItem.Title>
+                    <Text>Peso</Text>
+                  </ListItem.Title>
+                  <Text>{paciente.peso} Kg</Text>
+                </ListItem.Content>
+              </ListItem>
+              <Divider />
+              <ListItem>
+                <Avatar source={require("../../../assets/owner.png")} />
+                <ListItem.Content>
+                  <ListItem.Title>
+                    <Text>Nombre propietario</Text>
+                  </ListItem.Title>
+                  <Text>{paciente.propietario.nombre}</Text>
+                </ListItem.Content>
+              </ListItem>
+              <ListItem>
+                <Avatar source={require("../../../assets/call.png")} />
+                <ListItem.Content>
+                  <ListItem.Title>
+                    <Text>Telefono propietario</Text>
+                  </ListItem.Title>
+                  <Text>{paciente.propietario.telefono}</Text>
+                </ListItem.Content>
+              </ListItem>
+              <ListItem>
+                <Avatar source={require("../../../assets/pet-shop.png")} />
+                <ListItem.Content>
+                  <ListItem.Title>
+                    <Text>Direccion propietario</Text>
+                  </ListItem.Title>
+                  <Text>{paciente.propietario.direccion}</Text>
+                </ListItem.Content>
+              </ListItem>
+              
             </View>
           </Box>
         </ScrollView>
