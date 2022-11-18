@@ -22,6 +22,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { signOut } from "firebase/auth";
 import { ListItem,Avatar } from "react-native-elements";
 
+
+
 export default function Home({ navigation }) {
   const [veterinario, setVeterinario] = useState(null);
 
@@ -68,7 +70,7 @@ export default function Home({ navigation }) {
   return (
     <NativeBaseProvider>
       {veterinario ? (
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <Box flex={1} p={1} mb={5}>
             <Heading
               mt={5}

@@ -32,16 +32,18 @@ import { auth, db } from "../../../config/firebase";
 import { addDoc, collection } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Platform } from "react-native";
+import { ActivityIndicator } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateDesparasitacion = () => {
+const CreateDesparasitacion = ({navigation, route}) => {
+    const {id} = route.params;
     const [date, setDate] = useState(new Date());
     const [show, setShow] = useState(false);
     const [mode, setMode] = useState("date");
     const [text, setText] = useState("");
     const [proxD, setProxD] = useState(new Date());
-    const [uploading, setUploading] = useState(false);
+    const [loading, setLoading] = useState(false);
   
     const form = useRef();
   
@@ -88,34 +90,41 @@ const CreateDesparasitacion = () => {
     };
   
     const sendData = (data) => {
+      setLoading(true);
       if (text === "") {
         if (Platform.OS === "web") {
-          alert("Debe Ingresar una Fecha Valida");
+          Alert.alert("Debe Ingresar una Fecha Valida");
+          setLoading(false);
         } else {
+          setLoading(false);
           Alert.alert("Deber Ingresar una Fecha Valida");
         }
         return false;
       } else {
-        setUploading(true);
         data.proximaDosis = proxD;
         data.fecha = new Date();
         addDoc(collection(db, "patients", id, "desparasitacion"), data)
           .then((ocRef) => {
-            setUploading(false);
             Alert.alert("Exito", "Se registró desparasitacion correctamente", [
+              setLoading(false),
               {
                 text: "Aceptar",
               },
+              navigation.navigate('Desparasitacion')
+              
             ]);
             if (Platform.OS === "web") {
-              alert("Se registró desparasitacion correctamente");
+              Alert.alert("Se registró desparasitacion correctamente");
+              setLoading(false);
+              navigation.navigate('Desparasitacion');
             }
           })
           .catch((error) => {
-            setUploading(false);
             Alert.alert("Error", "Ocurrio un error al registrar desparasitacion");
+            setLoading(false);
             if (Platform.OS === "web") {
-              alert("Ocurrio un error al registrar desparasitacion");
+              Alert.alert("Ocurrio un error al registrar desparasitacion");
+              setLoading(false);
             }
           });
         return true;
@@ -130,17 +139,28 @@ const CreateDesparasitacion = () => {
   
     useFocusEffect(
       React.useCallback(() => {
+        setLoading(true);
         return () => {
           form.current?.resetForm();
           setShow(false)
           setText("")
+          setLoading(false)
         };
       }, [])
     );
   
+
     return (
       <NativeBaseProvider>
-        <ScrollView>
+        {loading ? (
+        <ActivityIndicator
+          style={styles.indicador}
+          size="large"
+          color="rgba(117, 140, 255, 1)"
+        />
+      ) : null}
+      {text ? ( 
+        <ScrollView style={loading ? { opacity: 0.5 } : { opacity: 1 }}>
           <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
           <Heading
               mt={5}
@@ -175,7 +195,7 @@ const CreateDesparasitacion = () => {
                 handleSubmit,
                 resetForm,
               }) => (
-                <View>
+                <View style={{ marginHorizontal: 5 }}>
                   <VStack space={4} mt="5">
                     <FormControl isInvalid={"nombre" in errors}>
                       <FormControl.Label _text={styles.labelInput}>
@@ -317,6 +337,7 @@ const CreateDesparasitacion = () => {
                     )}
                     <HStack mb={5} space={2} justifyContent="center">
                       <Ionicons.Button
+                      disabled={loading ? true : false}
                         backgroundColor={"rgba(117, 140, 255, 1)"}
                         size={22}
                         onPress={handleSubmit}
@@ -330,10 +351,11 @@ const CreateDesparasitacion = () => {
                         Guardar
                       </Ionicons.Button>
                       <Ionicons.Button
+                      disabled={loading ? true : false}
                         backgroundColor={"rgba(117, 140, 255, 1)"}
                         size={22}
                         onPress={() => {
-                          resetForm();
+                          form.current?.resetForm();
                           setText("");
                         }}
                         style={{
@@ -352,6 +374,7 @@ const CreateDesparasitacion = () => {
             </Formik>
           </Box>
         </ScrollView>
+        ) : null}
       </NativeBaseProvider>
     );
   };
@@ -372,6 +395,12 @@ const CreateDesparasitacion = () => {
       color: "indigo",
       fontSize: 18,
       fontWeight: "bold",
+    },
+    indicador: {
+      position: "absolute",
+      top: "50%",
+      left: "25%",
+      right: "25%",
     },
   };
 export default CreateDesparasitacion

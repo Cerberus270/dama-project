@@ -98,21 +98,21 @@ export default function ListPacientes({ navigation }) {
           color="rgba(117, 140, 255, 1)"
         />
       ) : (
-        <ScrollView ref={scrollRef}>
-          <Box m={2} flex={1} p={1}>
-            <Heading
-              size="lg"
-              color="coolGray.800"
-              _dark={{
-                color: "warmGray.50",
-              }}
-              fontWeight="bold"
-              alignSelf="center"
-              mb={2}
-            >
-              Mis pacientes
-            </Heading>
-            <View style={styles.container}>
+        <Box m={2} flex={1} p={1}>
+          <Heading
+            size="lg"
+            color="coolGray.800"
+            _dark={{
+              color: "warmGray.50",
+            }}
+            fontWeight="bold"
+            alignSelf="center"
+            mb={2}
+          >
+            Mis pacientes
+          </Heading>
+          <View style={styles.container}>
+            <ScrollView ref={scrollRef}>
               {pacientes.map((paciente) => {
                 return (
                   <ListItem.Swipeable
@@ -131,6 +131,7 @@ export default function ListPacientes({ navigation }) {
                         buttonStyle={{ minHeight: "100%" }}
                       />
                     }
+                    
                   >
                     <Avatar source={avatarPic(paciente.tipo)} />
                     <ListItem.Content>
@@ -156,9 +157,9 @@ export default function ListPacientes({ navigation }) {
                   </ListItem.Swipeable>
                 );
               })}
-            </View>
-          </Box>
-        </ScrollView>
+            </ScrollView>
+          </View>
+        </Box>
       )}
     </NativeBaseProvider>
   );
