@@ -183,7 +183,17 @@ export default function Profile({ navigation }) {
                   .required("Necesitamos la direccion de su clinica"),
               })}
               onSubmit={(values) => {
-                updateDocVeterinario(values);
+                Alert.alert("Confirmacion","Desea modificar la informacion de su perfil",[
+                  {
+                    text:"Aceptar",
+                    onPress:()=>{
+                      updateDocVeterinario(values);
+                    }
+                  },
+                  {
+                    text:"Cancelar"
+                  }
+                ])
               }}
             >
               {({

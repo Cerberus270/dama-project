@@ -116,17 +116,17 @@ export default function App() {
          <Stack.Screen
           name="CreateVacunas"
           component={CreateVacunas}
-          options={{ headerShown: false }}
+          options={{ headerShown: true,title:"Nueva Vacuna" }}
         />
         <Stack.Screen
           name="CreateDesparasitacion"
           component={CreateDesparasitacion}
-          options={{ headerShown: false }}
+          options={{ headerShown: true, title:"Nueva Desparasitacion" }}
         />
         <Stack.Screen
           name="CreateReceta"
           component={CreateReceta}
-          options={{ headerShown: false }}
+          options={{ headerShown: true }}
         />
       </Stack.Navigator>
     </NavigationContainer>

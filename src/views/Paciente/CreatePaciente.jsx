@@ -41,6 +41,7 @@ const CreatePaciente = () => {
   const [mode, setMode] = useState("date");
   const [text, setText] = useState("");
   const [fecNac, setFecNac] = useState(new Date());
+  const [uploading,setUploading] = useState(false);
 
   const regexPhone = /^[0-9]{4}-[0-9]{4}$/;
 
@@ -113,11 +114,13 @@ const CreatePaciente = () => {
       }
       return false;
     } else {
+      setUploading(true)
       data.fechaNacimiento = fecNac;
       data.fechaRegistro = new Date();
       data.veterinario = auth.currentUser.uid;
       addDoc(collection(db, "patients"), data)
         .then((ocRef) => {
+          setUploading(false);
           Alert.alert("Exito", "Se registro el paciente correctamente", [
             {
               text: "Aceptar",
@@ -128,6 +131,7 @@ const CreatePaciente = () => {
           }
         })
         .catch((error) => {
+          setUploading(false);
           Alert.alert("Error", "Ocurrio un error al registrar el paciente");
           if (Platform.OS === "web") {
             alert("Ocurrio un error al registrar el paciente");

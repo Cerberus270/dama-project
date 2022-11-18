@@ -29,17 +29,32 @@ import {
   getDocs,
   query,
   where,
-  doc,
   deleteDoc,
   onSnapshot,
+  doc,
 } from "firebase/firestore";
 import { db, auth } from "../../../config/firebase";
 import { ActivityIndicator } from "react-native";
+import { Alert } from "react-native";
 
 export default function Vacunas({ navigation, route }) {
   const { id } = route.params;
   const [vacunas, setVacunas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+
+  const deleteVacuna = (idVacuna) => {
+    setUploading(true);
+    deleteDoc(doc(db, "patients", id, "vacunas", idVacuna))
+      .then((result) => {
+        setUploading(false);
+        Alert.alert("Exito", "La vacuna fue eliminada exitosamente");
+      })
+      .catch((error) => {
+        setUploading(false);
+        Alert.alert("Error", "Ocurrio un error al intentar eliminar la vacuna");
+      });
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -84,7 +99,14 @@ export default function Vacunas({ navigation, route }) {
           color="rgba(117, 140, 255, 1)"
         />
       ) : (
-        <ScrollView>
+        <ScrollView style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
+          {uploading ? (
+            <ActivityIndicator
+              style={styles.indicador}
+              size="large"
+              color="rgba(117, 140, 255, 1)"
+            />
+          ) : null}
           <Box flex={1} p={1} w="95%" mx="auto">
             <VStack mt={15} mb={15} space={2} px="2">
               <ButtonNative
@@ -117,6 +139,34 @@ export default function Vacunas({ navigation, route }) {
                       onPress={() => {
                         console.log("Detalles");
                       }}
+                      leftContent={
+                        <Button
+                          disabled={uploading ? true : false}
+                          title="Eliminar"
+                          onPress={() => {
+                            Alert.alert(
+                              "Confirmacion",
+                              "Desea eliminar la vacuna seleccionada?",
+                              [
+                                {
+                                  text: "Eliminar",
+                                  onPress: () => {
+                                    deleteVacuna(vacuna.id);
+                                  },
+                                },
+                                {
+                                  text: "Cancelar",
+                                },
+                              ]
+                            );
+                          }}
+                          icon={{ name: "delete", color: "white" }}
+                          buttonStyle={{
+                            minHeight: "100%",
+                            backgroundColor: "red",
+                          }}
+                        />
+                      }
                     >
                       <ListItem.Content>
                         <ListItem.Title>
