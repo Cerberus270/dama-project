@@ -172,7 +172,7 @@ export default function CompleteProfile({ navigation }) {
                       placeholder="Digite su nombre"
                       InputLeftElement={
                         <Icon
-                          as={<MaterialCommunityIcons name="face-profile" />}
+                          as={<MaterialCommunityIcons name="account" />}
                           size={5}
                           ml="2"
                           color="muted.400"

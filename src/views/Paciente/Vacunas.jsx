@@ -72,7 +72,7 @@ export default function Vacunas({ navigation, route }) {
 
       return () => {
         unsuscribe();
-        setLoading(false);
+        setLoading(true);
         setVacunas([]);
       };
     }, [])
@@ -87,7 +87,7 @@ export default function Vacunas({ navigation, route }) {
           color="rgba(117, 140, 255, 1)"
         />
       ) : (
-        <ScrollView style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
+        <ScrollView flex={1} style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
           {uploading ? (
             <ActivityIndicator
               style={styles.indicador}
@@ -122,7 +122,7 @@ export default function Vacunas({ navigation, route }) {
               ) : (
                 vacunas.map((vacuna) => {
                   return (
-                    <ListItem.Swipeable
+                    <ListItem.Swipeable flex={1}
                       key={vacuna.id}
                       bottomDivider
                       onPress={() => {

@@ -30,12 +30,11 @@ export default function CustomDrawer(props) {
           style={{ padding: 20 }}
         >
           <Image
-            source={{
-              uri: "https://us.123rf.com/450wm/yupiramos/yupiramos1804/yupiramos180421545/100217337-m%C3%A9dico-veterinario-con-perro-avatar-ilustraci%C3%B3n-vectorial-character-design.jpg?ver=6",
-            }}
+            source={require("../../assets/Logo.png")}
             style={{
-              height: 80,
-              width: 80,
+              backgroundColor:'white',
+              height: 90,
+              width: 90,
               borderRadius: 40,
               marginBottom: 10,
             }}
@@ -43,7 +42,7 @@ export default function CustomDrawer(props) {
           <Text
             style={{
               color: "#fff",
-              fontSize: 17,
+              fontSize: 16,
               fontWeight: "bold",
               marginBottom: 5,
             }}
