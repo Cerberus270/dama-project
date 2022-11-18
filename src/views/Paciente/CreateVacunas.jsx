@@ -29,20 +29,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 //import DateTimePickerModal from "react-native-modal-datetime-picker";
 // Firebase Auth and Firestore
 import { auth, db } from "../../../config/firebase";
-import { 
-    addDoc,
-    collection,
-    query,
-    where,
-    onSnapshot,
-    doc,
-} from "firebase/firestore";
+import {addDoc,collection} from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateVacunas = ({route}) => {
+const CreateVacunas = ({navigation, route}) => {
   const {id} = route.params;
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
@@ -100,7 +93,7 @@ const CreateVacunas = ({route}) => {
   const sendData = (data) => {
     if (text === "") {
       if (Platform.OS === "web") {
-        alert("Debe Ingresar una Fecha Valida");
+        Alert.alert("Debe Ingresar una Fecha Valida");
       } else {
         Alert.alert("Deber Ingresar una Fecha Valida");
       }
@@ -115,16 +108,18 @@ const CreateVacunas = ({route}) => {
             {
               text: "Aceptar",
             },
+            navigation.navigate('Vacunas')
           ]);
           if (Platform.OS === "web") {
-            alert("Se registro vacuna correctamente");
+            Alert.alert("Se registro vacuna correctamente");
+            navigation.navigate('Vacunas');
           }
         })
         .catch((error) => {
          
           Alert.alert("Error", "Ocurrio un error al registrar vacuna");
           if (Platform.OS === "web") {
-            alert("Ocurrio un error al registrar vacuna");
+            Alert.alert("Ocurrio un error al registrar vacuna");
           }
         });
       return true;
@@ -170,6 +165,7 @@ const CreateVacunas = ({route}) => {
               if (sendData(values)) {
                 resetForm({ values: valoresIniciales });
                 setText("");
+                
               }
             }}
             validationSchema={formularioValidacion}
@@ -362,6 +358,7 @@ const CreateVacunas = ({route}) => {
                       backgroundColor={"rgba(117, 140, 255, 1)"}
                       size={22}
                       onPress={handleSubmit}
+                      
                       style={{
                         alignSelf: "stretch",
                         justifyContent: "center",
