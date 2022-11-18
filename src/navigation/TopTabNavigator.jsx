@@ -28,6 +28,7 @@ export default function TopTabNavigator({ navigation, route }) {
         options={{
           tabBarLabel: "Vacunas",
           tabBarScrollEnabled: true,
+          swipeEnabled:false
         }}
       />
 
@@ -38,6 +39,7 @@ export default function TopTabNavigator({ navigation, route }) {
         options={{
           tabBarScrollEnabled: true,
           tabBarLabel: "Desparasitacion",
+          swipeEnabled:false
         }}
       />
       <Tab.Screen
@@ -47,6 +49,7 @@ export default function TopTabNavigator({ navigation, route }) {
         options={{
           tabBarLabel: "Atenciones",
           tabBarScrollEnabled: true,
+          swipeEnabled:false
         }}
       />
     </Tab.Navigator>
