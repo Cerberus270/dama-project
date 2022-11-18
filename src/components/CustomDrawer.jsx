@@ -62,8 +62,8 @@ export default function CustomDrawer(props) {
           backgroundColor={"rrgba(117, 140, 255, 1)"}
           name="exit"
           size={22}
-          onPress={()=>{
-            signOut(auth);
+          onPress={async ()=>{
+            await signOut(auth);
             props.navigation.reset({
             index:0,
             routes:[{

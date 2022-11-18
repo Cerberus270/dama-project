@@ -1,6 +1,6 @@
-import { Text, View, ScrollView, StyleSheet, Alert } from "react-native";
+import { Text, View, StyleSheet, Alert } from "react-native";
 import React, { Component, useDebugValue, useEffect, useState } from "react";
-import { NativeBaseProvider, Heading, Box } from "native-base";
+import { NativeBaseProvider, Heading, Box, ScrollView } from "native-base";
 import {
   collection,
   getDocs,
@@ -16,6 +16,8 @@ import { ListItem, Button, Avatar, Badge } from "react-native-elements";
 import { Platform } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
+
+const scrollRef = React.createRef();
 
 export default function ListPacientes({ navigation }) {
   const [pacientes, setPacientes] = useState([]);
@@ -96,7 +98,7 @@ export default function ListPacientes({ navigation }) {
           color="rgba(117, 140, 255, 1)"
         />
       ) : (
-        <ScrollView>
+        <ScrollView ref={scrollRef}>
           <Box m={2} flex={1} p={1}>
             <Heading
               size="lg"
@@ -133,10 +135,12 @@ export default function ListPacientes({ navigation }) {
                     <Avatar source={avatarPic(paciente.tipo)} />
                     <ListItem.Content>
                       <ListItem.Title>
-                        <Text >{paciente.id}</Text>
+                        <Text>{paciente.id}</Text>
                       </ListItem.Title>
                       <View>
-                        <Text style={styles.ratingText}>Nombre Paciente: {paciente.nombre}</Text>
+                        <Text style={styles.ratingText}>
+                          Nombre Paciente: {paciente.nombre}
+                        </Text>
                         <Text style={styles.ratingText}>
                           Nombre Propietario: {paciente.propietario.nombre}
                         </Text>

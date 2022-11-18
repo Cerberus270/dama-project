@@ -75,8 +75,8 @@ export default function App() {
                   backgroundColor={"rgba(117, 140, 255, 1)"}
                   name="exit"
                   size={22}
-                  onPress={() => {
-                    signOut(auth);
+                  onPress={async () => {
+                    await signOut(auth);
                     navigationRef.current?.reset({
                       index: 0,
                       routes: [

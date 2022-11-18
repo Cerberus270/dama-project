@@ -77,7 +77,8 @@ export default function Profile({ navigation }) {
               [
                 {
                   text: "Aceptar",
-                  onPress: () => {
+                  onPress: async () => {
+                    await signOut(auth);
                     navigation.reset({
                       index: 0,
                       routes: [

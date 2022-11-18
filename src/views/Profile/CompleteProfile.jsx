@@ -21,6 +21,7 @@ import { ActivityIndicator, Alert } from "react-native";
 import { useState } from "react";
 import { doc, setDoc } from "firebase/firestore";
 import { db, auth } from "../../../config/firebase";
+import { signOut } from "firebase/auth";
 
 export default function CompleteProfile({ navigation }) {
   const [isLoading, setLoading] = useState(false);
@@ -52,7 +53,7 @@ export default function CompleteProfile({ navigation }) {
           [
             {
               text: "Aceptar",
-              onPress: () => {
+              onPress: async () => {
                 setLoading(false);
                 navigation.reset({
                   index: 0,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 // Components Imports
 import {
@@ -20,6 +20,7 @@ import {
   CheckIcon,
   Pressable,
 } from "native-base";
+import { useFocusEffect } from "@react-navigation/native";
 // Validation Imports
 import * as yup from "yup";
 import { Formik, getIn } from "formik";
@@ -41,7 +42,9 @@ const CreatePaciente = () => {
   const [mode, setMode] = useState("date");
   const [text, setText] = useState("");
   const [fecNac, setFecNac] = useState(new Date());
-  const [uploading,setUploading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const form = useRef();
 
   const regexPhone = /^[0-9]{4}-[0-9]{4}$/;
 
@@ -114,7 +117,7 @@ const CreatePaciente = () => {
       }
       return false;
     } else {
-      setUploading(true)
+      setUploading(true);
       data.fechaNacimiento = fecNac;
       data.fechaRegistro = new Date();
       data.veterinario = auth.currentUser.uid;
@@ -144,12 +147,26 @@ const CreatePaciente = () => {
   const showMode = (currentMode) => {
     setShow(true);
     setMode(currentMode);
+    form.reset;
   };
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        form.current?.resetForm();
+        setShow(false)
+        setText("")
+      };
+    }, [])
+  );
+
+  
 
   return (
     <NativeBaseProvider>
       <ScrollView>
-        <Box style={{marginHorizontal:5}} mt={2} flex={1} p={1}>
+        <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
           <Heading
             mt={5}
             size="lg"
@@ -163,6 +180,7 @@ const CreatePaciente = () => {
             Registro de paciente
           </Heading>
           <Formik
+            innerRef={form}
             initialValues={valoresIniciales}
             onSubmit={(values, { resetForm }) => {
               if (sendData(values)) {
@@ -447,10 +465,10 @@ const CreatePaciente = () => {
                         </FormControl.ErrorMessage>
                       )}
                   </FormControl>
-                  <HStack space={2} justifyContent="center">
+                  <HStack mb={5} space={2} justifyContent="center">
                     <Ionicons.Button
                       backgroundColor={"rgba(117, 140, 255, 1)"}
-                      size={10}
+                      size={22}
                       onPress={handleSubmit}
                       style={{
                         alignSelf: "stretch",
@@ -463,7 +481,7 @@ const CreatePaciente = () => {
                     </Ionicons.Button>
                     <Ionicons.Button
                       backgroundColor={"rgba(117, 140, 255, 1)"}
-                      size={10}
+                      size={22}
                       onPress={() => {
                         resetForm();
                         setText("");
@@ -472,10 +490,10 @@ const CreatePaciente = () => {
                         alignSelf: "stretch",
                         justifyContent: "center",
                       }}
-                      name="backspace"
+                      name="refresh-outline"
                       _disabled={styles.botonDisabled}
                     >
-                      Reset
+                      Reestablecer
                     </Ionicons.Button>
                   </HStack>
                 </VStack>

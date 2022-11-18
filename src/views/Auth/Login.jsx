@@ -67,7 +67,7 @@ export default function Login({ navigation }) {
   }, []);
 
   const erroresLogin = (errores) => {
-    const defecto = "Otro tipo de error";
+    const defecto = "Ocurrio un error";
     const listaErrores = {
       "auth/invalid-email":
         "El correo ingresado no es valido, intente de nuevo",
@@ -155,6 +155,7 @@ export default function Login({ navigation }) {
                   />
                 }
                 onChangeText={(e) => setEmail(e)}
+              
               />
             </FormControl>
             <FormControl>
