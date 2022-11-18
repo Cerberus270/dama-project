@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {Alert} from 'react-native';
 // Components Imports
 import {
@@ -18,7 +18,8 @@ import {
     Select,
     CheckIcon,
     Pressable
-} from "native-base"
+} from "native-base";
+import { useFocusEffect } from "@react-navigation/native";
 // Validation Imports
 import * as yup from 'yup';
 import {Formik} from 'formik';
@@ -39,6 +40,9 @@ const CreateAtenciones = ({navigation}) => {
     const [mode, setMode] = useState('date');
     const [text, setText] = useState('');
     const [proximaCita, setProximaCita] = useState(new Date());
+    const [uploading, setUploading] = useState(false);
+
+    const form = useRef();
 
     const formularioValidacion = yup.object().shape({
         nombre: yup
@@ -67,7 +71,9 @@ const CreateAtenciones = ({navigation}) => {
 
         if (event.type == "set") {
             let tempDate = new Date(currentDate);
-            let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+            let fDate = tempDate.getDate() +
+             '/' + (tempDate.getMonth() + 1) + 
+             '/' + tempDate.getFullYear();
             setProximaCita(tempDate);
             setText(fDate);
             console.log(fDate);
@@ -83,10 +89,12 @@ const CreateAtenciones = ({navigation}) => {
             }
             return false;
         } else {
+            setUploading(true);
             data.fecha = new Date();
             data.proximaCita = proximaCita;
             addDoc(collection(db, "atenciones"), data)
                 .then((ocRef) => {
+                    setUploading(true);
                     Alert.alert("Exito", "Se agregó atención correctamente", [
                         {
                             text: "Aceptar",
@@ -97,6 +105,7 @@ const CreateAtenciones = ({navigation}) => {
                     }
                 })
                 .catch((error) => {
+                    setUploading(false);
                     Alert.alert("Error", "Ocurrio un error al agregar atención");
                     if (Platform.OS === "web") {
                         alert("Ocurrio un error al agregar atención");
@@ -108,19 +117,38 @@ const CreateAtenciones = ({navigation}) => {
 
     const showMode = (currentMode) => {
         setShow(true);
-        setMode(currentMode)
+        setMode(currentMode);
+        form.reset;
     }
 
+    useFocusEffect(
+        React.useCallback(() => {
+          return () => {
+            form.current?.resetForm();
+            setShow(false)
+            setText("")
+          };
+        }, [])
+      );
+    
     return (
         <NativeBaseProvider>
             <ScrollView>
-                <Box w={"95%"} mt={8} flex={1} p={1} marginLeft={1}>
-                    <Heading mt="1" color="coolGray.600" _dark={{
-                        color: "warmGray.200"
-                    }} fontWeight="medium" size="xs">
-                        <Text style={styles.tituloForm}>Ingrese Nueva Atención</Text>
-                    </Heading>
+            <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
+                <Heading
+                    mt={5}
+                    size="lg"
+                    color="coolGray.800"
+                    _dark={{
+                    color: "warmGray.50",
+                    }}
+                    fontWeight="bold"
+                    alignSelf="center"
+                >
+                    Registro de Atención
+                </Heading>
                     <Formik
+                        innerRef={form}
                         initialValues={valoresIniciales}
                         onSubmit={(values, {resetForm}) => {
                           if(sendData(values))  {
@@ -211,45 +239,52 @@ const CreateAtenciones = ({navigation}) => {
                                             </FormControl.ErrorMessage>
                                         }
                                     </FormControl>
-
-                                    <Button mt="2" mb="2" colorScheme="indigo" variant="subtle"
+                                     <HStack mb={5} space={2} paddingTop="3" justifyContent="center">
+                                            <Ionicons.Button 
+                                            backgroundColor={"rgba(117, 140, 255, 1)"}
+                                            size={22}
                                             onPress={() => {
                                                 navigation.navigate('CreateReceta');
                                             }}
-                                            _disabled={styles.botonDisabled}
-                                            leftIcon={<Icon as={MaterialCommunityIcons} name="content-save"
-                                                            size="sm"/>}>
-                                        Crear Receta
-                                    </Button>
-
-                                    <HStack space={2} justifyContent="center">
-                                        <Ionicons.Button
-                                            backgroundColor={"rgba(117, 140, 255, 1)"}
-                                            size={10}
-                                            onPress={handleSubmit}
                                             style={{
                                                 alignSelf: "stretch",
                                                 justifyContent: "center",
                                             }}
-                                            name="save"
-                                            _disabled={styles.botonDisabled}>
-                                            Guardar
+                                            name="create"
+                                            _disabled={styles.botonDisabled}
+                                           >
+                                             Crear Receta
+                                            </Ionicons.Button>
+                                    </HStack>
+                                    <HStack mb={5} space={2} justifyContent="center">
+                                        <Ionicons.Button
+                                        backgroundColor={"rgba(117, 140, 255, 1)"}
+                                        size={22}
+                                        onPress={handleSubmit}
+                                        style={{
+                                            alignSelf: "stretch",
+                                            justifyContent: "center",
+                                        }}
+                                        name="save"
+                                        _disabled={styles.botonDisabled}
+                                        >
+                                        Guardar
                                         </Ionicons.Button>
                                         <Ionicons.Button
-                                            backgroundColor={"rgba(117, 140, 255, 1)"}
-                                            size={20}
-                                            onPress={() => {
-                                                resetForm();
-                                                setText('');
-                                            }
-                                            }
-                                            style={{
-                                                alignSelf: "stretch",
-                                                justifyContent: "center",
-                                            }}
-                                            name="backspace"
-                                            _disabled={styles.botonDisabled}>
-                                            Reset
+                                        backgroundColor={"rgba(117, 140, 255, 1)"}
+                                        size={22}
+                                        onPress={() => {
+                                            resetForm();
+                                            setText("");
+                                        }}
+                                        style={{
+                                            alignSelf: "stretch",
+                                            justifyContent: "center",
+                                        }}
+                                        name="refresh-outline"
+                                        _disabled={styles.botonDisabled}
+                                        >
+                                        Reestablecer
                                         </Ionicons.Button>
                                     </HStack>
                                 </VStack>

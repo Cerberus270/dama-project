@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {Alert} from 'react-native';
 // Components Imports
 import {
@@ -7,6 +7,7 @@ import {
     Box,
     Heading,
     VStack,
+    HStack,
     FormControl,
     Input,
     Text,
@@ -14,12 +15,12 @@ import {
     View,
     WarningOutlineIcon,
     Icon,
-    HStack,
     Radio,
     Select,
     CheckIcon,
-    Pressable
-} from "native-base"
+    Pressable,
+} from "native-base";
+import { useFocusEffect } from "@react-navigation/native";
 // Validation Imports
 import * as yup from 'yup';
 import {Formik} from 'formik';
@@ -33,7 +34,12 @@ import {Platform} from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const CreateReceta = ({navigation}) => {
+
     const [text, setText] = useState('');
+    const [uploading, setUploading] = useState(false);
+
+    const form = useRef();
+
     const formularioValidacion = yup.object().shape({
              nombreProducto: yup
             .string()
@@ -42,10 +48,10 @@ const CreateReceta = ({navigation}) => {
             marcaProducto: yup
             .string()
             .min(2, 'Minimo 2 caracteres')
-            .required('Marca de producto mascota requerido.'),
+            .required('Marca de producto requerida.'),
             tipo: yup
             .string()
-            .required('Elija tipo de Atención brindada'),
+            .required('Elija tipo de producto'),
             indicaciones: yup
             .string()
             .min(6, 'Minimo 6 caracteres')
@@ -68,8 +74,10 @@ const CreateReceta = ({navigation}) => {
             }
             return false;
         } else {
+            setUploading(true);
             addDoc(collection(db, "receta"), data)
                 .then((ocRef) => {
+                    setUploading(true);
                     Alert.alert("Exito", "Se agregó Receta correctamente", [
                         {
                             text: "Aceptar",
@@ -81,6 +89,7 @@ const CreateReceta = ({navigation}) => {
                     }
                 })
                 .catch((error) => {
+                    setUploading(false);
                     Alert.alert("Error", "Ocurrio un error al agregar Receta");
                     if (Platform.OS === "web") {
                         alert("Ocurrio un error al agregar Receta");
@@ -90,16 +99,39 @@ const CreateReceta = ({navigation}) => {
         }
     }
 
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+        form.reset;
+      };
+
+      useFocusEffect(
+        React.useCallback(() => {
+          return () => {
+            form.current?.resetForm();
+            setText("")
+          };
+        }, [])
+      );
+
     return (
         <NativeBaseProvider>
             <ScrollView>
-                <Box w={"95%"} mt={8} flex={1} p={1} marginLeft={1}>
-                    <Heading mt="1" color="coolGray.600" _dark={{
-                        color: "warmGray.200"
-                    }} fontWeight="medium" size="xs">
-                        <Text style={styles.tituloForm}>Receta Médica</Text>
+                <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
+                    <Heading
+                        mt={5}
+                        size="lg"
+                        color="coolGray.800"
+                        _dark={{
+                        color: "warmGray.50",
+                        }}
+                        fontWeight="bold"
+                        alignSelf="center"
+                    >
+                        Registro de receta
                     </Heading>
                     <Formik
+                        innerRef={form}
                         initialValues={valoresIniciales}
                         onSubmit={(values, {resetForm}) => {
                           if(sendData(values))  {
@@ -140,7 +172,7 @@ const CreateReceta = ({navigation}) => {
                                         <FormControl.Label _text={styles.labelInput}>Marca:</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado}
                                                placeholder='Digite marca de producto'
-                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="bone"/>}
+                                               InputLeftElement={<Icon as={<MaterialCommunityIcons name="registered-trademark"/>}
                                                                        size={5} ml="2" color="muted.400"/>}
                                                value={values.marcaProducto}
                                                onChangeText={handleChange('marcaProducto')}
@@ -190,34 +222,35 @@ const CreateReceta = ({navigation}) => {
                                         }
                                     </FormControl>
 
-                                    <HStack space={2} justifyContent="center">
+                                    <HStack mb={5} space={2} justifyContent="center">
                                         <Ionicons.Button
-                                            backgroundColor={"rgba(117, 140, 255, 1)"}
-                                            size={10}
-                                            onPress={handleSubmit}
-                                            style={{
-                                                alignSelf: "stretch",
-                                                justifyContent: "center",
-                                            }}
-                                            name="save"
-                                            _disabled={styles.botonDisabled}>
-                                            Guardar
+                                        backgroundColor={"rgba(117, 140, 255, 1)"}
+                                        size={22}
+                                        onPress={handleSubmit}
+                                        style={{
+                                            alignSelf: "stretch",
+                                            justifyContent: "center",
+                                        }}
+                                        name="save"
+                                        _disabled={styles.botonDisabled}
+                                        >
+                                        Guardar
                                         </Ionicons.Button>
                                         <Ionicons.Button
-                                            backgroundColor={"rgba(117, 140, 255, 1)"}
-                                            size={20}
-                                            onPress={() => {
-                                                resetForm();
-                                                setText('');
-                                            }
-                                            }
-                                            style={{
-                                                alignSelf: "stretch",
-                                                justifyContent: "center",
-                                            }}
-                                            name="backspace"
-                                            _disabled={styles.botonDisabled}>
-                                            Reset
+                                        backgroundColor={"rgba(117, 140, 255, 1)"}
+                                        size={22}
+                                        onPress={() => {
+                                            resetForm();
+                                            setText("");
+                                        }}
+                                        style={{
+                                            alignSelf: "stretch",
+                                            justifyContent: "center",
+                                        }}
+                                        name="refresh-outline"
+                                        _disabled={styles.botonDisabled}
+                                        >
+                                        Reestablecer
                                         </Ionicons.Button>
                                     </HStack>
                                 </VStack>

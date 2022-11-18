@@ -106,7 +106,7 @@ export default function App() {
         <Stack.Screen
           name="CreateAtenciones"
           component={CreateAtenciones}
-          options={{ headerShown: false }}
+          options={{ headerShown: true, title:"Atenciones" }}
         />
         <Stack.Screen
           name="TabPaciente"
@@ -116,17 +116,17 @@ export default function App() {
          <Stack.Screen
           name="CreateVacunas"
           component={CreateVacunas}
-          options={{ headerShown: true,title:"Nueva Vacuna" }}
+          options={{ headerShown: true,title:"Vacuna" }}
         />
         <Stack.Screen
           name="CreateDesparasitacion"
           component={CreateDesparasitacion}
-          options={{ headerShown: true, title:"Nueva Desparasitacion" }}
+          options={{ headerShown: true, title:"Desparasitación" }}
         />
         <Stack.Screen
           name="CreateReceta"
           component={CreateReceta}
-          options={{ headerShown: true }}
+          options={{ headerShown: true, title:"Receta" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

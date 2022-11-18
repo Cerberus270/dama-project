@@ -7,6 +7,7 @@ import {
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function Atenciones({navigation}){
     return (
@@ -21,15 +22,22 @@ export default function Atenciones({navigation}){
                                 base: "auto",
                                 md: "0"
                             }}>
-                                <Button 
-                                backgroundColor= {"rgba(117, 140, 255, 1)"}
-                                size="lg" variant="outline" onPress={() => {
-                                        navigation.navigate('CreateAtenciones');
-                                    }}>
-                                   <Text style={{color:'white'}}> 
-                                    Crear Atención
-                                    </Text>
-                                </Button>
+                                
+                                 <Ionicons.Button
+                                            backgroundColor={"rgba(117, 140, 255, 1)"}
+                                            size={22}
+                                            onPress={() => {
+                                                navigation.navigate('CreateAtenciones');
+                                            }}
+                                            style={{
+                                                alignSelf: "stretch",
+                                                justifyContent: "center",
+                                            }}
+                                            name="save"
+                                            >
+                                            Crear Atención
+                                        </Ionicons.Button>
+                         
                             </Stack>
                         </VStack>
                     </Box>
