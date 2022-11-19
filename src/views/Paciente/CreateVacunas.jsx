@@ -44,6 +44,9 @@ const CreateVacunas = ({ navigation, route }) => {
   const [proxD, setProxD] = useState(new Date());
   const [uploading, setUploading] = useState(false);
 
+  const fechaProxMin = new Date()
+  fechaProxMin.setDate(fechaProxMin.getDate()+1)
+
   const form = useRef();
 
   const formularioValidacion = yup.object().shape({
@@ -367,6 +370,7 @@ const CreateVacunas = ({ navigation, route }) => {
                       value={date}
                       mode={mode}
                       is24Hour={true}
+                      minimumDate={fechaProxMin}
                       display="default"
                       onChange={onChangeDate}
                     />

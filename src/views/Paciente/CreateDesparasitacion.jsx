@@ -45,6 +45,9 @@ const CreateDesparasitacion = ({ navigation, route }) => {
   const [proxD, setProxD] = useState(new Date());
   const [uploading, setUploading] = useState(false);
 
+  const fechaProxMin = new Date()
+  fechaProxMin.setDate(fechaProxMin.getDate()+1)
+
   const form = useRef();
 
   const formularioValidacion = yup.object().shape({
@@ -332,6 +335,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
                       is24Hour={true}
                       display="default"
                       onChange={onChangeDate}
+                      minimumDate={fechaProxMin}
                     />
                   )}
                   <HStack mb={5} space={2} justifyContent="center">
