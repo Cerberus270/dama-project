@@ -25,6 +25,9 @@ import CreateAtenciones from "./src/views/Paciente/CreateAtenciones";
 import CreateVacunas from "./src/views/Paciente/CreateVacunas";
 import CreateDesparasitacion from "./src/views/Paciente/CreateDesparasitacion";
 import CreateReceta from "./src/views/Paciente/CreateReceta";
+import DetailsVacuna from "./src/views/Paciente/DetailsVacuna";
+import DetailsDesparasitacion from "./src/views/Paciente/DetailsDesparasitacion";
+
 
 const Stack = createNativeStackNavigator();
 const navigationRef = React.createRef();
@@ -128,6 +131,16 @@ export default function App() {
           component={CreateReceta}
           options={{ headerShown: true, title:"Receta" }}
         />
+        <Stack.Screen
+          name="DetailsVacuna"
+          component={DetailsVacuna}
+          options={{headerShown: true, title:"Detalles Vacuna"}}
+         />
+         <Stack.Screen
+          name="DetailsDesparasitacion"
+          component={DetailsDesparasitacion}
+          options={{headerShown: true, title:"Detalles Desparasitacion"}}
+         />
       </Stack.Navigator>
     </NavigationContainer>
   );

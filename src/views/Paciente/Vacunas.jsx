@@ -61,7 +61,6 @@ export default function Vacunas({ navigation, route }) {
         (vacunas) => {
           let listaVacuna = [];
           vacunas.forEach((doc) => {
-            console.log(doc.data());
             const { dosis, fecha, marca, nombre, peso, proximaDosis, tipo } =
               doc.data();
             listaVacuna.push({
@@ -136,15 +135,15 @@ export default function Vacunas({ navigation, route }) {
                         key={vacuna.id}
                         bottomDivider
                         onPress={() => {
-                          console.log("Detalles");
+                          navigation.navigate("DetailsVacuna", { vacuna, idPaciente: id })
                         }}
                         rightContent={
                           <Button
-                              title="Actualizar"
-                              icon={{ name: 'update', color: 'white' }}
-                              buttonStyle={{ minHeight: '100%' }}
+                            title="Actualizar"
+                            icon={{ name: 'update', color: 'white' }}
+                            buttonStyle={{ minHeight: '100%' }}
                           />
-                      }
+                        }
                         leftContent={
                           <Button
                             disabled={uploading ? true : false}

@@ -297,6 +297,7 @@ const CreateVacunas = ({ navigation, route }) => {
                     <Input
                       _focus={styles.inputSeleccionado}
                       placeholder="Digite Dosis de Vacuna"
+                      keyboardType="decimal-pad"
                       InputLeftElement={
                         <Icon
                           as={<MaterialCommunityIcons name="eyedropper" />}

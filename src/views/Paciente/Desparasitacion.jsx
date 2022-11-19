@@ -56,7 +56,6 @@ export default function Desparasitacion({ navigation, route }) {
                 (desparasitacion) => {
                     let listaDesparasitaciones = [];
                     desparasitacion.forEach((doc) => {
-                        console.log(doc.data());
                         const { fecha, marca, proximaDosis } =
                             doc.data();
                         listaDesparasitaciones.push({
@@ -125,7 +124,7 @@ export default function Desparasitacion({ navigation, route }) {
                                             key={desparasitante.id}
                                             bottomDivider
                                             onPress={() => {
-                                                console.log("Detalles");
+                                                navigation.navigate("DetailsDesparasitacion", {desparasitante, idPaciente: id})
                                             }}
                                             rightContent={
                                                 <Button
