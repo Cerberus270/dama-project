@@ -103,66 +103,81 @@ const CreateAtenciones = ({ navigation, route }) => {
   const sendData = (data) => {
     if (text === "") {
       Alert.alert("Deber seleccionar una fecha valida");
-      return false;
     } else {
-      setUploading(true);
-      data.fecha = new Date();
-      data.proximaCita = proximaCita;
-      data.paciente = id;
-      addDoc(collection(db, "atenciones"), data)
-        .then(async (docRef) => {
-          const batch = writeBatch(db);
-          detallesReceta.forEach((detalle) => {
-            const detalleRef = doc(
-              collection(db, "atenciones", docRef.id, "receta")
-            );
-            batch.set(detalleRef, detalle);
-          });
-          batch
-            .commit()
-            .then((result) => {
-              setUploading(false);
-              Alert.alert("Exito", "La atencion fue registrada con exito", [
-                {
-                  text: "Aceptar",
-                  onPress: () => {
-                    navigation.goBack();
-                  },
-                },
-              ]);
-            })
-            .catch((error) => {
-              setUploading(false);
-              Alert.alert(
-                "Advertencia",
-                "La atencion fue registrada con exito, pero ocurrio un error al registrar la receta",
-                [
-                  {
-                    text: "Aceptar",
-                    onPress: () => {
-                      navigation.goBack();
-                    },
-                  },
-                ]
-              );
-            });
-        })
-        .catch((error) => {
-          setUploading(false);
-          Alert.alert(
-            "Error",
-            "Ocurrio un error inesperado al registrar la atencion",
-            [
-              {
-                text: "Aceptar",
-                onPress: () => {
-                  navigation.goBack();
-                },
-              },
-            ]
-          );
-        });
-      return true;
+      Alert.alert(
+        "Confirmacion",
+        "Por razones de seguridad, una atencion no puede ser modificada o eliminada, desea registrar esta atencion?",[
+          {
+            text: "Aceptar",
+            onPress: () => {
+              setUploading(true);
+              data.fecha = new Date();
+              data.proximaCita = proximaCita;
+              data.paciente = id;
+              addDoc(collection(db, "atenciones"), data)
+                .then(async (docRef) => {
+                  const batch = writeBatch(db);
+                  detallesReceta.forEach((detalle) => {
+                    const detalleRef = doc(
+                      collection(db, "atenciones", docRef.id, "receta")
+                    );
+                    batch.set(detalleRef, detalle);
+                  });
+                  batch
+                    .commit()
+                    .then((result) => {
+                      setUploading(false);
+                      Alert.alert(
+                        "Exito",
+                        "La atencion fue registrada con exito",
+                        [
+                          {
+                            text: "Aceptar",
+                            onPress: () => {
+                              navigation.goBack();
+                            },
+                          },
+                        ]
+                      );
+                    })
+                    .catch((error) => {
+                      setUploading(false);
+                      Alert.alert(
+                        "Advertencia",
+                        "La atencion fue registrada con exito, pero ocurrio un error al registrar la receta",
+                        [
+                          {
+                            text: "Aceptar",
+                            onPress: () => {
+                              navigation.goBack();
+                            },
+                          },
+                        ]
+                      );
+                    });
+                })
+                .catch((error) => {
+                  setUploading(false);
+                  Alert.alert(
+                    "Error",
+                    "Ocurrio un error inesperado al registrar la atencion",
+                    [
+                      {
+                        text: "Aceptar",
+                        onPress: () => {
+                          navigation.goBack();
+                        },
+                      },
+                    ]
+                  );
+                });
+            },
+          },
+          {
+            text: "Cancelar",
+          }
+        ]
+      );
     }
   };
 
@@ -441,12 +456,7 @@ const CreateAtenciones = ({ navigation, route }) => {
             innerRef={form}
             initialValues={valoresIniciales}
             onSubmit={(values, { resetForm }) => {
-              if (sendData(values)) {
-                resetForm({ values: valoresIniciales });
-                setText("");
-                setElements(0);
-                setDetallesReceta([]);
-              }
+              sendData(values)
             }}
             validationSchema={formularioValidacion}
           >
