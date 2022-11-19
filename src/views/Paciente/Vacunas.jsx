@@ -132,12 +132,47 @@ export default function Vacunas({ navigation, route }) {
                 ) : (
                   vacunas.map((vacuna) => {
                     return (
-                      <ListItem flex={1}
+                      <ListItem.Swipeable
                         key={vacuna.id}
                         bottomDivider
                         onPress={() => {
                           console.log("Detalles");
-                        }}>
+                        }}
+                        rightContent={
+                          <Button
+                              title="Actualizar"
+                              icon={{ name: 'update', color: 'white' }}
+                              buttonStyle={{ minHeight: '100%' }}
+                          />
+                      }
+                        leftContent={
+                          <Button
+                            disabled={uploading ? true : false}
+                            title="Eliminar"
+                            onPress={() => {
+                              Alert.alert(
+                                "Confirmacion",
+                                "Desea eliminar la vacuna seleccionada?",
+                                [
+                                  {
+                                    text: "Eliminar",
+                                    onPress: () => {
+                                      deleteVacuna(vacuna.id);
+                                    },
+                                  },
+                                  {
+                                    text: "Cancelar",
+                                  },
+                                ]
+                              );
+                            }}
+                            icon={{ name: "delete", color: "white" }}
+                            buttonStyle={{
+                              minHeight: "100%",
+                              backgroundColor: "red",
+                            }}
+                          />
+                        }>
                         <ListItem.Content>
                           <ListItem.Title>
                             <Text>Nombre Vacuna: {vacuna.nombre}</Text>
@@ -151,23 +186,8 @@ export default function Vacunas({ navigation, route }) {
                             </Text>
                           </View>
                         </ListItem.Content>
-                        <Menu>
-                          <MenuTrigger
-                            customStyles={{
-                              triggerWrapper: {
-                                top: -20,
-                              },
-                            }}
-                          >
-                            <Entypo name="dots-three-vertical" size={24} color="black" />
-                          </MenuTrigger>
-                          <MenuOptions>
-                            <MenuOption onSelect={() => console.log(`Save`)} text="Save" />
-                            <MenuOption onSelect={() => console.log(`Delete`)} text="Delete" />
-                          </MenuOptions>
-                        </Menu>
-
-                      </ListItem>
+                        <ListItem.Chevron />
+                      </ListItem.Swipeable>
                     );
                   })
                 )}

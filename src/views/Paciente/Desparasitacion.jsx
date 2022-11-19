@@ -71,7 +71,7 @@ export default function Desparasitacion({ navigation, route }) {
 
             return () => {
                 unsuscribe();
-                setLoading(true);
+                setLoading(false);
                 setVacunas([]);
             };
         }, [])
@@ -127,6 +127,13 @@ export default function Desparasitacion({ navigation, route }) {
                                             onPress={() => {
                                                 console.log("Detalles");
                                             }}
+                                            rightContent={
+                                                <Button
+                                                    title="Actualizar"
+                                                    icon={{ name: 'update', color: 'white' }}
+                                                    buttonStyle={{ minHeight: '100%' }}
+                                                />
+                                            }
                                             leftContent={
                                                 <Button
                                                     disabled={uploading ? true : false}
