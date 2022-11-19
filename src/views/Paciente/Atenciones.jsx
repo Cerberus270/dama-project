@@ -29,11 +29,13 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function Atenciones({ navigation, route }) {
 
+    const { id } = route.params;
+
+    console.log(id);
+
     const timestampToDate = (valorTimestamp) => {
         return new Date(valorTimestamp * 1000).toLocaleDateString("en-US")
     };
-
-    const { id } = route.params;
     const [atenciones, setAtenciones] = useState([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
@@ -89,7 +91,7 @@ export default function Atenciones({ navigation, route }) {
 
             return () => {
                 unsuscribe();
-                setLoading(false);
+                setLoading(true);
                 setAtenciones([]);
             };
         }, [])
