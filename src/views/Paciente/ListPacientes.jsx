@@ -17,8 +17,6 @@ import { Platform } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
 
-const scrollRef = React.createRef();
-
 export default function ListPacientes({ navigation }) {
   const [pacientes, setPacientes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -38,7 +36,7 @@ export default function ListPacientes({ navigation }) {
 
   const actualizarEmpleado = (paciente) => {
     // AQUI VA EL DE ACTUALIZAR
-    navigation.navigate('UpdatePaciente', paciente);
+    navigation.navigate("UpdatePaciente", paciente);
     //console.log("Hola", paciente);
   };
 
@@ -98,20 +96,20 @@ export default function ListPacientes({ navigation }) {
           color="rgba(117, 140, 255, 1)"
         />
       ) : (
-        <ScrollView ref={scrollRef}>
-          <Box m={2} flex={1} p={1}>
-            <Heading
-              size="lg"
-              color="coolGray.800"
-              _dark={{
-                color: "warmGray.50",
-              }}
-              fontWeight="bold"
-              alignSelf="center"
-              mb={2}
-            >
-              Mis pacientes
-            </Heading>
+        <Box m={2} flex={1} p={1}>
+          <Heading
+            size="lg"
+            color="coolGray.800"
+            _dark={{
+              color: "warmGray.50",
+            }}
+            fontWeight="bold"
+            alignSelf="center"
+            mb={2}
+          >
+            Mis pacientes
+          </Heading>
+          <ScrollView>
             <View style={styles.container}>
               {pacientes.map((paciente) => {
                 return (
@@ -157,8 +155,8 @@ export default function ListPacientes({ navigation }) {
                 );
               })}
             </View>
-          </Box>
-        </ScrollView>
+          </ScrollView>
+        </Box>
       )}
     </NativeBaseProvider>
   );
