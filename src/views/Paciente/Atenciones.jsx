@@ -141,46 +141,16 @@ export default function Atenciones({ navigation, route }) {
                             ) : (
                                 atenciones.map((atencion) => {
                                     return (
-                                        <ListItem.Swipeable
+                                        <ListItem
                                             key={atencion.id}
                                             bottomDivider
-                                            rightContent={
-                                                <Button
-                                                    title="Actualizar"
-                                                    icon={{ name: 'update', color: 'white' }}
-                                                    buttonStyle={{ minHeight: '100%' }}
-                                                />
-                                            }
-                                            leftContent={
-                                                <Button
-                                                    disabled={uploading ? true : false}
-                                                    title="Eliminar"
-                                                    onPress={() => {
-                                                        Alert.alert(
-                                                            "Confirmación",
-                                                            "¿Desea eliminar la desparasitación seleccionada?",
-                                                            [
-                                                                {
-                                                                    text: "Eliminar",
-                                                                    onPress: () => {
-                                                                        console.log(atencion.id);
-                                                                    },
-                                                                },
-                                                                {
-                                                                    text: "Cancelar",
-                                                                },
-                                                            ]
-                                                        );
-                                                    }}
-                                                    icon={{ name: "delete", color: "white" }}
-                                                    buttonStyle={{
-                                                        minHeight: "100%",
-                                                        backgroundColor: "red",
-                                                    }}
-                                                />
-                                            }
                                             onPress={() => {
-                                                console.log("Detalles");
+                                                navigation.navigate("DetailsAtencion", 
+                                                {
+                                                    idPaciente: id, 
+                                                    atencion: atencion
+                                                }
+                                                );
                                             }}>
                                             <Avatar source={atencionPic(atencion.tipo)} />
                                             <ListItem.Content>
@@ -194,7 +164,7 @@ export default function Atenciones({ navigation, route }) {
                                                 </View>
                                             </ListItem.Content>
                                             <ListItem.Chevron />
-                                        </ListItem.Swipeable>
+                                        </ListItem>
                                     );
                                 })
                             )}
