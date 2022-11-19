@@ -168,7 +168,7 @@ export default function DetailsPaciente({ navigation, route }) {
                   <ListItem.Title>
                     <Text>Peso</Text>
                   </ListItem.Title>
-                  <Text>{paciente.peso} Kg</Text>
+                  <Text>{paciente.peso} Lb</Text>
                 </ListItem.Content>
               </ListItem>
               <Divider />
