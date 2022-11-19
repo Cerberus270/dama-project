@@ -17,7 +17,6 @@ import {
   HStack,
   Select,
   CheckIcon,
-  Pressable,
   Modal,
 } from "native-base";
 import { useFocusEffect } from "@react-navigation/native";
@@ -28,12 +27,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 // Other Components
 // Firebase Auth and Firestore
 import { auth, db } from "../../../config/firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, writeBatch, doc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { ListItem, Button as ButtonElements } from "react-native-elements";
+import { ActivityIndicator } from "react-native";
 
 const CreateAtenciones = ({ navigation, route }) => {
   const { id } = route.params;
@@ -46,6 +46,7 @@ const CreateAtenciones = ({ navigation, route }) => {
   const [uploading, setUploading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [detallesReceta, setDetallesReceta] = useState([]);
+  const [elements, setElements] = useState(0);
 
   const form = useRef();
   const formDetalles = useRef();
@@ -76,7 +77,6 @@ const CreateAtenciones = ({ navigation, route }) => {
   };
 
   const valoresIniciales = {
-    nombre: "",
     tipo: "",
     descripcion: "",
   };
@@ -102,34 +102,65 @@ const CreateAtenciones = ({ navigation, route }) => {
 
   const sendData = (data) => {
     if (text === "") {
-      if (Platform.OS === "web") {
-        alert("Debe Ingresar una Fecha Valida");
-      } else {
-        Alert.alert("Deber Ingresar una Fecha Valida");
-      }
+      Alert.alert("Deber seleccionar una fecha valida");
       return false;
     } else {
       setUploading(true);
       data.fecha = new Date();
       data.proximaCita = proximaCita;
+      data.paciente = id;
       addDoc(collection(db, "atenciones"), data)
-        .then((ocRef) => {
-          setUploading(true);
-          Alert.alert("Exito", "Se agregó atención correctamente", [
-            {
-              text: "Aceptar",
-            },
-          ]);
-          if (Platform.OS === "web") {
-            alert("Se agregó atención correctamente");
-          }
+        .then(async (docRef) => {
+          const batch = writeBatch(db);
+          detallesReceta.forEach((detalle) => {
+            const detalleRef = doc(
+              collection(db, "atenciones", docRef.id, "receta")
+            );
+            batch.set(detalleRef, detalle);
+          });
+          batch
+            .commit()
+            .then((result) => {
+              setUploading(false);
+              Alert.alert("Exito", "La atencion fue registrada con exito", [
+                {
+                  text: "Aceptar",
+                  onPress: () => {
+                    navigation.goBack();
+                  },
+                },
+              ]);
+            })
+            .catch((error) => {
+              setUploading(false);
+              Alert.alert(
+                "Advertencia",
+                "La atencion fue registrada con exito, pero ocurrio un error al registrar la receta",
+                [
+                  {
+                    text: "Aceptar",
+                    onPress: () => {
+                      navigation.goBack();
+                    },
+                  },
+                ]
+              );
+            });
         })
         .catch((error) => {
           setUploading(false);
-          Alert.alert("Error", "Ocurrio un error al agregar atención");
-          if (Platform.OS === "web") {
-            alert("Ocurrio un error al agregar atención");
-          }
+          Alert.alert(
+            "Error",
+            "Ocurrio un error inesperado al registrar la atencion",
+            [
+              {
+                text: "Aceptar",
+                onPress: () => {
+                  navigation.goBack();
+                },
+              },
+            ]
+          );
         });
       return true;
     }
@@ -147,12 +178,23 @@ const CreateAtenciones = ({ navigation, route }) => {
         form.current?.resetForm();
         setShow(false);
         setText("");
+        setUploading(false);
+        setElements(0);
+        setDetallesReceta([]);
+        setModalVisible(false);
       };
     }, [])
   );
 
   return (
     <NativeBaseProvider>
+      {uploading ? (
+        <ActivityIndicator
+          style={styles.indicador}
+          size="large"
+          color="rgba(117, 140, 255, 1)"
+        />
+      ) : null}
       <Modal
         isOpen={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -175,7 +217,9 @@ const CreateAtenciones = ({ navigation, route }) => {
                   initialValues={valoresInicialesDetalles}
                   onSubmit={(values, { resetForm }) => {
                     detallesReceta.push(values);
-                    setDetallesReceta(detallesReceta);
+                    resetForm();
+                    setModalVisible(false);
+                    setElements(elements + 1);
                   }}
                   validationSchema={formularioDetalle}
                 >
@@ -379,7 +423,7 @@ const CreateAtenciones = ({ navigation, route }) => {
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-      <ScrollView>
+      <ScrollView style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
         <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
           <Heading
             mt={5}
@@ -400,6 +444,8 @@ const CreateAtenciones = ({ navigation, route }) => {
               if (sendData(values)) {
                 resetForm({ values: valoresIniciales });
                 setText("");
+                setElements(0);
+                setDetallesReceta([]);
               }
             }}
             validationSchema={formularioValidacion}
@@ -451,6 +497,7 @@ const CreateAtenciones = ({ navigation, route }) => {
                       Próxima Cita:
                     </FormControl.Label>
                     <Button
+                      disabled={uploading ? true : false}
                       size="sm"
                       variant="outline"
                       leftIcon={
@@ -526,11 +573,12 @@ const CreateAtenciones = ({ navigation, route }) => {
                       }}
                       name="create"
                       _disabled={styles.botonDisabled}
+                      disabled={uploading ? true : false}
                     >
-                      Agregar Detalle
+                      Agregar Detalle Receta
                     </Ionicons.Button>
                   </HStack>
-                  <ScrollView>
+                  <ScrollView nestedScrollEnabled={true}>
                     {detallesReceta.length === 0 ? (
                       <View style={{ alignSelf: "center", marginBottom: 5 }}>
                         <Text style={{ alignSelf: "center" }}>
@@ -542,9 +590,10 @@ const CreateAtenciones = ({ navigation, route }) => {
                         </Text>
                       </View>
                     ) : (
-                      detallesReceta.map((detalle) => {
+                      detallesReceta.map((detalle, index) => {
                         return (
                           <ListItem.Swipeable
+                            key={index}
                             bottomDivider
                             leftContent={
                               <ButtonElements
@@ -556,6 +605,10 @@ const CreateAtenciones = ({ navigation, route }) => {
                                     [
                                       {
                                         text: "Eliminar",
+                                        onPress: () => {
+                                          detallesReceta.splice(index, 1);
+                                          setElements(elements - 1);
+                                        },
                                       },
                                       {
                                         text: "Cancelar",
@@ -593,7 +646,7 @@ const CreateAtenciones = ({ navigation, route }) => {
                       })
                     )}
                   </ScrollView>
-                  <HStack mb={5} space={2} justifyContent="center">
+                  <HStack mb={20} space={2} justifyContent="center">
                     <Ionicons.Button
                       backgroundColor={"rgba(117, 140, 255, 1)"}
                       size={22}
@@ -604,6 +657,7 @@ const CreateAtenciones = ({ navigation, route }) => {
                       }}
                       name="save"
                       _disabled={styles.botonDisabled}
+                      disabled={uploading ? true : false}
                     >
                       Guardar
                     </Ionicons.Button>
@@ -613,6 +667,8 @@ const CreateAtenciones = ({ navigation, route }) => {
                       onPress={() => {
                         resetForm();
                         setText("");
+                        setElements(0);
+                        setDetallesReceta([]);
                       }}
                       style={{
                         alignSelf: "stretch",
@@ -620,6 +676,7 @@ const CreateAtenciones = ({ navigation, route }) => {
                       }}
                       name="refresh-outline"
                       _disabled={styles.botonDisabled}
+                      disabled={uploading ? true : false}
                     >
                       Reestablecer
                     </Ionicons.Button>
@@ -654,6 +711,12 @@ const styles = {
   ratingText: {
     paddingLeft: 10,
     color: "grey",
+  },
+  indicador: {
+    position: "absolute",
+    top: "50%",
+    left: "25%",
+    right: "25%",
   },
 };
 
