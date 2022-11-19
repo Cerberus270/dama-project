@@ -55,7 +55,7 @@ export default function App() {
         <Stack.Screen
           name="UpdatePaciente"
           component={UpdatePaciente}
-          options={{ title: "Actualizar paciente" }}
+          options={{ title: "" }}
         />
         <Stack.Screen
           name="CompleteProfile"

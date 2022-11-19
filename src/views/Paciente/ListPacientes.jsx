@@ -38,8 +38,8 @@ export default function ListPacientes({ navigation }) {
 
   const actualizarEmpleado = (paciente) => {
     // AQUI VA EL DE ACTUALIZAR
-    //navigation.navigate('DetailsPaciente');
-    console.log("Hola", paciente);
+    navigation.navigate('UpdatePaciente', paciente);
+    //console.log("Hola", paciente);
   };
 
   useFocusEffect(
@@ -98,21 +98,21 @@ export default function ListPacientes({ navigation }) {
           color="rgba(117, 140, 255, 1)"
         />
       ) : (
-        <Box m={2} flex={1} p={1}>
-          <Heading
-            size="lg"
-            color="coolGray.800"
-            _dark={{
-              color: "warmGray.50",
-            }}
-            fontWeight="bold"
-            alignSelf="center"
-            mb={2}
-          >
-            Mis pacientes
-          </Heading>
-          <View style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false} ref={scrollRef}>
+        <ScrollView ref={scrollRef}>
+          <Box m={2} flex={1} p={1}>
+            <Heading
+              size="lg"
+              color="coolGray.800"
+              _dark={{
+                color: "warmGray.50",
+              }}
+              fontWeight="bold"
+              alignSelf="center"
+              mb={2}
+            >
+              Mis pacientes
+            </Heading>
+            <View style={styles.container}>
               {pacientes.map((paciente) => {
                 return (
                   <ListItem.Swipeable
@@ -127,11 +127,10 @@ export default function ListPacientes({ navigation }) {
                         onPress={() => {
                           actualizarEmpleado(paciente);
                         }}
-                        icon={{ name: "info", color: "white" }}
+                        icon={{ name: "update", color: "white" }}
                         buttonStyle={{ minHeight: "100%" }}
                       />
                     }
-                    
                   >
                     <Avatar source={avatarPic(paciente.tipo)} />
                     <ListItem.Content>
@@ -157,9 +156,9 @@ export default function ListPacientes({ navigation }) {
                   </ListItem.Swipeable>
                 );
               })}
-            </ScrollView>
-          </View>
-        </Box>
+            </View>
+          </Box>
+        </ScrollView>
       )}
     </NativeBaseProvider>
   );
