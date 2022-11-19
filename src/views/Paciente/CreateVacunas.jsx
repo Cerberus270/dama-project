@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, ActivityIndicator } from "react-native";
 // Components Imports
 import {
   NativeBaseProvider,
@@ -29,20 +29,20 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 //import DateTimePickerModal from "react-native-modal-datetime-picker";
 // Firebase Auth and Firestore
 import { auth, db } from "../../../config/firebase";
-import {addDoc,collection} from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateVacunas = ({navigation, route}) => {
-  const {id} = route.params;
+const CreateVacunas = ({ navigation, route }) => {
+  const { id } = route.params;
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState("date");
   const [text, setText] = useState("");
   const [proxD, setProxD] = useState(new Date());
- 
+  const [uploading, setUploading] = useState(false);
 
   const form = useRef();
 
@@ -50,7 +50,7 @@ const CreateVacunas = ({navigation, route}) => {
     nombre: yup
       .string()
       .min(2, "Minimo 2 caracteres")
-      .required("Nombre mascota requerido."),
+      .required("Nombre vacuna requerido."),
     marca: yup
       .string()
       .min(2, "Minimo 2 caracteres")
@@ -99,25 +99,28 @@ const CreateVacunas = ({navigation, route}) => {
       }
       return false;
     } else {
+      setUploading(true);
       data.proximaDosis = proxD;
       data.fecha = new Date();
       addDoc(collection(db, "patients", id, "vacunas"), data)
         .then((ocRef) => {
-      
-          Alert.alert("Exito", "Se registro vacuna correctamente", [
+          setUploading(false);
+          Alert.alert("Exito", "Se registro la vacuna correctamente", [
             {
               text: "Aceptar",
+              onPress: () => {
+                navigation.goBack();
+              },
             },
-            navigation.navigate('Vacunas')
           ]);
           if (Platform.OS === "web") {
             Alert.alert("Se registro vacuna correctamente");
-            navigation.navigate('Vacunas');
+            navigation.goBack();
           }
         })
         .catch((error) => {
-         
-          Alert.alert("Error", "Ocurrio un error al registrar vacuna");
+          setUploading(false);
+          Alert.alert("Error", "Ocurrio un error al registrar la vacuna");
           if (Platform.OS === "web") {
             Alert.alert("Ocurrio un error al registrar vacuna");
           }
@@ -136,23 +139,31 @@ const CreateVacunas = ({navigation, route}) => {
     React.useCallback(() => {
       return () => {
         form.current?.resetForm();
-        setShow(false)
-        setText("")
+        setShow(false);
+        setText("");
+        setUploading(false);
       };
     }, [])
   );
 
   return (
     <NativeBaseProvider>
-      <ScrollView>
+      {uploading ? (
+        <ActivityIndicator
+          style={styles.indicador}
+          size="large"
+          color="rgba(117, 140, 255, 1)"
+        />
+      ) : null}
+      <ScrollView style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
         <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
-        <Heading
+          <Heading
             mt={5}
             size="lg"
             color="coolGray.800"
             _dark={{
               color: "warmGray.50",
-            }} 
+            }}
             fontWeight="bold"
             alignSelf="center"
           >
@@ -165,7 +176,6 @@ const CreateVacunas = ({navigation, route}) => {
               if (sendData(values)) {
                 resetForm({ values: valoresIniciales });
                 setText("");
-                
               }
             }}
             validationSchema={formularioValidacion}
@@ -218,7 +228,9 @@ const CreateVacunas = ({navigation, route}) => {
                       placeholder="Digite Marca de Vacuna"
                       InputLeftElement={
                         <Icon
-                          as={<MaterialCommunityIcons name="registered-trademark" />}
+                          as={
+                            <MaterialCommunityIcons name="registered-trademark" />
+                          }
                           size={5}
                           ml="2"
                           color="muted.400"
@@ -258,8 +270,14 @@ const CreateVacunas = ({navigation, route}) => {
                       />
                       <Select.Item label="Rabia" value="Rabia" />
                       <Select.Item label="Parvovirus" value="Parvovirus" />
-                      <Select.Item label="Leptospirosis" value="Leptospirosis"/>
-                      <Select.Item label="Hepatitis Infecciosa Canina" value="Hepatitis"/>
+                      <Select.Item
+                        label="Leptospirosis"
+                        value="Leptospirosis"
+                      />
+                      <Select.Item
+                        label="Hepatitis Infecciosa Canina"
+                        value="Hepatitis"
+                      />
                     </Select>
                     {touched.tipo && errors.tipo && (
                       <FormControl.ErrorMessage
@@ -358,13 +376,13 @@ const CreateVacunas = ({navigation, route}) => {
                       backgroundColor={"rgba(117, 140, 255, 1)"}
                       size={22}
                       onPress={handleSubmit}
-                      
                       style={{
                         alignSelf: "stretch",
                         justifyContent: "center",
                       }}
                       name="save"
                       _disabled={styles.botonDisabled}
+                      disabled={uploading ? true : false}
                     >
                       Guardar
                     </Ionicons.Button>
@@ -411,6 +429,12 @@ const styles = {
     color: "indigo",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  indicador: {
+    position: "absolute",
+    top: "50%",
+    left: "25%",
+    right: "25%",
   },
 };
 

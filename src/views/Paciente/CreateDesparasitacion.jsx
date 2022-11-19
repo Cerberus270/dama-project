@@ -36,371 +36,368 @@ import { ActivityIndicator } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-const CreateDesparasitacion = ({navigation, route}) => {
-    const {id} = route.params;
-    const [date, setDate] = useState(new Date());
-    const [show, setShow] = useState(false);
-    const [mode, setMode] = useState("date");
-    const [text, setText] = useState("");
-    const [proxD, setProxD] = useState(new Date());
-    const [loading, setLoading] = useState(false);
-  
-    const form = useRef();
-  
-    const formularioValidacion = yup.object().shape({
-      nombre: yup
-        .string()
-        .min(2, "Minimo 2 caracteres")
-        .required("Nombre mascota requerido."),
-      marca: yup
-        .string()
-        .min(2, "Minimo 2 caracteres")
-        .required("Marca requerida"),
-      dosis: yup.string().required("Dosis requerida"),
-      peso: yup
-        .number()
-        .min(0, "Ingrese un peso mayor a 0 lb")
-        .required("Peso del paciente requerido"),
-    });
-  
-    const valoresIniciales = {
-      nombre: "",
-      marca: "",
-      dosis: "",
-      peso: "",
-    };
-  
-    const onChangeDate = (event, selectedDate) => {
-      const currentDate = selectedDate || date;
-      setShow(Platform.OS === "ios");
-      setDate(currentDate);
-  
-      if (event.type == "set") {
-        let tempDate = new Date(currentDate);
-        let fDate =
-          tempDate.getDate() +
-          "/" +
-          (tempDate.getMonth() + 1) +
-          "/" +
-          tempDate.getFullYear();
-        setProxD(tempDate);
-        setText(fDate);
-        console.log(fDate);
-      }
-    };
-  
-    const sendData = (data) => {
-      setLoading(true);
-      if (text === "") {
-        if (Platform.OS === "web") {
-          Alert.alert("Debe Ingresar una Fecha Valida");
-          setLoading(false);
-        } else {
-          setLoading(false);
-          Alert.alert("Deber Ingresar una Fecha Valida");
-        }
-        return false;
-      } else {
-        data.proximaDosis = proxD;
-        data.fecha = new Date();
-        addDoc(collection(db, "patients", id, "desparasitacion"), data)
-          .then((ocRef) => {
-            Alert.alert("Exito", "Se registró desparasitacion correctamente", [
-              setLoading(false),
-              {
-                text: "Aceptar",
-              },
-              navigation.navigate('Desparasitacion')
-              
-            ]);
-            if (Platform.OS === "web") {
-              Alert.alert("Se registró desparasitacion correctamente");
-              setLoading(false);
-              navigation.navigate('Desparasitacion');
-            }
-          })
-          .catch((error) => {
-            Alert.alert("Error", "Ocurrio un error al registrar desparasitacion");
-            setLoading(false);
-            if (Platform.OS === "web") {
-              Alert.alert("Ocurrio un error al registrar desparasitacion");
-              setLoading(false);
-            }
-          });
-        return true;
-      }
-    };
-  
-    const showMode = (currentMode) => {
-      setShow(true);
-      setMode(currentMode);
-      form.reset;
-    };
-  
-    useFocusEffect(
-      React.useCallback(() => {
-        setLoading(true);
-        return () => {
-          form.current?.resetForm();
-          setShow(false)
-          setText("")
-          setLoading(false)
-        };
-      }, [])
-    );
-  
+const CreateDesparasitacion = ({ navigation, route }) => {
+  const { id } = route.params;
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+  const [mode, setMode] = useState("date");
+  const [text, setText] = useState("");
+  const [proxD, setProxD] = useState(new Date());
+  const [uploading, setUploading] = useState(false);
 
-    return (
-      <NativeBaseProvider>
-        {loading ? (
+  const form = useRef();
+
+  const formularioValidacion = yup.object().shape({
+    nombre: yup
+      .string()
+      .min(2, "Minimo 2 caracteres")
+      .required("Nombre desparasitante requerido."),
+    marca: yup
+      .string()
+      .min(2, "Minimo 2 caracteres")
+      .required("Marca requerida"),
+    dosis: yup.string().required("Dosis requerida"),
+    peso: yup
+      .number()
+      .min(0, "Ingrese un peso mayor a 0 kg")
+      .required("Peso del paciente requerido"),
+  });
+
+  const valoresIniciales = {
+    nombre: "",
+    marca: "",
+    dosis: "",
+    peso: "",
+  };
+
+  const onChangeDate = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === "ios");
+    setDate(currentDate);
+
+    if (event.type == "set") {
+      let tempDate = new Date(currentDate);
+      let fDate =
+        tempDate.getDate() +
+        "/" +
+        (tempDate.getMonth() + 1) +
+        "/" +
+        tempDate.getFullYear();
+      setProxD(tempDate);
+      setText(fDate);
+      console.log(fDate);
+    }
+  };
+
+  const sendData = (data) => {
+    if (text === "") {
+      if (Platform.OS === "web") {
+        Alert.alert("Debe Ingresar una Fecha Valida");
+      } else {
+        Alert.alert("Deber Ingresar una Fecha Valida");
+      }
+      return false;
+    } else {
+      setUploading(true);
+      data.proximaDosis = proxD;
+      data.fecha = new Date();
+      addDoc(collection(db, "patients", id, "desparasitacion"), data)
+        .then((ocRef) => {
+          setUploading(false);
+          Alert.alert("Exito", "Se registró la desparasitacion correctamente", [
+            {
+              text: "Aceptar",
+              onPress: () => {
+                navigation.goBack();
+              },
+            },
+          ]);
+          if (Platform.OS === "web") {
+            Alert.alert("Se registró la desparasitacion correctamente");
+            navigation.goBack();
+          }
+        })
+        .catch((error) => {
+          setUploading(false);
+          Alert.alert(
+            "Error",
+            "Ocurrio un error al registrar la desparasitacion"
+          );
+          if (Platform.OS === "web") {
+            Alert.alert("Ocurrio un error al registrar la desparasitacion");
+          }
+        });
+      return true;
+    }
+  };
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+    form.reset;
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        form.current?.resetForm();
+        setShow(false);
+        setText("");
+        setUploading(false);
+      };
+    }, [])
+  );
+
+  return (
+    <NativeBaseProvider>
+      {uploading ? (
         <ActivityIndicator
           style={styles.indicador}
           size="large"
           color="rgba(117, 140, 255, 1)"
         />
       ) : null}
-      {text ? ( 
-        <ScrollView style={loading ? { opacity: 0.5 } : { opacity: 1 }}>
-          <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
+      <ScrollView style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
+        <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
           <Heading
-              mt={5}
-              size="lg"
-              color="coolGray.800"
-              _dark={{
-                color: "warmGray.50",
-              }}
-              fontWeight="bold"
-              alignSelf="center"
-            >
-              Registro de Desparasitación
-            </Heading>
-            <Formik
-              innerRef={form}
-              initialValues={valoresIniciales}
-              onSubmit={(values, { resetForm }) => {
-                if (sendData(values)) {
-                  resetForm({ values: valoresIniciales });
-                  setText("");
-                }
-              }}
-              validationSchema={formularioValidacion}
-            >
-              {({
-                values,
-                handleChange,
-                errors,
-                setFieldTouched,
-                touched,
-                isValid,
-                handleSubmit,
-                resetForm,
-              }) => (
-                <View style={{ marginHorizontal: 5 }}>
-                  <VStack space={4} mt="5">
-                    <FormControl isInvalid={"nombre" in errors}>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Nombre:
-                      </FormControl.Label>
-                      <Input
-                        _focus={styles.inputSeleccionado}
-                        placeholder="Digite nombre de Desparasitante"
-                        InputLeftElement={
-                          <Icon
-                            as={<MaterialCommunityIcons name="pill" />}
-                            size={5}
-                            ml="2"
-                            color="muted.400"
-                          />
-                        }
-                        value={values.nombre}
-                        onChangeText={handleChange("nombre")}
-                        onBlur={() => setFieldTouched("nombre")}
-                      />
-                      {touched.nombre && errors.nombre && (
-                        <FormControl.ErrorMessage
-                          leftIcon={<WarningOutlineIcon size="xs" />}
-                        >
-                          {errors.nombre}
-                        </FormControl.ErrorMessage>
-                      )}
-                    </FormControl>
-                    <FormControl isInvalid={"marca" in errors}>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Marca:
-                      </FormControl.Label>
-                      <Input
-                        _focus={styles.inputSeleccionado}
-                        placeholder="Digite marca de Desparasitante"
-                        InputLeftElement={
-                          <Icon
-                            as={<MaterialCommunityIcons name="registered-trademark" />}
-                            size={5}
-                            ml="2"
-                            color="muted.400"
-                          />
-                        }
-                        value={values.marca}
-                        onChangeText={handleChange("marca")}
-                        onBlur={() => setFieldTouched("marca")}
-                      />
-                      {touched.marca && errors.marca && (
-                        <FormControl.ErrorMessage
-                          leftIcon={<WarningOutlineIcon size="xs" />}
-                        >
-                          {errors.marca}
-                        </FormControl.ErrorMessage>
-                      )}
-                    </FormControl>
-                    <FormControl isInvalid={"dosis" in errors}>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Dosis:
-                      </FormControl.Label>
-                      <Input
-                        _focus={styles.inputSeleccionado}
-                        placeholder="Digite Dosis de Vacuna"
-                        InputLeftElement={
-                          <Icon
-                            as={<MaterialCommunityIcons name="eyedropper" />}
-                            size={5}
-                            ml="2"
-                            color="muted.400"
-                          />
-                        }
-                        value={values.dosis}
-                        onChangeText={handleChange("dosis")}
-                        onBlur={() => setFieldTouched("dosis")}
-                      />
-                      {touched.dosis && errors.dosis && (
-                        <FormControl.ErrorMessage
-                          leftIcon={<WarningOutlineIcon size="xs" />}
-                        >
-                          {errors.dosis}
-                        </FormControl.ErrorMessage>
-                      )}
-                    </FormControl>
-                    <FormControl isInvalid={"peso" in errors}>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Peso Paciente:
-                      </FormControl.Label>
-                      <Input
-                        _focus={styles.inputSeleccionado}
-                        placeholder="Digite el peso del Paciente"
-                        InputLeftElement={
-                          <Icon
-                            as={<MaterialCommunityIcons name="weight-pound" />}
-                            size={5}
-                            ml="2"
-                            color="muted.400"
-                          />
-                        }
-                        value={values.peso}
-                        keyboardType={"decimal-pad"}
-                        onChangeText={handleChange("peso")}
-                        onBlur={() => setFieldTouched("peso")}
-                      />
-                      {touched.peso && errors.peso && (
-                        <FormControl.ErrorMessage
-                          leftIcon={<WarningOutlineIcon size="xs" />}
-                        >
-                          {errors.peso}
-                        </FormControl.ErrorMessage>
-                      )}
-                    </FormControl>
-                    <FormControl onTouchStart={() => showMode("date")}>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Próxima dosis:
-                      </FormControl.Label>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        leftIcon={
-                          <Icon
-                            as={MaterialCommunityIcons}
-                            name="calendar"
-                            size="sm"
-                          />
-                        }
-                        onLongPress={() => showMode("date")}
+            mt={5}
+            size="lg"
+            color="coolGray.800"
+            _dark={{
+              color: "warmGray.50",
+            }}
+            fontWeight="bold"
+            alignSelf="center"
+          >
+            Registro de Desparasitación
+          </Heading>
+          <Formik
+            innerRef={form}
+            initialValues={valoresIniciales}
+            onSubmit={(values, { resetForm }) => {
+              if (sendData(values)) {
+                resetForm({ values: valoresIniciales });
+                setText("");
+              }
+            }}
+            validationSchema={formularioValidacion}
+          >
+            {({
+              values,
+              handleChange,
+              errors,
+              setFieldTouched,
+              touched,
+              isValid,
+              handleSubmit,
+              resetForm,
+            }) => (
+              <View style={{ marginHorizontal: 5 }}>
+                <VStack space={4} mt="5">
+                  <FormControl isInvalid={"nombre" in errors}>
+                    <FormControl.Label _text={styles.labelInput}>
+                      Nombre:
+                    </FormControl.Label>
+                    <Input
+                      _focus={styles.inputSeleccionado}
+                      placeholder="Digite nombre de Desparasitante"
+                      InputLeftElement={
+                        <Icon
+                          as={<MaterialCommunityIcons name="pill" />}
+                          size={5}
+                          ml="2"
+                          color="muted.400"
+                        />
+                      }
+                      value={values.nombre}
+                      onChangeText={handleChange("nombre")}
+                      onBlur={() => setFieldTouched("nombre")}
+                    />
+                    {touched.nombre && errors.nombre && (
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}
                       >
-                        {text.length > 1 ? text : "Seleccione una Fecha"}
-                      </Button>
-                    </FormControl>
-                    {show && (
-                      <DateTimePicker
-                        testID="dateTimePicker"
-                        value={date}
-                        mode={mode}
-                        is24Hour={true}
-                        display="default"
-                        onChange={onChangeDate}
-                      />
+                        {errors.nombre}
+                      </FormControl.ErrorMessage>
                     )}
-                    <HStack mb={5} space={2} justifyContent="center">
-                      <Ionicons.Button
-                      disabled={loading ? true : false}
-                        backgroundColor={"rgba(117, 140, 255, 1)"}
-                        size={22}
-                        onPress={handleSubmit}
-                        style={{
-                          alignSelf: "stretch",
-                          justifyContent: "center",
-                        }}
-                        name="save"
-                        _disabled={styles.botonDisabled}
+                  </FormControl>
+                  <FormControl isInvalid={"marca" in errors}>
+                    <FormControl.Label _text={styles.labelInput}>
+                      Marca:
+                    </FormControl.Label>
+                    <Input
+                      _focus={styles.inputSeleccionado}
+                      placeholder="Digite marca de Desparasitante"
+                      InputLeftElement={
+                        <Icon
+                          as={
+                            <MaterialCommunityIcons name="registered-trademark" />
+                          }
+                          size={5}
+                          ml="2"
+                          color="muted.400"
+                        />
+                      }
+                      value={values.marca}
+                      onChangeText={handleChange("marca")}
+                      onBlur={() => setFieldTouched("marca")}
+                    />
+                    {touched.marca && errors.marca && (
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}
                       >
-                        Guardar
-                      </Ionicons.Button>
-                      <Ionicons.Button
-                      disabled={loading ? true : false}
-                        backgroundColor={"rgba(117, 140, 255, 1)"}
-                        size={22}
-                        onPress={() => {
-                          form.current?.resetForm();
-                          setText("");
-                        }}
-                        style={{
-                          alignSelf: "stretch",
-                          justifyContent: "center",
-                        }}
-                        name="refresh-outline"
-                        _disabled={styles.botonDisabled}
+                        {errors.marca}
+                      </FormControl.ErrorMessage>
+                    )}
+                  </FormControl>
+                  <FormControl isInvalid={"dosis" in errors}>
+                    <FormControl.Label _text={styles.labelInput}>
+                      Dosis:
+                    </FormControl.Label>
+                    <Input
+                      _focus={styles.inputSeleccionado}
+                      placeholder="Digite Dosis de Vacuna"
+                      InputLeftElement={
+                        <Icon
+                          as={<MaterialCommunityIcons name="eyedropper" />}
+                          size={5}
+                          ml="2"
+                          color="muted.400"
+                        />
+                      }
+                      value={values.dosis}
+                      onChangeText={handleChange("dosis")}
+                      onBlur={() => setFieldTouched("dosis")}
+                    />
+                    {touched.dosis && errors.dosis && (
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}
                       >
-                        Reestablecer
-                      </Ionicons.Button>
-                    </HStack>
-                  </VStack>
-                </View>
-              )}
-            </Formik>
-          </Box>
-        </ScrollView>
-        ) : null}
-      </NativeBaseProvider>
-    );
-  };
-  
-  const styles = {
-    inputSeleccionado: {
-      bg: "coolGray.200:alpha.100",
-    },
-    botonDisabled: {
-      backgroundColor: "#00aeef",
-    },
-    labelInput: {
-      color: "black",
-      fontSize: "sm",
-      fontWeight: "bold",
-    },
-    tituloForm: {
-      color: "indigo",
-      fontSize: 18,
-      fontWeight: "bold",
-    },
-    indicador: {
-      position: "absolute",
-      top: "50%",
-      left: "25%",
-      right: "25%",
-    },
-  };
-export default CreateDesparasitacion
+                        {errors.dosis}
+                      </FormControl.ErrorMessage>
+                    )}
+                  </FormControl>
+                  <FormControl isInvalid={"peso" in errors}>
+                    <FormControl.Label _text={styles.labelInput}>
+                      Peso Paciente:
+                    </FormControl.Label>
+                    <Input
+                      _focus={styles.inputSeleccionado}
+                      placeholder="Digite el peso del Paciente"
+                      InputLeftElement={
+                        <Icon
+                          as={<MaterialCommunityIcons name="weight-pound" />}
+                          size={5}
+                          ml="2"
+                          color="muted.400"
+                        />
+                      }
+                      value={values.peso}
+                      keyboardType={"decimal-pad"}
+                      onChangeText={handleChange("peso")}
+                      onBlur={() => setFieldTouched("peso")}
+                    />
+                    {touched.peso && errors.peso && (
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}
+                      >
+                        {errors.peso}
+                      </FormControl.ErrorMessage>
+                    )}
+                  </FormControl>
+                  <FormControl onTouchStart={() => showMode("date")}>
+                    <FormControl.Label _text={styles.labelInput}>
+                      Próxima dosis:
+                    </FormControl.Label>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      leftIcon={
+                        <Icon
+                          as={MaterialCommunityIcons}
+                          name="calendar"
+                          size="sm"
+                        />
+                      }
+                      onLongPress={() => showMode("date")}
+                    >
+                      {text.length > 1 ? text : "Seleccione una Fecha"}
+                    </Button>
+                  </FormControl>
+                  {show && (
+                    <DateTimePicker
+                      testID="dateTimePicker"
+                      value={date}
+                      mode={mode}
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChangeDate}
+                    />
+                  )}
+                  <HStack mb={5} space={2} justifyContent="center">
+                    <Ionicons.Button
+                      disabled={uploading ? true : false}
+                      backgroundColor={"rgba(117, 140, 255, 1)"}
+                      size={22}
+                      onPress={handleSubmit}
+                      style={{
+                        alignSelf: "stretch",
+                        justifyContent: "center",
+                      }}
+                      name="save"
+                      _disabled={styles.botonDisabled}
+                    >
+                      Guardar
+                    </Ionicons.Button>
+                    <Ionicons.Button
+                      backgroundColor={"rgba(117, 140, 255, 1)"}
+                      size={22}
+                      onPress={() => {
+                        form.current?.resetForm();
+                        setText("");
+                      }}
+                      style={{
+                        alignSelf: "stretch",
+                        justifyContent: "center",
+                      }}
+                      name="refresh-outline"
+                      _disabled={styles.botonDisabled}
+                    >
+                      Reestablecer
+                    </Ionicons.Button>
+                  </HStack>
+                </VStack>
+              </View>
+            )}
+          </Formik>
+        </Box>
+      </ScrollView>
+    </NativeBaseProvider>
+  );
+};
+
+const styles = {
+  inputSeleccionado: {
+    bg: "coolGray.200:alpha.100",
+  },
+  botonDisabled: {
+    backgroundColor: "#00aeef",
+  },
+  labelInput: {
+    color: "black",
+    fontSize: "sm",
+    fontWeight: "bold",
+  },
+  tituloForm: {
+    color: "indigo",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  indicador: {
+    position: "absolute",
+    top: "50%",
+    left: "25%",
+    right: "25%",
+  },
+};
+export default CreateDesparasitacion;
