@@ -40,6 +40,12 @@ export default function Vacunas({ navigation, route }) {
   const [uploading, setUploading] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const actualizarVacuna = (id) => {
+    // AQUI VA EL DE ACTUALIZAR
+    navigation.navigate('UpdateVacuna', id);
+    
+  };
+
   const deleteVacuna = (idVacuna) => {
     setUploading(true);
     deleteDoc(doc(db, "patients", id, "vacunas", idVacuna))
@@ -65,6 +71,7 @@ export default function Vacunas({ navigation, route }) {
               doc.data();
             listaVacuna.push({
               id: doc.id,
+              dosis,
               fecha,
               marca,
               nombre,
@@ -139,9 +146,9 @@ export default function Vacunas({ navigation, route }) {
                         }}
                         rightContent={
                           <Button
-                            title="Actualizar"
-                            icon={{ name: 'update', color: 'white' }}
-                            buttonStyle={{ minHeight: '100%' }}
+                              title="Actualizar"
+                              icon={{ name: 'update', color: 'white' }}
+                              buttonStyle={{ minHeight: '100%' }}
                           />
                         }
                         leftContent={

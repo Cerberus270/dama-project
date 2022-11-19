@@ -27,7 +27,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function Desparasitacion({ navigation, route }) {
     const { id } = route.params;
-    const [desparasitacion, setVacunas] = useState([]);
+    const [desparasitacion, setDesparasitacion] = useState([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
 
@@ -35,7 +35,13 @@ export default function Desparasitacion({ navigation, route }) {
         return new Date(valorTimestamp * 1000).toLocaleDateString("en-US")
     };
 
-    const deleteVacuna = (idDesparasitante) => {
+    const actualizarDesparasitacion = (desparasitacion) => {
+        // AQUI VA EL DE ACTUALIZAR
+        navigation.navigate('UpdateDesparasitacion', desparasitacion);
+        
+      };
+
+    const deleteDesparasitante = (idDesparasitante) => {
         setUploading(true);
         deleteDoc(doc(db, "patients", id, "desparasitacion", idDesparasitante))
             .then((result) => {
@@ -64,14 +70,14 @@ export default function Desparasitacion({ navigation, route }) {
                         });
                     });
                     setLoading(false);
-                    setVacunas(listaDesparasitaciones);
+                    setDesparasitacion(listaDesparasitaciones);
                 }
             );
 
             return () => {
                 unsuscribe();
-                setLoading(false);
-                setVacunas([]);
+                setLoading(true);
+                setDesparasitacion([])
             };
         }, [])
     );
@@ -128,10 +134,13 @@ export default function Desparasitacion({ navigation, route }) {
                                             }}
                                             rightContent={
                                                 <Button
-                                                    title="Actualizar"
-                                                    icon={{ name: 'update', color: 'white' }}
-                                                    buttonStyle={{ minHeight: '100%' }}
-                                                />
+                                                title="Actualizar"
+                                                onPress={() => {
+                                                actualizarDesparasitacion(desparasitacion);
+                                                }}
+                                                icon={{ name: "update", color: "white" }}
+                                                buttonStyle={{ minHeight: "100%" }}
+                                            />
                                             }
                                             leftContent={
                                                 <Button
@@ -145,7 +154,7 @@ export default function Desparasitacion({ navigation, route }) {
                                                                 {
                                                                     text: "Eliminar",
                                                                     onPress: () => {
-                                                                        deleteVacuna(desparasitante.id);
+                                                                        deleteDesparasitante(desparasitante.id);
                                                                     },
                                                                 },
                                                                 {

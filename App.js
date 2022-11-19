@@ -9,6 +9,7 @@ import Register from "./src/views/Auth/Register";
 import ResetPassword from "./src/views/Auth/ResetPassword";
 import CompleteProfile from "./src/views/Profile/CompleteProfile";
 import UpdatePaciente from "./src/views/Paciente/UpdatePaciente";
+import UpdateDesparasitacion from "./src/views/Paciente/UpdateDesparasitacion"; 
 
 import { View } from "react-native";
 
@@ -28,6 +29,7 @@ import CreateReceta from "./src/views/Paciente/CreateReceta";
 import DetailsVacuna from "./src/views/Paciente/DetailsVacuna";
 import DetailsDesparasitacion from "./src/views/Paciente/DetailsDesparasitacion";
 
+import UpdateVacuna from "./src/views/Paciente/UpdateVacuna";
 
 const Stack = createNativeStackNavigator();
 const navigationRef = React.createRef();
@@ -59,6 +61,16 @@ export default function App() {
           name="UpdatePaciente"
           component={UpdatePaciente}
           options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="UpdateVacuna"
+          component={UpdateVacuna}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="UpdateDesparasitacion"
+          component={UpdateDesparasitacion}
+          options={{ title: "Modificar Desparasitacion" }}
         />
         <Stack.Screen
           name="CompleteProfile"
