@@ -61,12 +61,12 @@ export default function App() {
           <Stack.Screen
             name="UpdatePaciente"
             component={UpdatePaciente}
-            options={{ title: "" }}
+            options={{ title: "Actualizar Paciente" }}
           />
           <Stack.Screen
             name="UpdateVacuna"
             component={UpdateVacuna}
-            options={{ title: "" }}
+            options={{ title: "Actualizar Vacuna" }}
           />
           <Stack.Screen
             name="UpdateDesparasitacion"
