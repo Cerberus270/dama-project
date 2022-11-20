@@ -72,7 +72,7 @@ export default function App() {
           <Stack.Screen
             name="UpdateDesparasitacion"
             component={UpdateDesparasitacion}
-            options={{ title: "Modificar Desparasitacion" }}
+            options={{ title: "Actualizar Desparasitación" }}
           />
           <Stack.Screen
             name="CompleteProfile"
@@ -153,12 +153,12 @@ export default function App() {
           <Stack.Screen
             name="DetailsDesparasitacion"
             component={DetailsDesparasitacion}
-            options={{ headerShown: true, title: "Detalles Desparasitacion" }}
+            options={{ headerShown: true, title: "Detalles Desparasitación" }}
           />
           <Stack.Screen
             name="DetailsAtencion"
             component={DetailsAtencion}
-            options={{ headerShown: true, title: "Detalles Atencion" }}
+            options={{ headerShown: true, title: "Detalles Atención" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

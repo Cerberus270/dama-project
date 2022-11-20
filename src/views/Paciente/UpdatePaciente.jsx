@@ -68,12 +68,14 @@ export default function UpdatePaciente({ navigation, route }) {
               text: "Aceptar",
               onPress: () => {
                 setLoading(false);
+                navigation.goBack();
               }
             },
           ]);
           if (Platform.OS === "web") {
             alert("Se actualizo el paciente correctamente");
             setLoading(false);
+            navigation.goBack();
           }
         })
         .catch((error) => {
@@ -271,6 +273,7 @@ export default function UpdatePaciente({ navigation, route }) {
                         Nombre Paciente:
                       </FormControl.Label>
                       <Input
+                      fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite el nombre del paciente"
                         InputLeftElement={
@@ -299,6 +302,7 @@ export default function UpdatePaciente({ navigation, route }) {
                         Tipo Paciente:
                       </FormControl.Label>
                       <Select
+                      fontSize={15}
                         minWidth="200"
                         accessibilityLabel="Tipo de Paciente"
                         placeholder="Tipo de Paciente"
@@ -331,6 +335,7 @@ export default function UpdatePaciente({ navigation, route }) {
                         Raza Paciente:
                       </FormControl.Label>
                       <Input
+                      fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite la raza del paciente"
                         InputLeftElement={
@@ -385,6 +390,7 @@ export default function UpdatePaciente({ navigation, route }) {
                         Peso Paciente:
                       </FormControl.Label>
                       <Input
+                      fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite el peso del Paciente"
                         InputLeftElement={
@@ -413,6 +419,7 @@ export default function UpdatePaciente({ navigation, route }) {
                         Fecha de Nacimiento:
                       </FormControl.Label>
                       <Button
+                      fontSize={15}
                         size="sm"
                         variant="outline"
                         leftIcon={
@@ -444,6 +451,7 @@ export default function UpdatePaciente({ navigation, route }) {
                         Nombre Propietario:
                       </FormControl.Label>
                       <Input
+                      fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite el nombre del propietario"
                         InputLeftElement={
@@ -476,6 +484,7 @@ export default function UpdatePaciente({ navigation, route }) {
                         Telefono Propietario:
                       </FormControl.Label>
                       <Input
+                      fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite Telefono del Propietario"
                         InputLeftElement={
@@ -507,6 +516,7 @@ export default function UpdatePaciente({ navigation, route }) {
                         Direccion Propietario:
                       </FormControl.Label>
                       <Input
+                      fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite la direccion del Propietario"
                         InputLeftElement={

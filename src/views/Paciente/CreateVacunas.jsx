@@ -200,6 +200,7 @@ const CreateVacunas = ({ navigation, route }) => {
                       Nombre:
                     </FormControl.Label>
                     <Input
+                      fontSize={15}
                       _focus={styles.inputSeleccionado}
                       placeholder="Digite Nombre de Vacuna"
                       InputLeftElement={
@@ -227,6 +228,7 @@ const CreateVacunas = ({ navigation, route }) => {
                       Marca:
                     </FormControl.Label>
                     <Input
+                      fontSize={15}
                       _focus={styles.inputSeleccionado}
                       placeholder="Digite Marca de Vacuna"
                       InputLeftElement={
@@ -257,6 +259,7 @@ const CreateVacunas = ({ navigation, route }) => {
                     </FormControl.Label>
                     <Select
                       minWidth="200"
+                      fontSize={15}
                       accessibilityLabel="Seleccione Tipo de Vacuna"
                       placeholder="Seleccione tipo de vacuna"
                       onValueChange={handleChange("tipo")}
@@ -295,6 +298,7 @@ const CreateVacunas = ({ navigation, route }) => {
                       Dosis:
                     </FormControl.Label>
                     <Input
+                      fontSize={15}
                       _focus={styles.inputSeleccionado}
                       placeholder="Digite Dosis de Vacuna"
                       keyboardType="decimal-pad"
@@ -323,6 +327,7 @@ const CreateVacunas = ({ navigation, route }) => {
                       Peso Paciente:
                     </FormControl.Label>
                     <Input
+                      fontSize={15}
                       _focus={styles.inputSeleccionado}
                       placeholder="Digite el peso del Paciente"
                       InputLeftElement={
@@ -346,11 +351,12 @@ const CreateVacunas = ({ navigation, route }) => {
                       </FormControl.ErrorMessage>
                     )}
                   </FormControl>
-                  <FormControl onTouchStart={() => showMode("date")}>
+                  <FormControl>
                     <FormControl.Label _text={styles.labelInput}>
                       Próxima dosis:
                     </FormControl.Label>
                     <Button
+                    fontSize={15}
                       size="sm"
                       variant="outline"
                       leftIcon={
@@ -360,7 +366,7 @@ const CreateVacunas = ({ navigation, route }) => {
                           size="sm"
                         />
                       }
-                      onLongPress={() => showMode("date")}
+                      onPress={() => showMode("date")}
                     >
                       {text.length > 1 ? text : "Seleccione una Fecha"}
                     </Button>
@@ -371,7 +377,7 @@ const CreateVacunas = ({ navigation, route }) => {
                       value={date}
                       mode={mode}
                       is24Hour={true}
-                      minimumDate={fechaProxMin}
+                      maximumDate={new Date()}
                       display="default"
                       onChange={onChangeDate}
                     />

@@ -202,6 +202,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
                       Nombre:
                     </FormControl.Label>
                     <Input
+                    fontSize={15}
                       _focus={styles.inputSeleccionado}
                       placeholder="Digite nombre de Desparasitante"
                       InputLeftElement={
@@ -229,6 +230,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
                       Marca:
                     </FormControl.Label>
                     <Input
+                    fontSize={15}
                       _focus={styles.inputSeleccionado}
                       placeholder="Digite marca de Desparasitante"
                       InputLeftElement={
@@ -258,6 +260,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
                       Dosis:
                     </FormControl.Label>
                     <Input
+                    fontSize={15}
                       _focus={styles.inputSeleccionado}
                       placeholder="Digite Dosis de Vacuna"
                       InputLeftElement={
@@ -285,6 +288,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
                       Peso Paciente:
                     </FormControl.Label>
                     <Input
+                    fontSize={15}
                       _focus={styles.inputSeleccionado}
                       placeholder="Digite el peso del Paciente"
                       InputLeftElement={
@@ -313,6 +317,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
                       Próxima dosis:
                     </FormControl.Label>
                     <Button
+                    fontSize={15}
                       size="sm"
                       variant="outline"
                       leftIcon={
@@ -335,7 +340,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
                       is24Hour={true}
                       display="default"
                       onChange={onChangeDate}
-                      minimumDate={fechaProxMin}
+                      maximumDate={new Date()}
                     />
                   )}
                   <HStack mb={5} space={2} justifyContent="center">

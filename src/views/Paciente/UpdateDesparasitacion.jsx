@@ -49,53 +49,79 @@ export default function UpdateDesparasitacion({ navigation, route }) {
   const [textProxima, setTextProxima] = useState("");
   const [fecProxima, setFecProxima] = useState(new Date());
 
-  const regexPhone = /^[0-9]{4}-[0-9]{4}$/;
-
   const form = useRef();
+
+  const checkDates = (date1, date2) => {
+    let control;
+    date1 > date2 ? control = true : control = false;
+    return control;
+  }
 
   const timestampToDate = (valorTimestamp) => {
     return new Date(valorTimestamp * 1000).toLocaleDateString("en-US");
   };
 
+  function addDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
 
   const updateDocPaciente = (data) => {
-    if (textActual === "") {
+    if (textActual === "" || textProxima === "") {
       if (Platform.OS === "web") {
         alert("Debe Ingresar una Fecha Valida");
       } else {
-        Alert.alert("Deber Ingresar una Fecha Valida");
+        Alert.alert("Error", "Deber Ingresar una Fecha Valida");
+      }
+      return false;
+    } else if (checkDates(dateActual, dateProxima)) {
+      if (Platform.OS === "web") {
+        alert("La fecha próxima no puede ser menor a la fecha actual de aplicación");
+      } else {
+        Alert.alert("Error", "La fecha próxima no puede ser menor a la fecha actual de aplicación");
       }
       return false;
     } else {
-      console.log("Actualizando");
-      setLoading(true);
-      data.fecha = fecActual;
-      data.proximaDosis = fecProxima;
-      updateDoc(doc(db, "patients", idPaciente, "desparasitacion", id), data)
-        .then((ocRef) => {
-          Alert.alert("Exito", "Se actualizo el desparasitacion correctamente", [
-            {
-              text: "Aceptar",
-              onPress: () => {
+      Alert.alert("Confirmacion", "Desea modificar la informacion del desparasitacion", [
+        {
+          text: "Aceptar",
+          onPress: () => {
+            setLoading(true);
+            data.fecha = fecActual;
+            data.proximaDosis = fecProxima;
+            updateDoc(doc(db, "patients", idPaciente, "desparasitacion", id), data)
+              .then((ocRef) => {
+                Alert.alert("Exito", "Se actualizo el desparasitacion correctamente", [
+                  {
+                    text: "Aceptar",
+                    onPress: () => {
+                      setLoading(false);
+                      navigation.goBack();
+                    }
+                  },
+                ]);
+                if (Platform.OS === "web") {
+                  alert("Se actualizo el desparasitacion correctamente");
+                  setLoading(false);
+                }
+              })
+              .catch((error) => {
                 setLoading(false);
-                navigation.goBack();
-              }
-            },
-          ]);
-          if (Platform.OS === "web") {
-            alert("Se actualizo el desparasitacion correctamente");
-            setLoading(false);
+                Alert.alert("Error", "Ocurrio un error al actualizar el desparasitacion");
+                if (Platform.OS === "web") {
+                  alert("Ocurrio un error al actualizar el desparasitacion");
+                  setLoading(false);
+                }
+              });
+            return true;
           }
-        })
-        .catch((error) => {
-          setLoading(false);
-          Alert.alert("Error", "Ocurrio un error al actualizar el desparasitacion");
-          if (Platform.OS === "web") {
-            alert("Ocurrio un error al actualizar el desparasitacion");
-            setLoading(false);
-          }
-        });
-      return true;
+        },
+        {
+          text: "Cancelar"
+        }
+      ])
     }
   };
 
@@ -164,7 +190,8 @@ export default function UpdateDesparasitacion({ navigation, route }) {
         tempDate.getFullYear();
       setFecActual(tempDate);
       setTextActual(fDate);
-      console.log("Fecha Actual",fDate);
+      console.log("Fecha Actual", fDate);
+      setDateProxima(su)
     }
   };
 
@@ -189,7 +216,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
         tempDate.getFullYear();
       setFecProxima(tempDate);
       setTextProxima(fDate);
-      console.log("Fecha Proxima",fDate);
+      console.log("Fecha Proxima", fDate);
     }
   };
 
@@ -237,17 +264,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                   .required("Nombre mascota requerido."),
               })}
               onSubmit={(values) => {
-                Alert.alert("Confirmacion", "Desea modificar la informacion del desparasitacion", [
-                  {
-                    text: "Aceptar",
-                    onPress: () => {
-                      updateDocPaciente(values);
-                    }
-                  },
-                  {
-                    text: "Cancelar"
-                  }
-                ])
+                updateDocPaciente(values);
               }}
             >
               {({
@@ -267,6 +284,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                         Desparasitante:
                       </FormControl.Label>
                       <Input
+                      fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite el Desparasitante"
                         InputLeftElement={
@@ -295,6 +313,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                         Fecha de Aplicación:
                       </FormControl.Label>
                       <Button
+                      fontSize={15}
                         size="sm"
                         variant="outline"
                         leftIcon={
@@ -315,8 +334,8 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                         mode={modeActual}
                         is24Hour={true}
                         display="default"
-                        maximumDate={new Date()}
                         onChange={onChangeDateActual}
+                        maximumDate={new Date()}
                       />
                     )}
 
@@ -325,6 +344,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                         Fecha de Proxima Aplicación:
                       </FormControl.Label>
                       <Button
+                      fontSize={15}
                         size="sm"
                         variant="outline"
                         leftIcon={
@@ -346,7 +366,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                         mode={modeProxima}
                         is24Hour={true}
                         display="default"
-                        minimumDate={new Date()}
+                        minimumDate={addDays(dateActual, 1)}
                         onChange={onChangeDateProxima}
                       />
                     )}

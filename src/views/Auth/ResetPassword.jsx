@@ -12,12 +12,16 @@ import {
     View,
     Icon,
     WarningOutlineIcon,
+    HStack
 } from "native-base"
+import { Alert } from 'react-native';
+import { Avatar } from "react-native-elements";
 
 // Validation Imports
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 // Firebase Auth
 import { auth } from "../../../config/firebase"
@@ -25,35 +29,54 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 
 const ResetPassword = ({ navigation }) => {
+
+    const listadoErr = (errores) => {
+        const defecto = "Ocurrio un error";
+        const listaErrores = {
+            "auth/invalid-email":
+                "El correo ingresado no es valido, intente de nuevo",
+            "auth/user-not-found":
+                "El correo ingresado no tiene ninguna cuenta asociada",
+            "auth/wrong-password": "La contraseña ingresada no es valida",
+            "auth/user-disabled":
+                "Su cuenta esta deshabilitada, por favor contactenos",
+            "auth/too-many-requests": "Muchas peticiones, por favor espere",
+        };
+        return listaErrores[errores] ?? defecto;
+    }
     const sendData = (values) => {
         const { email } = values;
         sendPasswordResetEmail(auth, email)
             .then((response) => {
                 console.log(response);
-                alert("Revise su email para cambiar la password");
+                Alert.alert("Éxito", "Revise su email para cambiar la password");
                 navigation.goBack();
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.log(errorCode, errorMessage);
-                alert("Error al enviar el email");
+                Alert.alert("Error", listadoErr(errorCode))
             });
     }
     return (
         <NativeBaseProvider>
             <ScrollView>
                 <Box w={"95%"} mt={8} flex={1} p={1} marginLeft={1}>
-                    <Heading size="lg" color="coolGray.800" _dark={{
-                        color: "warmGray.50"
-                    }} fontWeight="semibold">
-                        Bienvenido
-                    </Heading>
-                    <Heading mt="1" color="coolGray.600" _dark={{
-                        color: "warmGray.200"
-                    }} fontWeight="medium" size="sm">
-                        Cambiar Contraseña Aqui
-                    </Heading>
+                    <HStack mt={5} flex={1} space={2}>
+                        <Heading mt="1" color="coolGray.600" _dark={{
+                            color: "warmGray.200"
+                        }} fontWeight="medium" size="lg">
+                            Cambiar Contraseña Aqui
+                        </Heading>
+                        <Avatar
+                            source={require("../../../assets/reset-password.png")}
+                            size="large"
+                            justifyContent="center"
+
+                        >
+                        </Avatar>
+                    </HStack>
                     <Formik
                         initialValues={{
                             email: ''
@@ -71,6 +94,7 @@ const ResetPassword = ({ navigation }) => {
                                     <FormControl isInvalid={'email' in errors}>
                                         <FormControl.Label _text={styles.labelInput}>Email</FormControl.Label>
                                         <Input _focus={styles.inputSeleccionado} placeholder='Escriba su Email'
+                                            fontSize={15}
                                             InputLeftElement={<Icon as={<MaterialCommunityIcons name="account" />} size={5} ml="2" color="muted.400" />}
                                             value={values.email}
                                             keyboardType={'email-address'}
@@ -82,8 +106,10 @@ const ResetPassword = ({ navigation }) => {
                                             </FormControl.ErrorMessage>
                                         }
                                     </FormControl>
-                                    <Button mt="2" colorScheme="indigo" onPress={handleSubmit} _disabled={styles.botonDisabled}>
-                                        Cambiar Contraseña
+                                    <Button mt="2" background={"rgba(117, 140, 255, 1)"}
+                                    onPress={handleSubmit} _disabled={styles.botonDisabled}
+                                    leftIcon={<Icon as={Ionicons} name="mail" size="sm" />}>
+                                        Enviar Email
                                     </Button>
                                 </VStack>
                             </View>

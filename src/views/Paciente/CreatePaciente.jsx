@@ -219,6 +219,7 @@ const CreatePaciente = () => {
                         Nombre Paciente:
                       </FormControl.Label>
                       <Input
+                        fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite el nombre del paciente"
                         InputLeftElement={
@@ -248,6 +249,7 @@ const CreatePaciente = () => {
                       </FormControl.Label>
                       <Select
                         minWidth="200"
+                        fontSize={15}
                         accessibilityLabel="Tipo de Paciente"
                         placeholder="Tipo de Paciente"
                         onValueChange={handleChange("tipo")}
@@ -279,6 +281,7 @@ const CreatePaciente = () => {
                         Raza Paciente:
                       </FormControl.Label>
                       <Input
+                        fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite la raza del paciente"
                         InputLeftElement={
@@ -333,6 +336,7 @@ const CreatePaciente = () => {
                         Peso Paciente:
                       </FormControl.Label>
                       <Input
+                        fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite el peso del Paciente"
                         InputLeftElement={
@@ -356,11 +360,12 @@ const CreatePaciente = () => {
                         </FormControl.ErrorMessage>
                       )}
                     </FormControl>
-                    <FormControl onTouchStart={() => showMode("date")}>
+                    <FormControl>
                       <FormControl.Label _text={styles.labelInput}>
                         Fecha de Nacimiento:
                       </FormControl.Label>
                       <Button
+                      fontSize={15}
                         size="sm"
                         variant="outline"
                         leftIcon={
@@ -370,7 +375,7 @@ const CreatePaciente = () => {
                             size="sm"
                           />
                         }
-                        onLongPress={() => showMode("date")}
+                        onPress={() => showMode("date")}
                       >
                         {text.length > 1 ? text : "Seleccione una Fecha"}
                       </Button>
@@ -392,6 +397,7 @@ const CreatePaciente = () => {
                         Nombre Propietario:
                       </FormControl.Label>
                       <Input
+                        fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite el nombre del propietario"
                         InputLeftElement={
@@ -424,6 +430,7 @@ const CreatePaciente = () => {
                         Telefono Propietario:
                       </FormControl.Label>
                       <Input
+                        fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite Telefono del Propietario"
                         InputLeftElement={
@@ -455,6 +462,7 @@ const CreatePaciente = () => {
                         Direccion Propietario:
                       </FormControl.Label>
                       <Input
+                        fontSize={15}
                         _focus={styles.inputSeleccionado}
                         placeholder="Digite la direccion del Propietario"
                         InputLeftElement={
