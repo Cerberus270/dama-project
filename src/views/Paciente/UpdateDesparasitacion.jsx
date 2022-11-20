@@ -99,8 +99,8 @@ export default function UpdateDesparasitacion({ navigation, route }) {
       return false;
     } else {
       Alert.alert(
-        "Confirmacion",
-        "Desea modificar la informacion del desparasitacion",
+        "Confirmación",
+        "Desea modificar la informacion del desparasitación",
         [
           {
             text: "Aceptar",
@@ -115,7 +115,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                 .then((ocRef) => {
                   Alert.alert(
                     "Exito",
-                    "Se actualizo el desparasitacion correctamente",
+                    "Se actualizo el desparasitación correctamente",
                     [
                       {
                         text: "Aceptar",
@@ -135,10 +135,10 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                   setLoading(false);
                   Alert.alert(
                     "Error",
-                    "Ocurrio un error al actualizar el desparasitacion"
+                    "Ocurrio un error al actualizar el desparasitación"
                   );
                   if (Platform.OS === "web") {
-                    alert("Ocurrio un error al actualizar el desparasitacion");
+                    alert("Ocurrio un error al actualizar el desparasitación");
                     setLoading(false);
                   }
                 });
@@ -173,7 +173,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
             setDesparasitacion(null);
             Alert.alert(
               "Error",
-              "No hemos podido localizar este desparasitacion, contacte con soporte",
+              "No hemos podido localizar este desparasitación, contacte con soporte",
               [
                 {
                   text: "Aceptar",
@@ -346,7 +346,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                         </FormControl.Label>
                         <Button
                           fontSize={15}
-                          size="sm"
+                          size="lg"
                           variant="outline"
                           leftIcon={
                             <Icon
@@ -380,7 +380,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                         </FormControl.Label>
                         <Button
                           fontSize={15}
-                          size="sm"
+                          size="lg"
                           variant="outline"
                           leftIcon={
                             <Icon

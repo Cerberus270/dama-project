@@ -115,9 +115,9 @@ const CreatePaciente = () => {
   const sendData = (data) => {
     if (text === "") {
       if (Platform.OS === "web") {
-        alert("Debe Ingresar una Fecha Valida");
+        alert("Debe Ingresar una Fecha Válida");
       } else {
-        Alert.alert("Deber Ingresar una Fecha Valida");
+        Alert.alert("Error","Deber Ingresar una Fecha Válida");
       }
       return false;
     } else {

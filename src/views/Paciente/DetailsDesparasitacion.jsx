@@ -101,11 +101,11 @@ export default function DetailsDesparasitacion({ navigation, route }) {
                   >
                     <Heading
                       textAlign={"center"}
-                      size="xl"
+                      size="lg"
                       alignSelf="center"
                       flex={1}
                     >
-                      Marca: {desparasitacion.marca}
+                      Desparasitante: {desparasitacion.marca}
                     </Heading>
                   </ListItem.Title>
                 </ListItem.Content>
@@ -122,7 +122,7 @@ export default function DetailsDesparasitacion({ navigation, route }) {
                 />
                 <ListItem.Content>
                   <ListItem.Title>
-                    <Text>Fecha de Desparasitacion</Text>
+                    <Text>Fecha de Desparasitación</Text>
                   </ListItem.Title>
                   <Text>{desparasitacion.fecha.toLocaleDateString("es")}</Text>
                 </ListItem.Content>
@@ -131,7 +131,7 @@ export default function DetailsDesparasitacion({ navigation, route }) {
                 <Avatar source={require("../../../assets/chequeo-medico.png")} />
                 <ListItem.Content>
                   <ListItem.Title>
-                    <Text>Fecha Proxima Dosis</Text>
+                    <Text>Fecha próxima Dosis</Text>
                   </ListItem.Title>
                   <Text>
                     {desparasitacion.proximaDosis.toLocaleDateString("es")}

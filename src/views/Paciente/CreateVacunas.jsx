@@ -119,7 +119,7 @@ const CreateVacunas = ({ navigation, route }) => {
             },
           ]);
           if (Platform.OS === "web") {
-            Alert.alert("Se registro vacuna correctamente");
+            alert("Éxito","Se registro vacuna correctamente");
             navigation.goBack();
           }
         })
@@ -384,7 +384,7 @@ const CreateVacunas = ({ navigation, route }) => {
                         value={date}
                         mode={mode}
                         is24Hour={true}
-                        maximumDate={new Date()}
+                        minimumDate={fechaProxMin}
                         display="default"
                         onChange={onChangeDate}
                       />

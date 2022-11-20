@@ -53,26 +53,14 @@ const CreateDesparasitacion = ({ navigation, route }) => {
   const form = useRef();
 
   const formularioValidacion = yup.object().shape({
-    nombre: yup
-      .string()
-      .min(2, "Minimo 2 caracteres")
-      .required("Nombre desparasitante requerido."),
     marca: yup
       .string()
       .min(2, "Minimo 2 caracteres")
-      .required("Marca requerida"),
-    dosis: yup.string().required("Dosis requerida"),
-    peso: yup
-      .number()
-      .min(0, "Ingrese un peso mayor a 0 kg")
-      .required("Peso del paciente requerido"),
+      .required("Desparasitante requerido")
   });
 
   const valoresIniciales = {
-    nombre: "",
     marca: "",
-    dosis: "",
-    peso: "",
   };
 
   const onChangeDate = (event, selectedDate) => {
@@ -97,9 +85,9 @@ const CreateDesparasitacion = ({ navigation, route }) => {
   const sendData = (data) => {
     if (text === "") {
       if (Platform.OS === "web") {
-        Alert.alert("Debe Ingresar una Fecha Valida");
+        alert("Debe Ingresar una Fecha Válida");
       } else {
-        Alert.alert("Deber Ingresar una Fecha Valida");
+        Alert.alert("Error","Deber Ingresar una Fecha Válida");
       }
       return false;
     } else {
@@ -109,7 +97,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
       addDoc(collection(db, "patients", id, "desparasitacion"), data)
         .then((ocRef) => {
           setUploading(false);
-          Alert.alert("Exito", "Se registró la desparasitacion correctamente", [
+          Alert.alert("Éxito", "Se registró la desparasitación correctamente", [
             {
               text: "Aceptar",
               onPress: () => {
@@ -118,7 +106,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
             },
           ]);
           if (Platform.OS === "web") {
-            Alert.alert("Se registró la desparasitacion correctamente");
+            Alert.alert("Éxito","Se registró la desparasitación  correctamente");
             navigation.goBack();
           }
         })
@@ -126,10 +114,10 @@ const CreateDesparasitacion = ({ navigation, route }) => {
           setUploading(false);
           Alert.alert(
             "Error",
-            "Ocurrio un error al registrar la desparasitacion"
+            "Ocurrio un error al registrar la desparasitación"
           );
           if (Platform.OS === "web") {
-            Alert.alert("Ocurrio un error al registrar la desparasitacion");
+            Alert.alert("Error","Ocurrio un error al registrar la desparasitación");
           }
         });
       return true;
@@ -204,42 +192,14 @@ const CreateDesparasitacion = ({ navigation, route }) => {
               }) => (
                 <View style={{ marginHorizontal: 5 }}>
                   <VStack space={4} mt="5">
-                    <FormControl isInvalid={"nombre" in errors}>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Nombre:
-                      </FormControl.Label>
-                      <Input
-                        fontSize={15}
-                        _focus={styles.inputSeleccionado}
-                        placeholder="Digite nombre de Desparasitante"
-                        InputLeftElement={
-                          <Icon
-                            as={<MaterialCommunityIcons name="pill" />}
-                            size={5}
-                            ml="2"
-                            color="muted.400"
-                          />
-                        }
-                        value={values.nombre}
-                        onChangeText={handleChange("nombre")}
-                        onBlur={() => setFieldTouched("nombre")}
-                      />
-                      {touched.nombre && errors.nombre && (
-                        <FormControl.ErrorMessage
-                          leftIcon={<WarningOutlineIcon size="xs" />}
-                        >
-                          {errors.nombre}
-                        </FormControl.ErrorMessage>
-                      )}
-                    </FormControl>
                     <FormControl isInvalid={"marca" in errors}>
                       <FormControl.Label _text={styles.labelInput}>
-                        Marca:
+                        Desparasitante:
                       </FormControl.Label>
                       <Input
                         fontSize={15}
                         _focus={styles.inputSeleccionado}
-                        placeholder="Digite marca de Desparasitante"
+                        placeholder="Digite el Desparasitante"
                         InputLeftElement={
                           <Icon
                             as={
@@ -259,63 +219,6 @@ const CreateDesparasitacion = ({ navigation, route }) => {
                           leftIcon={<WarningOutlineIcon size="xs" />}
                         >
                           {errors.marca}
-                        </FormControl.ErrorMessage>
-                      )}
-                    </FormControl>
-                    <FormControl isInvalid={"dosis" in errors}>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Dosis:
-                      </FormControl.Label>
-                      <Input
-                        fontSize={15}
-                        _focus={styles.inputSeleccionado}
-                        placeholder="Digite Dosis de Vacuna"
-                        InputLeftElement={
-                          <Icon
-                            as={<MaterialCommunityIcons name="eyedropper" />}
-                            size={5}
-                            ml="2"
-                            color="muted.400"
-                          />
-                        }
-                        value={values.dosis}
-                        onChangeText={handleChange("dosis")}
-                        onBlur={() => setFieldTouched("dosis")}
-                      />
-                      {touched.dosis && errors.dosis && (
-                        <FormControl.ErrorMessage
-                          leftIcon={<WarningOutlineIcon size="xs" />}
-                        >
-                          {errors.dosis}
-                        </FormControl.ErrorMessage>
-                      )}
-                    </FormControl>
-                    <FormControl isInvalid={"peso" in errors}>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Peso Paciente:
-                      </FormControl.Label>
-                      <Input
-                        fontSize={15}
-                        _focus={styles.inputSeleccionado}
-                        placeholder="Digite el peso del Paciente"
-                        InputLeftElement={
-                          <Icon
-                            as={<MaterialCommunityIcons name="weight-pound" />}
-                            size={5}
-                            ml="2"
-                            color="muted.400"
-                          />
-                        }
-                        value={values.peso}
-                        keyboardType={"decimal-pad"}
-                        onChangeText={handleChange("peso")}
-                        onBlur={() => setFieldTouched("peso")}
-                      />
-                      {touched.peso && errors.peso && (
-                        <FormControl.ErrorMessage
-                          leftIcon={<WarningOutlineIcon size="xs" />}
-                        >
-                          {errors.peso}
                         </FormControl.ErrorMessage>
                       )}
                     </FormControl>
@@ -347,7 +250,7 @@ const CreateDesparasitacion = ({ navigation, route }) => {
                         is24Hour={true}
                         display="default"
                         onChange={onChangeDate}
-                        maximumDate={new Date()}
+                        minimumDate={fechaProxMin}
                       />
                     )}
                     <HStack mb={5} space={2} justifyContent="center">

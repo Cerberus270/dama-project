@@ -165,6 +165,7 @@ export default function Login({ navigation }) {
                 <FormControl.Label>Correo Electronico</FormControl.Label>
                 <Input
                   style={{ fontSize: 15 }}
+                  keyboardType="email-address"
                   placeholder="example@example.com"
                   value={email}
                   InputLeftElement={
