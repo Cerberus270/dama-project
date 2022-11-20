@@ -30,15 +30,387 @@ import { Radio } from "native-base";
 import { useFocusEffect } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-export default function UpdateDesparasitacion ({navigation, route}){
-   
-      return (
-        <NativeBaseProvider>
-            <View>
-              <Text>en construcción....</Text>
-            </View>
-        </NativeBaseProvider>
-      );
+export default function UpdateDesparasitacion({ navigation, route }) {
+  const { idPaciente } = route.params;
+  const { id } = route.params.desparasitacion;
+  const [desparasitacion, setDesparasitacion] = useState(null);
+  const [loading, setLoading] = useState(false);
+  //Date Picker Actual
+  const [dateActual, setDateActual] = useState(new Date());
+  const [showActual, setShowActual] = useState(false);
+  const [modeActual, setModeActual] = useState("date");
+  const [textActual, setTextActual] = useState("");
+  const [fecActual, setFecActual] = useState(new Date());
+
+  // Date picker proxima
+  const [dateProxima, setDateProxima] = useState(new Date());
+  const [showProxima, setShowProxima] = useState(false);
+  const [modeProxima, setModeProxima] = useState("date");
+  const [textProxima, setTextProxima] = useState("");
+  const [fecProxima, setFecProxima] = useState(new Date());
+
+  const regexPhone = /^[0-9]{4}-[0-9]{4}$/;
+
+  const form = useRef();
+
+  const timestampToDate = (valorTimestamp) => {
+    return new Date(valorTimestamp * 1000).toLocaleDateString("en-US");
+  };
+
+
+  const updateDocPaciente = (data) => {
+    if (textActual === "") {
+      if (Platform.OS === "web") {
+        alert("Debe Ingresar una Fecha Valida");
+      } else {
+        Alert.alert("Deber Ingresar una Fecha Valida");
+      }
+      return false;
+    } else {
+      console.log("Actualizando");
+      setLoading(true);
+      data.fecha = fecActual;
+      data.proximaDosis = fecProxima;
+      updateDoc(doc(db, "patients", idPaciente, "desparasitacion", id), data)
+        .then((ocRef) => {
+          Alert.alert("Exito", "Se actualizo el desparasitacion correctamente", [
+            {
+              text: "Aceptar",
+              onPress: () => {
+                setLoading(false);
+                navigation.goBack();
+              }
+            },
+          ]);
+          if (Platform.OS === "web") {
+            alert("Se actualizo el desparasitacion correctamente");
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          setLoading(false);
+          Alert.alert("Error", "Ocurrio un error al actualizar el desparasitacion");
+          if (Platform.OS === "web") {
+            alert("Ocurrio un error al actualizar el desparasitacion");
+            setLoading(false);
+          }
+        });
+      return true;
     }
-    
- 
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log(id, idPaciente);
+      setLoading(true);
+      const unsuscribe = onSnapshot(
+        doc(db, "patients", idPaciente, "desparasitacion", id),
+        (doc) => {
+          if (doc.exists()) {
+            console.log(doc.data());
+            setDesparasitacion(doc.data());
+            setTextActual(timestampToDate(doc.data().fecha.seconds))
+            setDateActual(new Date(doc.data().fecha.seconds * 1000))
+            //Proxima Dosis
+            setTextProxima(timestampToDate(doc.data().proximaDosis.seconds))
+            setDateProxima(new Date(doc.data().proximaDosis.seconds * 1000))
+            setLoading(false);
+          } else {
+            setDesparasitacion(null);
+            Alert.alert(
+              "Error",
+              "No hemos podido localizar este desparasitacion, contacte con soporte",
+              [
+                {
+                  text: "Aceptar",
+                  onPress: async () => {
+                    await signOut(auth);
+                    navigation.reset({
+                      index: 0,
+                      routes: [
+                        {
+                          name: "Login",
+                        },
+                      ],
+                    });
+                  },
+                },
+              ]
+            );
+          }
+        }
+      );
+
+      return () => {
+        unsuscribe();
+        setDesparasitacion(null);
+        setLoading(false);
+      };
+    }, [])
+  );
+
+  const onChangeDateActual = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShowActual(Platform.OS === "ios");
+    setDateActual(currentDate);
+
+    if (event.type === "set") {
+      let tempDate = new Date(currentDate);
+      let fDate =
+        tempDate.getDate() +
+        "/" +
+        (tempDate.getMonth() + 1) +
+        "/" +
+        tempDate.getFullYear();
+      setFecActual(tempDate);
+      setTextActual(fDate);
+      console.log("Fecha Actual",fDate);
+    }
+  };
+
+  const showModeActual = (currentMode) => {
+    setShowActual(true);
+    setModeActual(currentMode);
+    form.reset;
+  };
+
+  const onChangeDateProxima = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShowProxima(Platform.OS === "ios");
+    setDateProxima(currentDate);
+
+    if (event.type === "set") {
+      let tempDate = new Date(currentDate);
+      let fDate =
+        tempDate.getDate() +
+        "/" +
+        (tempDate.getMonth() + 1) +
+        "/" +
+        tempDate.getFullYear();
+      setFecProxima(tempDate);
+      setTextProxima(fDate);
+      console.log("Fecha Proxima",fDate);
+    }
+  };
+
+  const showModeProxima = (currentMode) => {
+    setShowProxima(true);
+    setModeProxima(currentMode);
+    form.reset;
+  };
+
+  const formikRef = useRef();
+
+  return (
+    <NativeBaseProvider>
+      {loading ? (
+        <ActivityIndicator
+          style={styles.indicador}
+          size="large"
+          color="rgba(117, 140, 255, 1)"
+        />
+      ) : null}
+      {desparasitacion ? (
+        <ScrollView style={loading ? { opacity: 0.5 } : { opacity: 1 }}>
+          <Box style={{ marginHorizontal: 5 }} mt={4} flex={1} p={1}>
+            <HStack mt={5} flex={1} space={2}>
+              <Heading size="md" alignSelf="center" flex={1}>
+                Actualizar Desparasitación
+              </Heading>
+              <Avatar
+                source={require('../../../assets/atenciones-tipo/parasite.png')}
+                size="large"
+                justifyContent="center"
+              >
+              </Avatar>
+            </HStack>
+            <Formik
+              innerRef={formikRef}
+              enableReinitialize
+              initialValues={{
+                marca: desparasitacion.marca,
+              }}
+              validationSchema={yup.object().shape({
+                marca: yup
+                  .string()
+                  .min(2, "Minimo 2 caracteres")
+                  .required("Nombre mascota requerido."),
+              })}
+              onSubmit={(values) => {
+                Alert.alert("Confirmacion", "Desea modificar la informacion del desparasitacion", [
+                  {
+                    text: "Aceptar",
+                    onPress: () => {
+                      updateDocPaciente(values);
+                    }
+                  },
+                  {
+                    text: "Cancelar"
+                  }
+                ])
+              }}
+            >
+              {({
+                values,
+                handleChange,
+                setFieldTouched,
+                errors,
+                touched,
+                isValid,
+                handleSubmit,
+                resetForm,
+              }) => (
+                <View>
+                  <VStack space={4} mt="5">
+                    <FormControl isInvalid={"marca" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Desparasitante:
+                      </FormControl.Label>
+                      <Input
+                        _focus={styles.inputSeleccionado}
+                        placeholder="Digite el Desparasitante"
+                        InputLeftElement={
+                          <Icon
+                            as={<MaterialCommunityIcons name="dog" />}
+                            size={5}
+                            ml="2"
+                            color="muted.400"
+                          />
+                        }
+                        value={values.marca}
+                        onChangeText={handleChange("marca")}
+                        onBlur={() => setFieldTouched("marca")}
+                      />
+                      {touched.marca && errors.marca && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.marca}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
+
+                    <FormControl>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Fecha de Aplicación:
+                      </FormControl.Label>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        leftIcon={
+                          <Icon
+                            as={MaterialCommunityIcons}
+                            name="calendar"
+                            size="sm"
+                          />
+                        }
+                        onPress={() => showModeActual("date")}>
+                        {textActual.length > 1 ? textActual : "Seleccione una Fecha"}
+                      </Button>
+                    </FormControl>
+                    {showActual && (
+                      <DateTimePicker
+                        testID="dateTimePicker"
+                        value={dateActual}
+                        mode={modeActual}
+                        is24Hour={true}
+                        display="default"
+                        maximumDate={new Date()}
+                        onChange={onChangeDateActual}
+                      />
+                    )}
+
+                    <FormControl>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Fecha de Proxima Aplicación:
+                      </FormControl.Label>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        leftIcon={
+                          <Icon
+                            as={MaterialCommunityIcons}
+                            name="calendar"
+                            size="sm"
+                          />
+                        }
+                        onPress={() => showModeProxima("date")}
+                      >
+                        {textProxima.length > 1 ? textProxima : "Seleccione una Fecha"}
+                      </Button>
+                    </FormControl>
+                    {showProxima && (
+                      <DateTimePicker
+                        testID="dateTimePicker2"
+                        value={dateProxima}
+                        mode={modeProxima}
+                        is24Hour={true}
+                        display="default"
+                        minimumDate={new Date()}
+                        onChange={onChangeDateProxima}
+                      />
+                    )}
+
+                    <HStack mb={5} space={2} justifyContent="center">
+                      <Ionicons.Button
+                        backgroundColor={"rgba(117, 140, 255, 1)"}
+                        size={22}
+                        onPress={handleSubmit}
+                        style={{
+                          alignSelf: "stretch",
+                          justifyContent: "center",
+                        }}
+                        name="save"
+                        _disabled={styles.botonDisabled}
+                      >
+                        Guardar
+                      </Ionicons.Button>
+                      <Ionicons.Button
+                        backgroundColor={"rgba(117, 140, 255, 1)"}
+                        size={22}
+                        onPress={() => {
+                          formikRef.current?.resetForm();
+                        }}
+                        style={{
+                          alignSelf: "stretch",
+                          justifyContent: "center",
+                        }}
+                        name="refresh-outline"
+                        _disabled={styles.botonDisabled}
+                      >
+                        Reestablecer
+                      </Ionicons.Button>
+                    </HStack>
+                  </VStack>
+                </View>
+              )}
+            </Formik>
+          </Box>
+        </ScrollView>
+      ) : null}
+    </NativeBaseProvider>
+  );
+}
+
+const styles = {
+  inputSeleccionado: {
+    bg: "coolGray.200:alpha.100",
+  },
+  botonDisabled: {
+    backgroundColor: "#00aeef",
+  },
+  labelInput: {
+    color: "black",
+    fontSize: "sm",
+    fontWeight: "bold",
+  },
+  tituloForm: {
+    color: "#8796FF",
+  },
+  indicador: {
+    position: "absolute",
+    top: "50%",
+    left: "25%",
+    right: "25%",
+  },
+};

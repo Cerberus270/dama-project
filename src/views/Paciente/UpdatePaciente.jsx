@@ -408,7 +408,7 @@ export default function UpdatePaciente({ navigation, route }) {
                         </FormControl.ErrorMessage>
                       )}
                     </FormControl>
-                    <FormControl onTouchStart={() => showMode("date")}>
+                    <FormControl>
                       <FormControl.Label _text={styles.labelInput}>
                         Fecha de Nacimiento:
                       </FormControl.Label>
@@ -422,7 +422,7 @@ export default function UpdatePaciente({ navigation, route }) {
                             size="sm"
                           />
                         }
-                        onLongPress={() => showMode("date")}
+                        onPress={() => showMode("date")}
                       >
                         {text.length > 1 ? text : "Seleccione una Fecha"}
                       </Button>

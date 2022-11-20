@@ -37,7 +37,7 @@ export default function Desparasitacion({ navigation, route }) {
 
     const actualizarDesparasitacion = (desparasitacion) => {
         // AQUI VA EL DE ACTUALIZAR
-        navigation.navigate('UpdateDesparasitacion', desparasitacion);
+        navigation.navigate('UpdateDesparasitacion',{desparasitacion, idPaciente: id});
         
       };
 
@@ -136,7 +136,7 @@ export default function Desparasitacion({ navigation, route }) {
                                                 <Button
                                                 title="Actualizar"
                                                 onPress={() => {
-                                                actualizarDesparasitacion(desparasitacion);
+                                                actualizarDesparasitacion(desparasitante);
                                                 }}
                                                 icon={{ name: "update", color: "white" }}
                                                 buttonStyle={{ minHeight: "100%" }}
