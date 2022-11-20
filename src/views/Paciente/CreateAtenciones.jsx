@@ -279,8 +279,8 @@ const CreateAtenciones = ({ navigation, route }) => {
                               value="Antibiotico"
                             />
                             <Select.Item
-                              label="Anti inflamatorio"
-                              value="Anti inflamatorio"
+                              label="Antiinflamatorio"
+                              value="Antiinflamatorio"
                             />
                             <Select.Item label="Estetica" value="Estetica" />
                           </Select>
