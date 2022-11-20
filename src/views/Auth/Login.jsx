@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView } from "react-native";
 import {
   NativeBaseProvider,
   Box,
@@ -7,6 +7,8 @@ import {
   Input,
   Text,
   Icon,
+  View,
+  Image,
   VStack,
   FormControl,
   Button,
@@ -22,12 +24,14 @@ import { Alert } from "react-native";
 import { doc, getDoc } from "firebase/firestore";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useFocusEffect } from "@react-navigation/native";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const headerHeight = useHeaderHeight();
 
   const getVeterinarioDoc = async (uid) => {
     const veterinarioRef = doc(db, "veterinarios", uid);
@@ -103,135 +107,161 @@ export default function Login({ navigation }) {
       });
   };
   return (
-    <NativeBaseProvider>
-      <ScrollView>
-        {loading ? (
-          <ActivityIndicator
-            style={styles.indicador}
-            size="large"
-            color="rgba(117, 140, 255, 1)"
-          />
-        ) : null}
-        <Box
-          mt={8}
-          flex={1}
-          p={1}
-          style={loading ? { opacity: 0.5 } : { opacity: 1 }}
-        >
-          <Heading
-            size="lg"
-            fontWeight="600"
-            color="coolGray.800"
-            _dark={{
-              color: "warmGray.50",
-            }}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={headerHeight}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <NativeBaseProvider>
+        <ScrollView>
+          {loading ? (
+            <ActivityIndicator
+              style={styles.indicador}
+              size="large"
+              color="rgba(117, 140, 255, 1)"
+            />
+          ) : null}
+          <Box
+            mt={8}
+            flex={1}
+            p={1}
+            style={loading ? { opacity: 0.5 } : { opacity: 1 }}
           >
-            Bienvenido
-          </Heading>
-          <Heading
-            mt="1"
-            _dark={{
-              color: "warmGray.200",
-            }}
-            color="coolGray.600"
-            fontWeight="medium"
-            size="xs"
-          >
-            ¡Inicia sesión para continuar!
-          </Heading>
-
-          <VStack space={3} mt="5">
-            <FormControl>
-              <FormControl.Label>Correo Electronico</FormControl.Label>
-              <Input
-                placeholder="Escriba su Email"
-                value={email}
-                InputLeftElement={
-                  <Icon
-                    as={<MaterialCommunityIcons name="account" />}
-                    size={5}
-                    ml="2"
-                    color="muted.400"
-                  />
-                }
-                onChangeText={(e) => setEmail(e)}
-              
+            <Heading
+              alignSelf={"center"}
+              size="lg"
+              fontWeight="600"
+              color="coolGray.800"
+              _dark={{
+                color: "warmGray.50",
+              }}
+            >
+              Bienvenido
+            </Heading>
+            <Heading
+              mt="1"
+              _dark={{
+                color: "warmGray.200",
+              }}
+              color="coolGray.600"
+              fontWeight="medium"
+              size="xs"
+              alignSelf={"center"}
+            >
+              ¡Inicia sesión para continuar!
+            </Heading>
+            <View style={{ alignItems: "center" }} mt={5}>
+              <Image
+                style={{
+                  resizeMode: "contain",
+                  aspectRatio: 1,
+                }}
+                alt="Logo"
+                source={require("../../../assets/Logo.png")}
               />
-            </FormControl>
-            <FormControl>
-              <FormControl.Label>Contraseña</FormControl.Label>
-              <Input
-                placeholder="Escriba su contraseña"
-                value={password}
-                onChangeText={(e) => setPassword(e)}
-                type={show ? "text" : "password"}
-                InputRightElement={
-                  <Pressable onPress={() => setShow(!show)}>
+            </View>
+            <VStack style={{ marginHorizontal: 5 }} space={3} mt="5">
+              <FormControl>
+                <FormControl.Label>Correo Electronico</FormControl.Label>
+                <Input
+                  style={{ fontSize: 15 }}
+                  placeholder="example@example.com"
+                  value={email}
+                  InputLeftElement={
                     <Icon
-                      as={
-                        <MaterialCommunityIcons
-                          name={show ? "eye-outline" : "eye-off-outline"}
-                        />
-                      }
+                      as={<MaterialCommunityIcons name="account" />}
                       size={5}
-                      mr="2"
+                      ml="2"
                       color="muted.400"
                     />
-                  </Pressable>
-                }
-              />
-              <Link
-                _text={{
-                  fontSize: "xs",
-                  fontWeight: "500",
-                  color: "indigo.500",
+                  }
+                  onChangeText={(e) => setEmail(e)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormControl.Label>Contraseña</FormControl.Label>
+                <Input
+                  style={{ fontSize: 15 }}
+                  placeholder="Escriba su contraseña"
+                  value={password}
+                  onChangeText={(e) => setPassword(e)}
+                  type={show ? "text" : "password"}
+                  InputLeftElement={
+                    <Icon
+                      as={<MaterialCommunityIcons name="lock" />}
+                      size={5}
+                      ml="2"
+                      color="muted.400"
+                    />
+                  }
+                  InputRightElement={
+                    <Pressable onPress={() => setShow(!show)}>
+                      <Icon
+                        as={
+                          <MaterialCommunityIcons
+                            name={show ? "eye-outline" : "eye-off-outline"}
+                          />
+                        }
+                        size={5}
+                        mr="2"
+                        color="muted.400"
+                      />
+                    </Pressable>
+                  }
+                />
+                <Link
+                  _text={{
+                    fontSize: "xs",
+                    fontWeight: "500",
+                    color: "indigo.500",
+                  }}
+                  alignSelf="flex-end"
+                  mt="1"
+                  onPress={sendReset}
+                >
+                  ¿Olvido la contraseña?
+                </Link>
+              </FormControl>
+              <Ionicons.Button
+                disabled={loading ? true : false}
+                backgroundColor={"rgba(117, 140, 255, 1)"}
+                size={22}
+                onPress={login}
+                style={{
+                  alignSelf: "stretch",
+                  justifyContent: "center",
                 }}
-                alignSelf="flex-end"
-                mt="1"
-                onPress={sendReset}
+                name="log-in-outline"
+                _disabled={styles.botonDisabled}
               >
-                ¿Olvido la contraseña?
-              </Link>
-            </FormControl>
-            <Ionicons.Button
-              disabled={loading ? true : false}
-              backgroundColor={"rgba(117, 140, 255, 1)"}
-              size={22}
-              onPress={login}
-              style={{
-                alignSelf: "stretch",
-                justifyContent: "center",
-              }}
-              name="log-in-outline"
-              _disabled={styles.botonDisabled}
-            >
-              Iniciar sesion
-            </Ionicons.Button>
-            <HStack mt="6" justifyContent="center">
-              <Text
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{
-                  color: "warmGray.200",
-                }}
-              >
-                Soy un nuevo usuario.{" "}
-              </Text>
-              <Link
-                _text={{
-                  color: "indigo.500",
-                  fontWeight: "medium",
-                  fontSize: "sm",
-                }}
-                onPress={sendRegister}
-              >
-                Registrarse
-              </Link>
-            </HStack>
-          </VStack>
-        </Box>
-      </ScrollView>
-    </NativeBaseProvider>
+                Iniciar sesion
+              </Ionicons.Button>
+              <HStack mt="6" justifyContent="center">
+                <Text
+                  fontSize="sm"
+                  color="coolGray.600"
+                  _dark={{
+                    color: "warmGray.200",
+                  }}
+                >
+                  Soy un nuevo usuario.{" "}
+                </Text>
+                <Link
+                  _text={{
+                    color: "indigo.500",
+                    fontWeight: "medium",
+                    fontSize: "sm",
+                  }}
+                  onPress={sendRegister}
+                >
+                  Registrarse
+                </Link>
+              </HStack>
+            </VStack>
+          </Box>
+        </ScrollView>
+      </NativeBaseProvider>
+    </KeyboardAvoidingView>
   );
 }
 

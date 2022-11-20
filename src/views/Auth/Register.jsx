@@ -17,7 +17,7 @@ import {
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import { ActivityIndicator, Alert } from "react-native";
+import { ActivityIndicator, Alert,KeyboardAvoidingView } from "react-native";
 
 //ProgressBar
 import * as Progress from "react-native-progress";
@@ -36,12 +36,15 @@ import {
   signOut,
 } from "firebase/auth";
 
+import { useHeaderHeight } from "@react-navigation/elements";
+
 //Firebase FireStore
 import { doc, setDoc } from "firebase/firestore";
 
 export default function Register({ navigation }) {
   const [show, setShow] = useState(false);
   const [isUpload, setUpload] = useState(false);
+  const headerHeight = useHeaderHeight();
 
   //Function that check is email is linked to another account in the app
   const checkAuthUser = async (email, password) => {
@@ -138,180 +141,207 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <NativeBaseProvider>
-      <ScrollView>
-        {isUpload ? (
-          <ActivityIndicator
-            style={styles.indicador}
-            size="large"
-            color="rgba(117, 140, 255, 1)"
-          />
-        ) : null}
-        <Box
-          style={isUpload ? { opacity: 0.5 } : { opacity: 1 }}
-          mt={8}
-          flex={1}
-          p={1}
-        >
-          <Heading
-            size="lg"
-            color="coolGray.800"
-            _dark={{
-              color: "warmGray.50",
-            }}
-            fontWeight="semibold"
-            alignSelf="center"
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={headerHeight}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <NativeBaseProvider>
+        <ScrollView>
+          {isUpload ? (
+            <ActivityIndicator
+              style={styles.indicador}
+              size="large"
+              color="rgba(117, 140, 255, 1)"
+            />
+          ) : null}
+          <Box
+            style={isUpload ? { opacity: 0.5 } : { opacity: 1 }}
+            mt={8}
+            flex={1}
+            p={1}
           >
-            Bienvenido
-          </Heading>
-          <Heading
-            mt="1"
-            color="coolGray.600"
-            _dark={{
-              color: "warmGray.200",
-            }}
-            fontWeight="medium"
-            size="xs"
-            alignSelf="center"
-          > 
-            ¡Registrate para Continuar!
-          </Heading>
-          <Formik
-            initialValues={{
-              email: "",
-              password: "",
-              passwordConfirm: "",
-            }}
-            onSubmit={(values) => createUser(values)}
-            validationSchema={yup.object().shape({
-              email: yup
-                .string()
-                .email("Ingrese un email válido.")
-                .required("Email requerido."),
-              password: yup
-                .string()
-                .min(6, "La contraseña debe tener al menos 6 caracteres.")
-                .required("Contraseña requerida."),
-              passwordConfirm: yup
-                .string()
-                .required("Debe ingresar su contraseña nuevamente")
-                .oneOf(
-                  [yup.ref("password")],
-                  "Las contraseñas deben coincidir."
-                ),
-            })}
-          >
-            {({
-              values,
-              handleChange,
-              errors,
-              touched,
-              isValid,
-              handleSubmit,
-            }) => (
-              <View>
-                <VStack space={4} mt="5">
-                  <FormControl isInvalid={"email" in errors}>
-                    <FormControl.Label _text={styles.labelInput}>
-                      Email
-                    </FormControl.Label>
-                    <Input
-                      _focus={styles.inputSeleccionado}
-                      placeholder="Escriba su Email"
-                      InputLeftElement={
-                        <Icon
-                          as={<MaterialCommunityIcons name="gmail" />}
-                          size={5}
-                          ml="2"
-                          color="muted.400"
-                        />
-                      }
-                      value={values.email}
-                      keyboardType={"email-address"}
-                      onChangeText={handleChange("email")}
-                    />
-                    {touched.email && errors.email && (
-                      <FormControl.ErrorMessage
-                        leftIcon={<WarningOutlineIcon size="xs" />}
-                      >
-                        {errors.email}
-                      </FormControl.ErrorMessage>
-                    )}
-                  </FormControl>
-                  <FormControl isInvalid={"password" in errors}>
-                    <FormControl.Label _text={styles.labelInput}>
-                      Contraseña
-                    </FormControl.Label>
-                    <Input
-                      _focus={styles.inputSeleccionado}
-                      placeholder="Escriba su contraseña"
-                      type={show ? "text" : "password"}
-                      InputRightElement={
-                        <Pressable onPress={() => setShow(!show)}>
+            <Heading
+              size="lg"
+              color="coolGray.800"
+              _dark={{
+                color: "warmGray.50",
+              }}
+              fontWeight="semibold"
+              alignSelf="center"
+            >
+              Bienvenido
+            </Heading>
+            <Heading
+              mt="1"
+              color="coolGray.600"
+              _dark={{
+                color: "warmGray.200",
+              }}
+              fontWeight="medium"
+              size="xs"
+              alignSelf="center"
+            >
+              ¡Registrate para Continuar!
+            </Heading>
+            <Formik
+              initialValues={{
+                email: "",
+                password: "",
+                passwordConfirm: "",
+              }}
+              onSubmit={(values) => createUser(values)}
+              validationSchema={yup.object().shape({
+                email: yup
+                  .string()
+                  .email("Ingrese un correo electronico válido.")
+                  .required("Email requerido."),
+                password: yup
+                  .string()
+                  .min(6, "La contraseña debe tener al menos 6 caracteres.")
+                  .required("Contraseña requerida."),
+                passwordConfirm: yup
+                  .string()
+                  .required("Debe ingresar su contraseña nuevamente")
+                  .oneOf(
+                    [yup.ref("password")],
+                    "Las contraseñas deben coincidir."
+                  ),
+              })}
+            >
+              {({
+                values,
+                handleChange,
+                errors,
+                touched,
+                isValid,
+                handleSubmit,
+              }) => (
+                <View>
+                  <VStack space={4} mt="5" style={{ marginHorizontal: 5 }}>
+                    <FormControl isInvalid={"email" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Correo electronico
+                      </FormControl.Label>
+                      <Input
+                        style={{ fontSize: 15 }}
+                        _focus={styles.inputSeleccionado}
+                        placeholder="example@example.com"
+                        InputLeftElement={
                           <Icon
-                            as={
-                              <MaterialCommunityIcons
-                                name={show ? "eye-outline" : "eye-off-outline"}
-                              />
-                            }
+                            as={<MaterialCommunityIcons name="gmail" />}
                             size={5}
-                            mr="2"
+                            ml="2"
                             color="muted.400"
                           />
-                        </Pressable>
-                      }
-                      value={values.password}
-                      onChangeText={handleChange("password")}
-                    />
-                    {touched.password && errors.password && (
-                      <FormControl.ErrorMessage
-                        leftIcon={<WarningOutlineIcon size="xs" />}
-                      >
-                        {errors.password}
-                      </FormControl.ErrorMessage>
-                    )}
-                  </FormControl>
-                  <FormControl isInvalid={"passwordConfirm" in errors}>
-                    <FormControl.Label _text={styles.labelInput}>
-                      Confirmar contraseña
-                    </FormControl.Label>
-                    <Input
-                      _focus={styles.inputSeleccionado}
-                      placeholder="Repita su contraseña"
-                      value={values.passwordConfirm}
-                      type={show ? "text" : "password"}
-                      onChangeText={handleChange("passwordConfirm")}
-                    />
-                    {touched.passwordConfirm && errors.passwordConfirm && (
-                      <FormControl.ErrorMessage
-                        leftIcon={<WarningOutlineIcon size="xs" />}
-                      >
-                        {errors.passwordConfirm}
-                      </FormControl.ErrorMessage>
-                    )}
-                  </FormControl>
+                        }
+                        value={values.email}
+                        keyboardType={"email-address"}
+                        onChangeText={handleChange("email")}
+                      />
+                      {touched.email && errors.email && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.email}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
+                    <FormControl isInvalid={"password" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Contraseña
+                      </FormControl.Label>
+                      <Input
+                        _focus={styles.inputSeleccionado}
+                        placeholder="Escriba su contraseña"
+                        type={show ? "text" : "password"}
+                        style={{ fontSize: 15 }}
+                        InputLeftElement={
+                          <Icon
+                            as={<MaterialCommunityIcons name="lock" />}
+                            size={5}
+                            ml="2"
+                            color="muted.400"
+                          />
+                        }
+                        InputRightElement={
+                          <Pressable onPress={() => setShow(!show)}>
+                            <Icon
+                              as={
+                                <MaterialCommunityIcons
+                                  name={
+                                    show ? "eye-outline" : "eye-off-outline"
+                                  }
+                                />
+                              }
+                              size={5}
+                              mr="2"
+                              color="muted.400"
+                            />
+                          </Pressable>
+                        }
+                        value={values.password}
+                        onChangeText={handleChange("password")}
+                      />
+                      {touched.password && errors.password && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.password}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
+                    <FormControl isInvalid={"passwordConfirm" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Confirmar contraseña
+                      </FormControl.Label>
+                      <Input
+                        _focus={styles.inputSeleccionado}
+                        style={{ fontSize: 15 }}
+                        InputLeftElement={
+                          <Icon
+                            as={<MaterialCommunityIcons name="lock" />}
+                            size={5}
+                            ml="2"
+                            color="muted.400"
+                          />
+                        }
+                        placeholder="Repita su contraseña"
+                        value={values.passwordConfirm}
+                        type={show ? "text" : "password"}
+                        onChangeText={handleChange("passwordConfirm")}
+                      />
+                      {touched.passwordConfirm && errors.passwordConfirm && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.passwordConfirm}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
 
-                  <Ionicons.Button
-                    disabled={isUpload ? true : false}
-                    backgroundColor={"rgba(117, 140, 255, 1)"}
-                    size={22}
-                    onPress={handleSubmit}
-                    style={{
-                      alignSelf: "stretch",
-                      justifyContent:'center'
-                    }}
-                    name="create-outline"
-                    _disabled={styles.botonDisabled}
-                  >
-                    Registrarme
-                  </Ionicons.Button>
-                </VStack>
-              </View>
-            )}
-          </Formik>
-        </Box>
-      </ScrollView>
-    </NativeBaseProvider>
+                    <Ionicons.Button
+                      disabled={isUpload ? true : false}
+                      backgroundColor={"rgba(117, 140, 255, 1)"}
+                      size={22}
+                      onPress={handleSubmit}
+                      style={{
+                        alignSelf: "stretch",
+                        justifyContent: "center",
+                      }}
+                      name="create-outline"
+                      _disabled={styles.botonDisabled}
+                    >
+                      Registrarme
+                    </Ionicons.Button>
+                  </VStack>
+                </View>
+              )}
+            </Formik>
+          </Box>
+        </ScrollView>
+      </NativeBaseProvider>
+    </KeyboardAvoidingView>
   );
 }
 

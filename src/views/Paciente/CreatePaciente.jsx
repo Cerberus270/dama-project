@@ -34,6 +34,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { KeyboardAvoidingView } from "react-native";
 
 const CreatePaciente = () => {
   //Date Picker
@@ -43,6 +45,8 @@ const CreatePaciente = () => {
   const [text, setText] = useState("");
   const [fecNac, setFecNac] = useState(new Date());
   const [loading, setLoading] = useState(false);
+  
+  const headerHeight = useHeaderHeight();
 
   const form = useRef();
 
@@ -128,7 +132,7 @@ const CreatePaciente = () => {
               text: "Aceptar",
               onPress: () => {
                 setLoading(false);
-              }
+              },
             },
           ]);
           if (Platform.OS === "web") {
@@ -154,29 +158,31 @@ const CreatePaciente = () => {
     form.reset;
   };
 
-
   useFocusEffect(
     React.useCallback(() => {
       return () => {
         form.current?.resetForm();
-        setShow(false)
-        setText("")
+        setShow(false);
+        setText("");
       };
     }, [])
   );
 
-
-
   return (
-    <NativeBaseProvider>
-
-      {loading ? (
-        <ActivityIndicator
-          style={styles.indicador}
-          size="large"
-          color="rgba(56, 109, 255, 0.58)"
-        />
-      ) : null}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={headerHeight}
+      
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <NativeBaseProvider>
+        {loading ? (
+          <ActivityIndicator
+            style={styles.indicador}
+            size="large"
+            color="rgba(56, 109, 255, 0.58)"
+          />
+        ) : null}
         <ScrollView style={loading ? { opacity: 0.5 } : { opacity: 1 }}>
           <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
             <Heading
@@ -365,8 +371,7 @@ const CreatePaciente = () => {
                         Fecha de Nacimiento:
                       </FormControl.Label>
                       <Button
-                      fontSize={15}
-                        size="sm"
+                        size="lg"
                         variant="outline"
                         leftIcon={
                           <Icon
@@ -392,7 +397,9 @@ const CreatePaciente = () => {
                       />
                     )}
 
-                    <FormControl isInvalid={getIn(errors, "propietario.nombre")}>
+                    <FormControl
+                      isInvalid={getIn(errors, "propietario.nombre")}
+                    >
                       <FormControl.Label _text={styles.labelInput}>
                         Nombre Propietario:
                       </FormControl.Label>
@@ -467,7 +474,9 @@ const CreatePaciente = () => {
                         placeholder="Digite la direccion del Propietario"
                         InputLeftElement={
                           <Icon
-                            as={<MaterialCommunityIcons name="home-map-marker" />}
+                            as={
+                              <MaterialCommunityIcons name="home-map-marker" />
+                            }
                             size={5}
                             ml="2"
                             color="muted.400"
@@ -523,9 +532,8 @@ const CreatePaciente = () => {
             </Formik>
           </Box>
         </ScrollView>
-
-
-    </NativeBaseProvider>
+      </NativeBaseProvider>
+    </KeyboardAvoidingView>
   );
 };
 

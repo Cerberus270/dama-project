@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, ActivityIndicator } from "react-native";
+import { Alert, ActivityIndicator, KeyboardAvoidingView } from "react-native";
 // Components Imports
 import {
   NativeBaseProvider,
@@ -34,6 +34,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 const CreateVacunas = ({ navigation, route }) => {
   const { id } = route.params;
@@ -43,9 +44,10 @@ const CreateVacunas = ({ navigation, route }) => {
   const [text, setText] = useState("");
   const [proxD, setProxD] = useState(new Date());
   const [uploading, setUploading] = useState(false);
+  const headerHeight = useHeaderHeight();
 
-  const fechaProxMin = new Date()
-  fechaProxMin.setDate(fechaProxMin.getDate()+1)
+  const fechaProxMin = new Date();
+  fechaProxMin.setDate(fechaProxMin.getDate() + 1);
 
   const form = useRef();
 
@@ -150,277 +152,283 @@ const CreateVacunas = ({ navigation, route }) => {
   );
 
   return (
-    <NativeBaseProvider>
-      {uploading ? (
-        <ActivityIndicator
-          style={styles.indicador}
-          size="large"
-          color="rgba(117, 140, 255, 1)"
-        />
-      ) : null}
-      <ScrollView style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
-        <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
-          <Heading
-            mt={5}
-            size="lg"
-            color="coolGray.800"
-            _dark={{
-              color: "warmGray.50",
-            }}
-            fontWeight="bold"
-            alignSelf="center"
-          >
-            Registro de vacuna
-          </Heading>
-          <Formik
-            innerRef={form}
-            initialValues={valoresIniciales}
-            onSubmit={(values, { resetForm }) => {
-              if (sendData(values)) {
-                resetForm({ values: valoresIniciales });
-                setText("");
-              }
-            }}
-            validationSchema={formularioValidacion}
-          >
-            {({
-              values,
-              handleChange,
-              errors,
-              setFieldTouched,
-              touched,
-              isValid,
-              handleSubmit,
-              resetForm,
-            }) => (
-              <View>
-                <VStack space={4} mt="5">
-                  <FormControl isInvalid={"nombre" in errors}>
-                    <FormControl.Label _text={styles.labelInput}>
-                      Nombre:
-                    </FormControl.Label>
-                    <Input
-                      fontSize={15}
-                      _focus={styles.inputSeleccionado}
-                      placeholder="Digite Nombre de Vacuna"
-                      InputLeftElement={
-                        <Icon
-                          as={<MaterialCommunityIcons name="needle" />}
-                          size={5}
-                          ml="2"
-                          color="muted.400"
-                        />
-                      }
-                      value={values.nombre}
-                      onChangeText={handleChange("nombre")}
-                      onBlur={() => setFieldTouched("nombre")}
-                    />
-                    {touched.nombre && errors.nombre && (
-                      <FormControl.ErrorMessage
-                        leftIcon={<WarningOutlineIcon size="xs" />}
-                      >
-                        {errors.nombre}
-                      </FormControl.ErrorMessage>
-                    )}
-                  </FormControl>
-                  <FormControl isInvalid={"marca" in errors}>
-                    <FormControl.Label _text={styles.labelInput}>
-                      Marca:
-                    </FormControl.Label>
-                    <Input
-                      fontSize={15}
-                      _focus={styles.inputSeleccionado}
-                      placeholder="Digite Marca de Vacuna"
-                      InputLeftElement={
-                        <Icon
-                          as={
-                            <MaterialCommunityIcons name="registered-trademark" />
-                          }
-                          size={5}
-                          ml="2"
-                          color="muted.400"
-                        />
-                      }
-                      value={values.marca}
-                      onChangeText={handleChange("marca")}
-                      onBlur={() => setFieldTouched("marca")}
-                    />
-                    {touched.marca && errors.marca && (
-                      <FormControl.ErrorMessage
-                        leftIcon={<WarningOutlineIcon size="xs" />}
-                      >
-                        {errors.marca}
-                      </FormControl.ErrorMessage>
-                    )}
-                  </FormControl>
-                  <FormControl isInvalid={"tipo" in errors}>
-                    <FormControl.Label _text={styles.labelInput}>
-                      Tipo:
-                    </FormControl.Label>
-                    <Select
-                      minWidth="200"
-                      fontSize={15}
-                      accessibilityLabel="Seleccione Tipo de Vacuna"
-                      placeholder="Seleccione tipo de vacuna"
-                      onValueChange={handleChange("tipo")}
-                      selectedValue={values.tipo}
-                      _selectedItem={{
-                        bg: "teal.600",
-                        endIcon: <CheckIcon size={5} />,
-                      }}
-                      mt="1"
-                    >
-                      <Select.Item
-                        label="Distemper (Moquillo)"
-                        value="Distemper"
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={headerHeight}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <NativeBaseProvider>
+        {uploading ? (
+          <ActivityIndicator
+            style={styles.indicador}
+            size="large"
+            color="rgba(117, 140, 255, 1)"
+          />
+        ) : null}
+        <ScrollView style={uploading ? { opacity: 0.5 } : { opacity: 1 }}>
+          <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
+            <Heading
+              mt={5}
+              size="lg"
+              color="coolGray.800"
+              _dark={{
+                color: "warmGray.50",
+              }}
+              fontWeight="bold"
+              alignSelf="center"
+            >
+              Registro de vacuna
+            </Heading>
+            <Formik
+              innerRef={form}
+              initialValues={valoresIniciales}
+              onSubmit={(values, { resetForm }) => {
+                if (sendData(values)) {
+                  resetForm({ values: valoresIniciales });
+                  setText("");
+                }
+              }}
+              validationSchema={formularioValidacion}
+            >
+              {({
+                values,
+                handleChange,
+                errors,
+                setFieldTouched,
+                touched,
+                isValid,
+                handleSubmit,
+                resetForm,
+              }) => (
+                <View>
+                  <VStack space={4} mt="5">
+                    <FormControl isInvalid={"nombre" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Nombre:
+                      </FormControl.Label>
+                      <Input
+                        fontSize={15}
+                        _focus={styles.inputSeleccionado}
+                        placeholder="Digite Nombre de Vacuna"
+                        InputLeftElement={
+                          <Icon
+                            as={<MaterialCommunityIcons name="needle" />}
+                            size={5}
+                            ml="2"
+                            color="muted.400"
+                          />
+                        }
+                        value={values.nombre}
+                        onChangeText={handleChange("nombre")}
+                        onBlur={() => setFieldTouched("nombre")}
                       />
-                      <Select.Item label="Rabia" value="Rabia" />
-                      <Select.Item label="Parvovirus" value="Parvovirus" />
-                      <Select.Item
-                        label="Leptospirosis"
-                        value="Leptospirosis"
+                      {touched.nombre && errors.nombre && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.nombre}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
+                    <FormControl isInvalid={"marca" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Marca:
+                      </FormControl.Label>
+                      <Input
+                        fontSize={15}
+                        _focus={styles.inputSeleccionado}
+                        placeholder="Digite Marca de Vacuna"
+                        InputLeftElement={
+                          <Icon
+                            as={
+                              <MaterialCommunityIcons name="registered-trademark" />
+                            }
+                            size={5}
+                            ml="2"
+                            color="muted.400"
+                          />
+                        }
+                        value={values.marca}
+                        onChangeText={handleChange("marca")}
+                        onBlur={() => setFieldTouched("marca")}
                       />
-                      <Select.Item
-                        label="Hepatitis Infecciosa Canina"
-                        value="Hepatitis"
+                      {touched.marca && errors.marca && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.marca}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
+                    <FormControl isInvalid={"tipo" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Tipo:
+                      </FormControl.Label>
+                      <Select
+                        minWidth="200"
+                        fontSize={15}
+                        accessibilityLabel="Seleccione Tipo de Vacuna"
+                        placeholder="Seleccione tipo de vacuna"
+                        onValueChange={handleChange("tipo")}
+                        selectedValue={values.tipo}
+                        _selectedItem={{
+                          bg: "teal.600",
+                          endIcon: <CheckIcon size={5} />,
+                        }}
+                        mt="1"
+                      >
+                        <Select.Item
+                          label="Distemper (Moquillo)"
+                          value="Distemper"
+                        />
+                        <Select.Item label="Rabia" value="Rabia" />
+                        <Select.Item label="Parvovirus" value="Parvovirus" />
+                        <Select.Item
+                          label="Leptospirosis"
+                          value="Leptospirosis"
+                        />
+                        <Select.Item
+                          label="Hepatitis Infecciosa Canina"
+                          value="Hepatitis"
+                        />
+                      </Select>
+                      {touched.tipo && errors.tipo && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.tipo}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
+                    <FormControl isInvalid={"dosis" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Dosis:
+                      </FormControl.Label>
+                      <Input
+                        fontSize={15}
+                        _focus={styles.inputSeleccionado}
+                        placeholder="Digite Dosis de Vacuna"
+                        keyboardType="decimal-pad"
+                        InputLeftElement={
+                          <Icon
+                            as={<MaterialCommunityIcons name="eyedropper" />}
+                            size={5}
+                            ml="2"
+                            color="muted.400"
+                          />
+                        }
+                        value={values.dosis}
+                        onChangeText={handleChange("dosis")}
+                        onBlur={() => setFieldTouched("dosis")}
                       />
-                    </Select>
-                    {touched.tipo && errors.tipo && (
-                      <FormControl.ErrorMessage
-                        leftIcon={<WarningOutlineIcon size="xs" />}
+                      {touched.dosis && errors.dosis && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.dosis}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
+                    <FormControl isInvalid={"peso" in errors}>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Peso Paciente:
+                      </FormControl.Label>
+                      <Input
+                        fontSize={15}
+                        _focus={styles.inputSeleccionado}
+                        placeholder="Digite el peso del Paciente"
+                        InputLeftElement={
+                          <Icon
+                            as={<MaterialCommunityIcons name="weight-pound" />}
+                            size={5}
+                            ml="2"
+                            color="muted.400"
+                          />
+                        }
+                        value={values.peso}
+                        keyboardType={"decimal-pad"}
+                        onChangeText={handleChange("peso")}
+                        onBlur={() => setFieldTouched("peso")}
+                      />
+                      {touched.peso && errors.peso && (
+                        <FormControl.ErrorMessage
+                          leftIcon={<WarningOutlineIcon size="xs" />}
+                        >
+                          {errors.peso}
+                        </FormControl.ErrorMessage>
+                      )}
+                    </FormControl>
+                    <FormControl>
+                      <FormControl.Label _text={styles.labelInput}>
+                        Próxima dosis:
+                      </FormControl.Label>
+                      <Button
+                        fontSize={15}
+                        size="lg"
+                        variant="outline"
+                        leftIcon={
+                          <Icon
+                            as={MaterialCommunityIcons}
+                            name="calendar"
+                            size="sm"
+                          />
+                        }
+                        onPress={() => showMode("date")}
                       >
-                        {errors.tipo}
-                      </FormControl.ErrorMessage>
+                        {text.length > 1 ? text : "Seleccione una Fecha"}
+                      </Button>
+                    </FormControl>
+                    {show && (
+                      <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        maximumDate={new Date()}
+                        display="default"
+                        onChange={onChangeDate}
+                      />
                     )}
-                  </FormControl>
-                  <FormControl isInvalid={"dosis" in errors}>
-                    <FormControl.Label _text={styles.labelInput}>
-                      Dosis:
-                    </FormControl.Label>
-                    <Input
-                      fontSize={15}
-                      _focus={styles.inputSeleccionado}
-                      placeholder="Digite Dosis de Vacuna"
-                      keyboardType="decimal-pad"
-                      InputLeftElement={
-                        <Icon
-                          as={<MaterialCommunityIcons name="eyedropper" />}
-                          size={5}
-                          ml="2"
-                          color="muted.400"
-                        />
-                      }
-                      value={values.dosis}
-                      onChangeText={handleChange("dosis")}
-                      onBlur={() => setFieldTouched("dosis")}
-                    />
-                    {touched.dosis && errors.dosis && (
-                      <FormControl.ErrorMessage
-                        leftIcon={<WarningOutlineIcon size="xs" />}
+                    <HStack mb={5} space={2} justifyContent="center">
+                      <Ionicons.Button
+                        backgroundColor={"rgba(117, 140, 255, 1)"}
+                        size={22}
+                        onPress={handleSubmit}
+                        style={{
+                          alignSelf: "stretch",
+                          justifyContent: "center",
+                        }}
+                        name="save"
+                        _disabled={styles.botonDisabled}
+                        disabled={uploading ? true : false}
                       >
-                        {errors.dosis}
-                      </FormControl.ErrorMessage>
-                    )}
-                  </FormControl>
-                  <FormControl isInvalid={"peso" in errors}>
-                    <FormControl.Label _text={styles.labelInput}>
-                      Peso Paciente:
-                    </FormControl.Label>
-                    <Input
-                      fontSize={15}
-                      _focus={styles.inputSeleccionado}
-                      placeholder="Digite el peso del Paciente"
-                      InputLeftElement={
-                        <Icon
-                          as={<MaterialCommunityIcons name="weight-pound" />}
-                          size={5}
-                          ml="2"
-                          color="muted.400"
-                        />
-                      }
-                      value={values.peso}
-                      keyboardType={"decimal-pad"}
-                      onChangeText={handleChange("peso")}
-                      onBlur={() => setFieldTouched("peso")}
-                    />
-                    {touched.peso && errors.peso && (
-                      <FormControl.ErrorMessage
-                        leftIcon={<WarningOutlineIcon size="xs" />}
+                        Guardar
+                      </Ionicons.Button>
+                      <Ionicons.Button
+                        backgroundColor={"rgba(117, 140, 255, 1)"}
+                        size={22}
+                        onPress={() => {
+                          resetForm();
+                          setText("");
+                        }}
+                        style={{
+                          alignSelf: "stretch",
+                          justifyContent: "center",
+                        }}
+                        name="refresh-outline"
+                        _disabled={styles.botonDisabled}
                       >
-                        {errors.peso}
-                      </FormControl.ErrorMessage>
-                    )}
-                  </FormControl>
-                  <FormControl>
-                    <FormControl.Label _text={styles.labelInput}>
-                      Próxima dosis:
-                    </FormControl.Label>
-                    <Button
-                    fontSize={15}
-                      size="sm"
-                      variant="outline"
-                      leftIcon={
-                        <Icon
-                          as={MaterialCommunityIcons}
-                          name="calendar"
-                          size="sm"
-                        />
-                      }
-                      onPress={() => showMode("date")}
-                    >
-                      {text.length > 1 ? text : "Seleccione una Fecha"}
-                    </Button>
-                  </FormControl>
-                  {show && (
-                    <DateTimePicker
-                      testID="dateTimePicker"
-                      value={date}
-                      mode={mode}
-                      is24Hour={true}
-                      maximumDate={new Date()}
-                      display="default"
-                      onChange={onChangeDate}
-                    />
-                  )}
-                  <HStack mb={5} space={2} justifyContent="center">
-                    <Ionicons.Button
-                      backgroundColor={"rgba(117, 140, 255, 1)"}
-                      size={22}
-                      onPress={handleSubmit}
-                      style={{
-                        alignSelf: "stretch",
-                        justifyContent: "center",
-                      }}
-                      name="save"
-                      _disabled={styles.botonDisabled}
-                      disabled={uploading ? true : false}
-                    >
-                      Guardar
-                    </Ionicons.Button>
-                    <Ionicons.Button
-                      backgroundColor={"rgba(117, 140, 255, 1)"}
-                      size={22}
-                      onPress={() => {
-                        resetForm();
-                        setText("");
-                      }}
-                      style={{
-                        alignSelf: "stretch",
-                        justifyContent: "center",
-                      }}
-                      name="refresh-outline"
-                      _disabled={styles.botonDisabled}
-                    >
-                      Reestablecer
-                    </Ionicons.Button>
-                  </HStack>
-                </VStack>
-              </View>
-            )}
-          </Formik>
-        </Box>
-      </ScrollView>
-    </NativeBaseProvider>
+                        Reestablecer
+                      </Ionicons.Button>
+                    </HStack>
+                  </VStack>
+                </View>
+              )}
+            </Formik>
+          </Box>
+        </ScrollView>
+      </NativeBaseProvider>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -24,7 +24,6 @@ import { auth } from "./config/firebase";
 import CreateAtenciones from "./src/views/Paciente/CreateAtenciones";
 import CreateVacunas from "./src/views/Paciente/CreateVacunas";
 import CreateDesparasitacion from "./src/views/Paciente/CreateDesparasitacion";
-import CreateReceta from "./src/views/Paciente/CreateReceta";
 import DetailsVacuna from "./src/views/Paciente/DetailsVacuna";
 import DetailsDesparasitacion from "./src/views/Paciente/DetailsDesparasitacion";
 import DetailsAtencion from "./src/views/Paciente/DetailsAtencion";
@@ -139,11 +138,6 @@ export default function App() {
             name="CreateDesparasitacion"
             component={CreateDesparasitacion}
             options={{ headerShown: true, title: "Desparasitación" }}
-          />
-          <Stack.Screen
-            name="CreateReceta"
-            component={CreateReceta}
-            options={{ headerShown: true, title: "Receta" }}
           />
           <Stack.Screen
             name="DetailsVacuna"

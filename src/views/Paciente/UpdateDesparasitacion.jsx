@@ -1,4 +1,4 @@
-import { View, Alert } from "react-native";
+import { View, Alert, KeyboardAvoidingView } from "react-native";
 import React, { Component, useRef } from "react";
 import * as yup from "yup";
 import {
@@ -15,12 +15,19 @@ import {
   HStack,
   Select,
   CheckIcon,
-  Button
+  Button,
 } from "native-base";
 import { Avatar } from "react-native-elements";
 import { useState } from "react";
 import { auth, db } from "../../../config/firebase";
-import { doc, getDoc, setDoc, onSnapshot, collection, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  onSnapshot,
+  collection,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { Formik, getIn } from "formik";
@@ -29,6 +36,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { Radio } from "native-base";
 import { useFocusEffect } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 export default function UpdateDesparasitacion({ navigation, route }) {
   const { idPaciente } = route.params;
@@ -49,13 +57,15 @@ export default function UpdateDesparasitacion({ navigation, route }) {
   const [textProxima, setTextProxima] = useState("");
   const [fecProxima, setFecProxima] = useState(new Date());
 
+  const headerHeight = useHeaderHeight();
+
   const form = useRef();
 
   const checkDates = (date1, date2) => {
     let control;
-    date1 > date2 ? control = true : control = false;
+    date1 > date2 ? (control = true) : (control = false);
     return control;
-  }
+  };
 
   const timestampToDate = (valorTimestamp) => {
     return new Date(valorTimestamp * 1000).toLocaleDateString("en-US");
@@ -67,7 +77,6 @@ export default function UpdateDesparasitacion({ navigation, route }) {
     return result;
   }
 
-
   const updateDocPaciente = (data) => {
     if (textActual === "" || textProxima === "") {
       if (Platform.OS === "web") {
@@ -78,50 +87,69 @@ export default function UpdateDesparasitacion({ navigation, route }) {
       return false;
     } else if (checkDates(dateActual, dateProxima)) {
       if (Platform.OS === "web") {
-        alert("La fecha próxima no puede ser menor a la fecha actual de aplicación");
+        alert(
+          "La fecha próxima no puede ser menor a la fecha actual de aplicación"
+        );
       } else {
-        Alert.alert("Error", "La fecha próxima no puede ser menor a la fecha actual de aplicación");
+        Alert.alert(
+          "Error",
+          "La fecha próxima no puede ser menor a la fecha actual de aplicación"
+        );
       }
       return false;
     } else {
-      Alert.alert("Confirmacion", "Desea modificar la informacion del desparasitacion", [
-        {
-          text: "Aceptar",
-          onPress: () => {
-            setLoading(true);
-            data.fecha = fecActual;
-            data.proximaDosis = fecProxima;
-            updateDoc(doc(db, "patients", idPaciente, "desparasitacion", id), data)
-              .then((ocRef) => {
-                Alert.alert("Exito", "Se actualizo el desparasitacion correctamente", [
-                  {
-                    text: "Aceptar",
-                    onPress: () => {
-                      setLoading(false);
-                      navigation.goBack();
-                    }
-                  },
-                ]);
-                if (Platform.OS === "web") {
-                  alert("Se actualizo el desparasitacion correctamente");
+      Alert.alert(
+        "Confirmacion",
+        "Desea modificar la informacion del desparasitacion",
+        [
+          {
+            text: "Aceptar",
+            onPress: () => {
+              setLoading(true);
+              data.fecha = fecActual;
+              data.proximaDosis = fecProxima;
+              updateDoc(
+                doc(db, "patients", idPaciente, "desparasitacion", id),
+                data
+              )
+                .then((ocRef) => {
+                  Alert.alert(
+                    "Exito",
+                    "Se actualizo el desparasitacion correctamente",
+                    [
+                      {
+                        text: "Aceptar",
+                        onPress: () => {
+                          setLoading(false);
+                          navigation.goBack();
+                        },
+                      },
+                    ]
+                  );
+                  if (Platform.OS === "web") {
+                    alert("Se actualizo el desparasitacion correctamente");
+                    setLoading(false);
+                  }
+                })
+                .catch((error) => {
                   setLoading(false);
-                }
-              })
-              .catch((error) => {
-                setLoading(false);
-                Alert.alert("Error", "Ocurrio un error al actualizar el desparasitacion");
-                if (Platform.OS === "web") {
-                  alert("Ocurrio un error al actualizar el desparasitacion");
-                  setLoading(false);
-                }
-              });
-            return true;
-          }
-        },
-        {
-          text: "Cancelar"
-        }
-      ])
+                  Alert.alert(
+                    "Error",
+                    "Ocurrio un error al actualizar el desparasitacion"
+                  );
+                  if (Platform.OS === "web") {
+                    alert("Ocurrio un error al actualizar el desparasitacion");
+                    setLoading(false);
+                  }
+                });
+              return true;
+            },
+          },
+          {
+            text: "Cancelar",
+          },
+        ]
+      );
     }
   };
 
@@ -135,11 +163,11 @@ export default function UpdateDesparasitacion({ navigation, route }) {
           if (doc.exists()) {
             console.log(doc.data());
             setDesparasitacion(doc.data());
-            setTextActual(timestampToDate(doc.data().fecha.seconds))
-            setDateActual(new Date(doc.data().fecha.seconds * 1000))
+            setTextActual(timestampToDate(doc.data().fecha.seconds));
+            setDateActual(new Date(doc.data().fecha.seconds * 1000));
             //Proxima Dosis
-            setTextProxima(timestampToDate(doc.data().proximaDosis.seconds))
-            setDateProxima(new Date(doc.data().proximaDosis.seconds * 1000))
+            setTextProxima(timestampToDate(doc.data().proximaDosis.seconds));
+            setDateProxima(new Date(doc.data().proximaDosis.seconds * 1000));
             setLoading(false);
           } else {
             setDesparasitacion(null);
@@ -191,7 +219,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
       setFecActual(tempDate);
       setTextActual(fDate);
       console.log("Fecha Actual", fDate);
-      setDateProxima(su)
+      setDateProxima(su);
     }
   };
 
@@ -229,186 +257,196 @@ export default function UpdateDesparasitacion({ navigation, route }) {
   const formikRef = useRef();
 
   return (
-    <NativeBaseProvider>
-      {loading ? (
-        <ActivityIndicator
-          style={styles.indicador}
-          size="large"
-          color="rgba(117, 140, 255, 1)"
-        />
-      ) : null}
-      {desparasitacion ? (
-        <ScrollView style={loading ? { opacity: 0.5 } : { opacity: 1 }}>
-          <Box style={{ marginHorizontal: 5 }} mt={4} flex={1} p={1}>
-            <HStack mt={5} flex={1} space={2}>
-              <Heading size="md" alignSelf="center" flex={1}>
-                Actualizar Desparasitación
-              </Heading>
-              <Avatar
-                source={require('../../../assets/atenciones-tipo/parasite.png')}
-                size="large"
-                justifyContent="center"
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={headerHeight}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <NativeBaseProvider>
+        {loading ? (
+          <ActivityIndicator
+            style={styles.indicador}
+            size="large"
+            color="rgba(117, 140, 255, 1)"
+          />
+        ) : null}
+        {desparasitacion ? (
+          <ScrollView style={loading ? { opacity: 0.5 } : { opacity: 1 }}>
+            <Box style={{ marginHorizontal: 5 }} mt={4} flex={1} p={1}>
+              <HStack mt={5} flex={1} space={2}>
+                <Heading size="md" alignSelf="center" flex={1}>
+                  Actualizar Desparasitación
+                </Heading>
+                <Avatar
+                  source={require("../../../assets/atenciones-tipo/parasite.png")}
+                  size="large"
+                  justifyContent="center"
+                ></Avatar>
+              </HStack>
+              <Formik
+                innerRef={formikRef}
+                enableReinitialize
+                initialValues={{
+                  marca: desparasitacion.marca,
+                }}
+                validationSchema={yup.object().shape({
+                  marca: yup
+                    .string()
+                    .min(2, "Minimo 2 caracteres")
+                    .required("Nombre mascota requerido."),
+                })}
+                onSubmit={(values) => {
+                  updateDocPaciente(values);
+                }}
               >
-              </Avatar>
-            </HStack>
-            <Formik
-              innerRef={formikRef}
-              enableReinitialize
-              initialValues={{
-                marca: desparasitacion.marca,
-              }}
-              validationSchema={yup.object().shape({
-                marca: yup
-                  .string()
-                  .min(2, "Minimo 2 caracteres")
-                  .required("Nombre mascota requerido."),
-              })}
-              onSubmit={(values) => {
-                updateDocPaciente(values);
-              }}
-            >
-              {({
-                values,
-                handleChange,
-                setFieldTouched,
-                errors,
-                touched,
-                isValid,
-                handleSubmit,
-                resetForm,
-              }) => (
-                <View>
-                  <VStack space={4} mt="5">
-                    <FormControl isInvalid={"marca" in errors}>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Desparasitante:
-                      </FormControl.Label>
-                      <Input
-                      fontSize={15}
-                        _focus={styles.inputSeleccionado}
-                        placeholder="Digite el Desparasitante"
-                        InputLeftElement={
-                          <Icon
-                            as={<MaterialCommunityIcons name="dog" />}
-                            size={5}
-                            ml="2"
-                            color="muted.400"
-                          />
-                        }
-                        value={values.marca}
-                        onChangeText={handleChange("marca")}
-                        onBlur={() => setFieldTouched("marca")}
-                      />
-                      {touched.marca && errors.marca && (
-                        <FormControl.ErrorMessage
-                          leftIcon={<WarningOutlineIcon size="xs" />}
+                {({
+                  values,
+                  handleChange,
+                  setFieldTouched,
+                  errors,
+                  touched,
+                  isValid,
+                  handleSubmit,
+                  resetForm,
+                }) => (
+                  <View>
+                    <VStack space={4} mt="5">
+                      <FormControl isInvalid={"marca" in errors}>
+                        <FormControl.Label _text={styles.labelInput}>
+                          Desparasitante:
+                        </FormControl.Label>
+                        <Input
+                          fontSize={15}
+                          _focus={styles.inputSeleccionado}
+                          placeholder="Digite el Desparasitante"
+                          InputLeftElement={
+                            <Icon
+                              as={<MaterialCommunityIcons name="dog" />}
+                              size={5}
+                              ml="2"
+                              color="muted.400"
+                            />
+                          }
+                          value={values.marca}
+                          onChangeText={handleChange("marca")}
+                          onBlur={() => setFieldTouched("marca")}
+                        />
+                        {touched.marca && errors.marca && (
+                          <FormControl.ErrorMessage
+                            leftIcon={<WarningOutlineIcon size="xs" />}
+                          >
+                            {errors.marca}
+                          </FormControl.ErrorMessage>
+                        )}
+                      </FormControl>
+
+                      <FormControl>
+                        <FormControl.Label _text={styles.labelInput}>
+                          Fecha de Aplicación:
+                        </FormControl.Label>
+                        <Button
+                          fontSize={15}
+                          size="sm"
+                          variant="outline"
+                          leftIcon={
+                            <Icon
+                              as={MaterialCommunityIcons}
+                              name="calendar"
+                              size="sm"
+                            />
+                          }
+                          onPress={() => showModeActual("date")}
                         >
-                          {errors.marca}
-                        </FormControl.ErrorMessage>
+                          {textActual.length > 1
+                            ? textActual
+                            : "Seleccione una Fecha"}
+                        </Button>
+                      </FormControl>
+                      {showActual && (
+                        <DateTimePicker
+                          testID="dateTimePicker"
+                          value={dateActual}
+                          mode={modeActual}
+                          is24Hour={true}
+                          display="default"
+                          onChange={onChangeDateActual}
+                          maximumDate={new Date()}
+                        />
                       )}
-                    </FormControl>
 
-                    <FormControl>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Fecha de Aplicación:
-                      </FormControl.Label>
-                      <Button
-                      fontSize={15}
-                        size="sm"
-                        variant="outline"
-                        leftIcon={
-                          <Icon
-                            as={MaterialCommunityIcons}
-                            name="calendar"
-                            size="sm"
-                          />
-                        }
-                        onPress={() => showModeActual("date")}>
-                        {textActual.length > 1 ? textActual : "Seleccione una Fecha"}
-                      </Button>
-                    </FormControl>
-                    {showActual && (
-                      <DateTimePicker
-                        testID="dateTimePicker"
-                        value={dateActual}
-                        mode={modeActual}
-                        is24Hour={true}
-                        display="default"
-                        onChange={onChangeDateActual}
-                        maximumDate={new Date()}
-                      />
-                    )}
+                      <FormControl>
+                        <FormControl.Label _text={styles.labelInput}>
+                          Fecha de Proxima Aplicación:
+                        </FormControl.Label>
+                        <Button
+                          fontSize={15}
+                          size="sm"
+                          variant="outline"
+                          leftIcon={
+                            <Icon
+                              as={MaterialCommunityIcons}
+                              name="calendar"
+                              size="sm"
+                            />
+                          }
+                          onPress={() => showModeProxima("date")}
+                        >
+                          {textProxima.length > 1
+                            ? textProxima
+                            : "Seleccione una Fecha"}
+                        </Button>
+                      </FormControl>
+                      {showProxima && (
+                        <DateTimePicker
+                          testID="dateTimePicker2"
+                          value={dateProxima}
+                          mode={modeProxima}
+                          is24Hour={true}
+                          display="default"
+                          minimumDate={addDays(dateActual, 1)}
+                          onChange={onChangeDateProxima}
+                        />
+                      )}
 
-                    <FormControl>
-                      <FormControl.Label _text={styles.labelInput}>
-                        Fecha de Proxima Aplicación:
-                      </FormControl.Label>
-                      <Button
-                      fontSize={15}
-                        size="sm"
-                        variant="outline"
-                        leftIcon={
-                          <Icon
-                            as={MaterialCommunityIcons}
-                            name="calendar"
-                            size="sm"
-                          />
-                        }
-                        onPress={() => showModeProxima("date")}
-                      >
-                        {textProxima.length > 1 ? textProxima : "Seleccione una Fecha"}
-                      </Button>
-                    </FormControl>
-                    {showProxima && (
-                      <DateTimePicker
-                        testID="dateTimePicker2"
-                        value={dateProxima}
-                        mode={modeProxima}
-                        is24Hour={true}
-                        display="default"
-                        minimumDate={addDays(dateActual, 1)}
-                        onChange={onChangeDateProxima}
-                      />
-                    )}
-
-                    <HStack mb={5} space={2} justifyContent="center">
-                      <Ionicons.Button
-                        backgroundColor={"rgba(117, 140, 255, 1)"}
-                        size={22}
-                        onPress={handleSubmit}
-                        style={{
-                          alignSelf: "stretch",
-                          justifyContent: "center",
-                        }}
-                        name="save"
-                        _disabled={styles.botonDisabled}
-                      >
-                        Guardar
-                      </Ionicons.Button>
-                      <Ionicons.Button
-                        backgroundColor={"rgba(117, 140, 255, 1)"}
-                        size={22}
-                        onPress={() => {
-                          formikRef.current?.resetForm();
-                        }}
-                        style={{
-                          alignSelf: "stretch",
-                          justifyContent: "center",
-                        }}
-                        name="refresh-outline"
-                        _disabled={styles.botonDisabled}
-                      >
-                        Reestablecer
-                      </Ionicons.Button>
-                    </HStack>
-                  </VStack>
-                </View>
-              )}
-            </Formik>
-          </Box>
-        </ScrollView>
-      ) : null}
-    </NativeBaseProvider>
+                      <HStack mb={5} space={2} justifyContent="center">
+                        <Ionicons.Button
+                          backgroundColor={"rgba(117, 140, 255, 1)"}
+                          size={22}
+                          onPress={handleSubmit}
+                          style={{
+                            alignSelf: "stretch",
+                            justifyContent: "center",
+                          }}
+                          name="save"
+                          _disabled={styles.botonDisabled}
+                        >
+                          Guardar
+                        </Ionicons.Button>
+                        <Ionicons.Button
+                          backgroundColor={"rgba(117, 140, 255, 1)"}
+                          size={22}
+                          onPress={() => {
+                            formikRef.current?.resetForm();
+                          }}
+                          style={{
+                            alignSelf: "stretch",
+                            justifyContent: "center",
+                          }}
+                          name="refresh-outline"
+                          _disabled={styles.botonDisabled}
+                        >
+                          Reestablecer
+                        </Ionicons.Button>
+                      </HStack>
+                    </VStack>
+                  </View>
+                )}
+              </Formik>
+            </Box>
+          </ScrollView>
+        ) : null}
+      </NativeBaseProvider>
+    </KeyboardAvoidingView>
   );
 }
 
