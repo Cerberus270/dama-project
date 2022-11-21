@@ -17,7 +17,7 @@ import {
   ScrollView,
   Pressable,
 } from "native-base";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "../../../config/firebase";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Alert } from "react-native";
@@ -34,30 +34,39 @@ export default function Login({ navigation }) {
   const headerHeight = useHeaderHeight();
 
   const getVeterinarioDoc = async (uid) => {
-    const veterinarioRef = doc(db, "veterinarios", uid);
-    const veterinarioSnap = await getDoc(veterinarioRef);
-    if (veterinarioSnap.exists()) {
-      const veterinario = veterinarioSnap.data();
-      setLoading(false);
-      if (veterinario.perfilCompleto) {
-        navigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: "AppMain",
-            },
-          ],
-        });
-      } else {
-        navigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: "CompleteProfile",
-            },
-          ],
-        });
+    if (auth.currentUser.emailVerified) {
+      const veterinarioRef = doc(db, "veterinarios", uid);
+      const veterinarioSnap = await getDoc(veterinarioRef);
+      if (veterinarioSnap.exists()) {
+        const veterinario = veterinarioSnap.data();
+        setLoading(false);
+        if (veterinario.perfilCompleto) {
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: "AppMain",
+              },
+            ],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: "CompleteProfile",
+              },
+            ],
+          });
+        }
       }
+    } else {
+      Alert.alert(
+        "Verificacion",
+        "Su cuenta de aun no ha sido verificada, revise su correo electronico"
+      );
+      signOut(auth);
+      setLoading(false);
     }
   };
 
@@ -106,6 +115,7 @@ export default function Login({ navigation }) {
         Alert.alert("Error", erroresLogin(error.code));
       });
   };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}

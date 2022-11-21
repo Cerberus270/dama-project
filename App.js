@@ -84,7 +84,6 @@ export default function App() {
                   style={{
                     justiftyContent: "center",
                     alignItems: "center",
-                    margin: 10,
                   }}
                 >
                   <Ionicons.Button
