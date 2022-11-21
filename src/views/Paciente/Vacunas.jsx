@@ -40,10 +40,8 @@ export default function Vacunas({ navigation, route }) {
   const [uploading, setUploading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const actualizarVacuna = (id) => {
-    // AQUI VA EL DE ACTUALIZAR
-    navigation.navigate('UpdateVacuna', id);
-    
+  const actualizarVacuna = (vacuna) => {
+    navigation.navigate('UpdateVacuna',{vacuna, idPaciente: id});
   };
 
   const deleteVacuna = (idVacuna) => {
@@ -147,6 +145,9 @@ export default function Vacunas({ navigation, route }) {
                         rightContent={
                           <Button
                               title="Actualizar"
+                              onPress={() => {
+                                actualizarVacuna(vacuna);
+                                }}
                               icon={{ name: 'update', color: 'white' }}
                               buttonStyle={{ minHeight: '100%' }}
                           />

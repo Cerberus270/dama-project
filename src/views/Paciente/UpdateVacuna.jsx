@@ -39,74 +39,77 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useHeaderHeight } from "@react-navigation/elements";
 
 export default function UpdateVacuna({ navigation, route }) {
-  const { id } = route.params;
+  const { idPaciente } = route.params;
+  const { id } = route.params.vacuna;
   const [vacuna, setVacuna] = useState(null);
   const [loading, setLoading] = useState(false);
-  //Date Picker
-  const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
-  const [mode, setMode] = useState("date");
-  const [text, setText] = useState("");
-  const [proxD, setProxD] = useState(new Date());
+
+  //Date Picker Actual
+  const [dateActual, setDateActual] = useState(new Date());
+  const [showActual, setShowActual] = useState(false);
+  const [modeActual, setModeActual] = useState("date");
+  const [textActual, setTextActual] = useState("");
+  const [fecActual, setFecActual] = useState(new Date());
+
+  // Date picker proxima
+  const [dateProxima, setDateProxima] = useState(new Date());
+  const [showProxima, setShowProxima] = useState(false);
+  const [modeProxima, setModeProxima] = useState("date");
+  const [textProxima, setTextProxima] = useState("");
+  const [fecProxima, setFecProxima] = useState(new Date());
+
   const headerHeight = useHeaderHeight();
+
+  const formularioValidacion = yup.object().shape({
+    nombre: yup
+      .string()
+      .min(2, "Minimo 2 caracteres")
+      .required("Nombre vacuna requerido."),
+    marca: yup
+      .string()
+      .min(2, "Minimo 2 caracteres")
+      .required("Marca requerida"),
+    tipo: yup.string().required("Tipo de vacuna requerida"),
+    dosis: yup.number().required("Dosis requerida"),
+    peso: yup
+      .number()
+      .min(0, "Ingrese un peso mayor a 0 lb")
+      .required("Peso del paciente requerido"),
+  });
 
   const form = useRef();
 
-  const timestampToDate = (valorTimestamp) => {
-    return new Date(valorTimestamp * 1000).toLocaleDateString("en-US");
+  const checkDates = (date1, date2) => {
+    let control;
+    date1 > date2 ? (control = true) : (control = false);
+    return control;
   };
 
-  const updateDocVacuna = (data) => {
-    if (text === "") {
-      if (Platform.OS === "web") {
-        alert("Debe Ingresar una Fecha Valida");
-      } else {
-        Alert.alert("Deber Ingresar una Fecha Valida");
-      }
-      return false;
-    } else {
-      setLoading(true);
-      data.proximaDosis = proxD;
-      data.fecha = new Date();
-      updateDoc(doc(db, "patients", id, "vacunas", id), data)
-        .then((ocRef) => {
-          Alert.alert("Exito", "Se actualizó la vacuna correctamente", [
-            {
-              text: "Aceptar",
-              onPress: () => {
-                setLoading(false);
-              },
-            },
-          ]);
-          if (Platform.OS === "web") {
-            alert("Se actualizó la vacuna correctamente");
-            setLoading(false);
-          }
-        })
-        .catch((error) => {
-          setLoading(false);
-          Alert.alert("Error", "Ocurrio un error al actualizar la vacuna");
-          if (Platform.OS === "web") {
-            alert("Ocurrio un error al actualizar la vacuna");
-            setLoading(false);
-          }
-        });
-      return true;
-    }
+  const timestampToDate = (valorTimestamp) => {
+    return new Date(valorTimestamp * 1000).toLocaleDateString("es");
   };
+
+  function addDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
 
   useFocusEffect(
     React.useCallback(() => {
       setLoading(true);
       const unsuscribe = onSnapshot(
-        doc(db, "patients", id, "vacunas", id),
+        doc(db, "patients", idPaciente, "vacunas", id),
         (doc) => {
           if (doc.exists()) {
-            setVacuna(doc.data());
-            setText(timestampToDate(doc.data().proximaDosis.seconds));
-            setDate(new Date(doc.data().fecha.seconds * 1000));
-            setLoading(false);
             console.log(doc.data());
+            setVacuna(doc.data());
+            setTextActual(timestampToDate(doc.data().fecha.seconds));
+            setDateActual(new Date(doc.data().fecha.seconds * 1000));
+            //Proxima Dosis
+            setTextProxima(timestampToDate(doc.data().proximaDosis.seconds));
+            setDateProxima(new Date(doc.data().proximaDosis.seconds * 1000));
+            setLoading(false);
           } else {
             setVacuna(null);
             Alert.alert(
@@ -116,15 +119,7 @@ export default function UpdateVacuna({ navigation, route }) {
                 {
                   text: "Aceptar",
                   onPress: async () => {
-                    await signOut(auth);
-                    navigation.reset({
-                      index: 0,
-                      routes: [
-                        {
-                          name: "Login",
-                        },
-                      ],
-                    });
+                    navigation.goBack();
                   },
                 },
               ]
@@ -137,14 +132,16 @@ export default function UpdateVacuna({ navigation, route }) {
         unsuscribe();
         setVacuna(null);
         setLoading(false);
+        setDateActual(null);
+        setDateProxima(null);
       };
     }, [])
   );
 
-  const onChangeDate = (event, selectedDate) => {
+  const onChangeDateActual = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShow(Platform.OS === "ios");
-    setDate(currentDate);
+    setShowActual(Platform.OS === "ios");
+    setDateActual(currentDate);
 
     if (event.type === "set") {
       let tempDate = new Date(currentDate);
@@ -154,19 +151,118 @@ export default function UpdateVacuna({ navigation, route }) {
         (tempDate.getMonth() + 1) +
         "/" +
         tempDate.getFullYear();
-      setProxD(tempDate);
-      setText(fDate);
-      console.log(fDate);
+      setFecActual(tempDate);
+      setTextActual(fDate);
+      console.log("Fecha Actual", fDate);
     }
   };
 
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
+  const showModeActual = (currentMode) => {
+    setShowActual(true);
+    setModeActual(currentMode);
     form.reset;
   };
 
-  const formikRef = useRef();
+  const onChangeDateProxima = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShowProxima(Platform.OS === "ios");
+    setDateProxima(currentDate);
+
+    if (event.type === "set") {
+      let tempDate = new Date(currentDate);
+      let fDate =
+        tempDate.getDate() +
+        "/" +
+        (tempDate.getMonth() + 1) +
+        "/" +
+        tempDate.getFullYear();
+      setFecProxima(tempDate);
+      setTextProxima(fDate);
+      console.log("Fecha Proxima", fDate);
+    }
+  };
+
+  const showModeProxima = (currentMode) => {
+    setShowProxima(true);
+    setModeProxima(currentMode);
+    form.reset;
+  };
+
+  const updateDocVacuna = (data) => {
+    if (textActual === "" || textProxima === "") {
+      if (Platform.OS === "web") {
+        alert("Debe Ingresar una Fecha Valida");
+      } else {
+        Alert.alert("Error", "Deber Ingresar una Fecha Valida");
+      }
+      return false;
+    } else if (checkDates(dateActual, dateProxima)) {
+      if (Platform.OS === "web") {
+        alert(
+          "La fecha próxima no puede ser menor a la fecha actual de aplicación"
+        );
+      } else {
+        Alert.alert(
+          "Error",
+          "La fecha próxima no puede ser menor a la fecha actual de aplicación"
+        );
+      }
+      return false;
+    } else {
+      Alert.alert(
+        "Confirmación",
+        "Desea modificar la informacion de la vacuna?",
+        [
+          {
+            text: "Aceptar",
+            onPress: () => {
+              setLoading(true);
+              data.fecha = fecActual;
+              data.proximaDosis = fecProxima;
+              updateDoc(
+                doc(db, "patients", idPaciente, "vacunas", id),
+                data
+              )
+                .then((ocRef) => {
+                  Alert.alert(
+                    "Exito",
+                    "Se actualizo la vacuna correctamente",
+                    [
+                      {
+                        text: "Aceptar",
+                        onPress: () => {
+                          setLoading(false);
+                          navigation.goBack();
+                        },
+                      },
+                    ]
+                  );
+                  if (Platform.OS === "web") {
+                    alert("Se actualizo la vacuna correctamente");
+                    setLoading(false);
+                  }
+                })
+                .catch((error) => {
+                  setLoading(false);
+                  Alert.alert(
+                    "Error",
+                    "Ocurrio un error al actualizar la vacuna"
+                  );
+                  if (Platform.OS === "web") {
+                    alert("Ocurrio un error al actualizar la vacuna");
+                    setLoading(false);
+                  }
+                });
+              return true;
+            },
+          },
+          {
+            text: "Cancelar",
+          },
+        ]
+      );
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -185,20 +281,23 @@ export default function UpdateVacuna({ navigation, route }) {
         {vacuna ? (
           <ScrollView style={loading ? { opacity: 0.5 } : { opacity: 1 }}>
             <Box style={{ marginHorizontal: 5 }} mt={2} flex={1} p={1}>
-              <Heading
-                mt={5}
-                size="lg"
-                color="coolGray.800"
-                _dark={{
-                  color: "warmGray.50",
-                }}
-                fontWeight="bold"
-                alignSelf="center"
-              >
-                Actualizar vacuna
-              </Heading>
+              <HStack mt={5} flex={1} space={2}>
+                <Heading
+                  size="md"
+                  alignSelf="center"
+                  textAlign={"center"}
+                  flex={1}
+                >
+                  Actualizar Vacuna
+                </Heading>
+                <Avatar
+                  source={require("../../../assets/vacuna.png")}
+                  size="large"
+                  justifyContent="center"
+                ></Avatar>
+              </HStack>
               <Formik
-                innerRef={formikRef}
+                innerRef={form}
                 enableReinitialize
                 initialValues={{
                   nombre: vacuna.nombre,
@@ -207,39 +306,10 @@ export default function UpdateVacuna({ navigation, route }) {
                   dosis: vacuna.dosis,
                   peso: vacuna.peso,
                 }}
-                validationSchema={yup.object().shape({
-                  nombre: yup
-                    .string()
-                    .min(2, "Minimo 2 caracteres")
-                    .required("Nombre vacuna requerido."),
-                  marca: yup
-                    .string()
-                    .min(2, "Minimo 2 caracteres")
-                    .required("Marca requerida"),
-                  tipo: yup.string().required("Tipo de vacuna requerida"),
-                  dosis: yup.string().required("Dosis requerida"),
-                  peso: yup
-                    .number()
-                    .min(0, "Ingrese un peso mayor a 0 lb")
-                    .required("Peso del paciente requerido"),
-                })}
                 onSubmit={(values) => {
-                  Alert.alert(
-                    "Confirmacion",
-                    "Desea modificar la vacuna del paciente",
-                    [
-                      {
-                        text: "Aceptar",
-                        onPress: () => {
-                          updateDocVacuna(values);
-                        },
-                      },
-                      {
-                        text: "Cancelar",
-                      },
-                    ]
-                  );
+                  updateDocVacuna(values);
                 }}
+                validationSchema={formularioValidacion}
               >
                 {({
                   values,
@@ -258,6 +328,7 @@ export default function UpdateVacuna({ navigation, route }) {
                           Nombre:
                         </FormControl.Label>
                         <Input
+                          fontSize={15}
                           _focus={styles.inputSeleccionado}
                           placeholder="Digite Nombre de Vacuna"
                           InputLeftElement={
@@ -285,6 +356,7 @@ export default function UpdateVacuna({ navigation, route }) {
                           Marca:
                         </FormControl.Label>
                         <Input
+                          fontSize={15}
                           _focus={styles.inputSeleccionado}
                           placeholder="Digite Marca de Vacuna"
                           InputLeftElement={
@@ -315,6 +387,7 @@ export default function UpdateVacuna({ navigation, route }) {
                         </FormControl.Label>
                         <Select
                           minWidth="200"
+                          fontSize={15}
                           accessibilityLabel="Seleccione Tipo de Vacuna"
                           placeholder="Seleccione tipo de vacuna"
                           onValueChange={handleChange("tipo")}
@@ -353,8 +426,10 @@ export default function UpdateVacuna({ navigation, route }) {
                           Dosis:
                         </FormControl.Label>
                         <Input
+                          fontSize={15}
                           _focus={styles.inputSeleccionado}
                           placeholder="Digite Dosis de Vacuna"
+                          keyboardType="decimal-pad"
                           InputLeftElement={
                             <Icon
                               as={<MaterialCommunityIcons name="eyedropper" />}
@@ -380,6 +455,7 @@ export default function UpdateVacuna({ navigation, route }) {
                           Peso Paciente:
                         </FormControl.Label>
                         <Input
+                          fontSize={15}
                           _focus={styles.inputSeleccionado}
                           placeholder="Digite el peso del Paciente"
                           InputLeftElement={
@@ -405,12 +481,13 @@ export default function UpdateVacuna({ navigation, route }) {
                           </FormControl.ErrorMessage>
                         )}
                       </FormControl>
-                      <FormControl onTouchStart={() => showMode("date")}>
+                      <FormControl>
                         <FormControl.Label _text={styles.labelInput}>
-                          Próxima dosis:
+                          Fecha de Aplicación:
                         </FormControl.Label>
                         <Button
-                          size="sm"
+                          fontSize={15}
+                          size="lg"
                           variant="outline"
                           leftIcon={
                             <Icon
@@ -419,23 +496,59 @@ export default function UpdateVacuna({ navigation, route }) {
                               size="sm"
                             />
                           }
-                          onLongPress={() => showMode("date")}
+                          onPress={() => showModeActual("date")}
                         >
-                          {text.length > 1 ? text : "Seleccione una Fecha"}
+                          {textActual.length > 1
+                            ? textActual
+                            : "Seleccione una Fecha"}
                         </Button>
                       </FormControl>
-                      {show && (
+                      {showActual && (
                         <DateTimePicker
                           testID="dateTimePicker"
-                          value={date}
-                          mode={mode}
+                          value={dateActual}
+                          mode={modeActual}
                           is24Hour={true}
-                          minimumDate={fechaProxMin}
                           display="default"
-                          onChange={onChangeDate}
+                          onChange={onChangeDateActual}
+                          maximumDate={new Date()}
                         />
                       )}
-                      <HStack mb={5} space={2} justifyContent="center">
+
+                      <FormControl>
+                        <FormControl.Label _text={styles.labelInput}>
+                          Fecha de Proxima Aplicación:
+                        </FormControl.Label>
+                        <Button
+                          fontSize={15}
+                          size="lg"
+                          variant="outline"
+                          leftIcon={
+                            <Icon
+                              as={MaterialCommunityIcons}
+                              name="calendar"
+                              size="sm"
+                            />
+                          }
+                          onPress={() => showModeProxima("date")}
+                        >
+                          {textProxima.length > 1
+                            ? textProxima
+                            : "Seleccione una Fecha"}
+                        </Button>
+                      </FormControl>
+                      {showProxima && (
+                        <DateTimePicker
+                          testID="dateTimePicker2"
+                          value={dateProxima}
+                          mode={modeProxima}
+                          is24Hour={true}
+                          display="default"
+                          minimumDate={addDays(dateActual, 1)}
+                          onChange={onChangeDateProxima}
+                        />
+                      )}
+                      <HStack mb={20} space={2} justifyContent="center">
                         <Ionicons.Button
                           backgroundColor={"rgba(117, 140, 255, 1)"}
                           size={22}
@@ -446,6 +559,7 @@ export default function UpdateVacuna({ navigation, route }) {
                           }}
                           name="save"
                           _disabled={styles.botonDisabled}
+                          disabled={loading ? true : false}
                         >
                           Guardar
                         </Ionicons.Button>
@@ -453,7 +567,7 @@ export default function UpdateVacuna({ navigation, route }) {
                           backgroundColor={"rgba(117, 140, 255, 1)"}
                           size={22}
                           onPress={() => {
-                            formikRef.current?.resetForm();
+                            resetForm();
                           }}
                           style={{
                             alignSelf: "stretch",

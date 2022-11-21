@@ -61,7 +61,7 @@ const CreateVacunas = ({ navigation, route }) => {
       .min(2, "Minimo 2 caracteres")
       .required("Marca requerida"),
     tipo: yup.string().required("Tipo de vacuna requerida"),
-    dosis: yup.string().required("Dosis requerida"),
+    dosis: yup.number().required("Dosis requerida"),
     peso: yup
       .number()
       .min(0, "Ingrese un peso mayor a 0 lb")

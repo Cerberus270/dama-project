@@ -32,7 +32,7 @@ export default function Desparasitacion({ navigation, route }) {
     const [uploading, setUploading] = useState(false);
 
     const timestampToDate = (valorTimestamp) => {
-        return new Date(valorTimestamp * 1000).toLocaleDateString("en-US")
+        return new Date(valorTimestamp * 1000).toLocaleDateString("es")
     };
 
     const actualizarDesparasitacion = (desparasitacion) => {

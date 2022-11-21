@@ -449,7 +449,7 @@ const CreatePaciente = () => {
                           />
                         }
                         value={values.propietario.telefono}
-                        keyboardType={"number-pad"}
+                        keyboardType={"numbers-and-punctuation"}
                         onChangeText={handleChange("propietario.telefono")}
                         onBlur={() => setFieldTouched("propietario.telefono")}
                       />

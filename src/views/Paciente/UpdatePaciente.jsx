@@ -55,7 +55,7 @@ export default function UpdatePaciente({ navigation, route }) {
   const form = useRef();
 
   const timestampToDate = (valorTimestamp) => {
-    return new Date(valorTimestamp * 1000).toLocaleDateString("en-US");
+    return new Date(valorTimestamp * 1000).toLocaleDateString("es");
   };
 
   const updateDocPaciente = (data) => {

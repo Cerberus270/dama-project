@@ -33,7 +33,7 @@ export default function Atenciones({ navigation, route }) {
   console.log(id);
 
   const timestampToDate = (valorTimestamp) => {
-    return new Date(valorTimestamp * 1000).toLocaleDateString("en-US");
+    return new Date(valorTimestamp * 1000).toLocaleDateString("es");
   };
   const [atenciones, setAtenciones] = useState([]);
   const [loading, setLoading] = useState(true);
