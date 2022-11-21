@@ -63,7 +63,7 @@ export default function Login({ navigation }) {
     } else {
       Alert.alert(
         "Verificacion",
-        "Su cuenta de aun no ha sido verificada, revise su correo electronico"
+        "Su cuenta aun no ha sido verificada, revise su correo electronico"
       );
       signOut(auth);
       setLoading(false);
