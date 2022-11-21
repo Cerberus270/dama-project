@@ -45,7 +45,7 @@ const CreatePaciente = () => {
   const [text, setText] = useState("");
   const [fecNac, setFecNac] = useState(new Date());
   const [loading, setLoading] = useState(false);
-  
+
   const headerHeight = useHeaderHeight();
 
   const form = useRef();
@@ -101,9 +101,9 @@ const CreatePaciente = () => {
     if (event.type === "set") {
       let tempDate = new Date(currentDate);
       let fDate =
-        tempDate.getDate() +
+        (tempDate.getDate() < 10 ? `0${tempDate.getDate()}` : tempDate.getDate()) +
         "/" +
-        (tempDate.getMonth() + 1) +
+        ((tempDate.getMonth() + 1) < 10 ? `0${tempDate.getMonth() + 1}` : tempDate.getMonth() + 1) +
         "/" +
         tempDate.getFullYear();
       setFecNac(tempDate);
@@ -117,7 +117,7 @@ const CreatePaciente = () => {
       if (Platform.OS === "web") {
         alert("Debe Ingresar una Fecha Válida");
       } else {
-        Alert.alert("Error","Deber Ingresar una Fecha Válida");
+        Alert.alert("Error", "Deber Ingresar una Fecha Válida");
       }
       return false;
     } else {
@@ -160,10 +160,13 @@ const CreatePaciente = () => {
 
   useFocusEffect(
     React.useCallback(() => {
+      console.log("Hola");
       return () => {
         form.current?.resetForm();
         setShow(false);
         setText("");
+        setDate(new Date());
+        setFecNac(new Date());
       };
     }, [])
   );
@@ -172,7 +175,7 @@ const CreatePaciente = () => {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       keyboardVerticalOffset={headerHeight}
-      
+
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <NativeBaseProvider>
@@ -204,6 +207,9 @@ const CreatePaciente = () => {
                 if (sendData(values)) {
                   resetForm({ values: valoresIniciales });
                   setText("");
+                  setDate(new Date());
+                  setFecNac(new Date());
+
                 }
               }}
               validationSchema={formularioValidacion}

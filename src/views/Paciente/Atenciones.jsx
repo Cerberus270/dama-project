@@ -26,15 +26,13 @@ import { db } from "../../../config/firebase";
 import { ActivityIndicator } from "react-native";
 import { Alert } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { timestampToDate } from "../../../utils/utils";
 
 export default function Atenciones({ navigation, route }) {
   const { id } = route.params;
 
   console.log(id);
 
-  const timestampToDate = (valorTimestamp) => {
-    return new Date(valorTimestamp * 1000).toLocaleDateString("es");
-  };
   const [atenciones, setAtenciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);

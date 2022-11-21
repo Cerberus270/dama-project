@@ -37,6 +37,7 @@ import { Radio } from "native-base";
 import { useFocusEffect } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { timestampToDate } from "../../../utils/utils";
 
 export default function UpdatePaciente({ navigation, route }) {
   const { id } = route.params;
@@ -54,9 +55,6 @@ export default function UpdatePaciente({ navigation, route }) {
 
   const form = useRef();
 
-  const timestampToDate = (valorTimestamp) => {
-    return new Date(valorTimestamp * 1000).toLocaleDateString("es");
-  };
 
   const updateDocPaciente = (data) => {
     if (text === "") {
@@ -162,9 +160,9 @@ export default function UpdatePaciente({ navigation, route }) {
     if (event.type === "set") {
       let tempDate = new Date(currentDate);
       let fDate =
-        tempDate.getDate() +
+        (tempDate.getDate() < 10 ? `0${tempDate.getDate()}` : tempDate.getDate()) +
         "/" +
-        (tempDate.getMonth() + 1) +
+        ((tempDate.getMonth() + 1) < 10 ? `0${tempDate.getMonth() + 1}` : tempDate.getMonth() + 1) +
         "/" +
         tempDate.getFullYear();
       setFecNac(tempDate);

@@ -71,11 +71,11 @@ const CreateDesparasitacion = ({ navigation, route }) => {
     if (event.type == "set") {
       let tempDate = new Date(currentDate);
       let fDate =
-        tempDate.getDate() +
-        "/" +
-        (tempDate.getMonth() + 1) +
-        "/" +
-        tempDate.getFullYear();
+      (tempDate.getDate() < 10 ? `0${tempDate.getDate()}` : tempDate.getDate()) +
+      "/" +
+      ((tempDate.getMonth() + 1) < 10 ? `0${tempDate.getMonth() + 1}` : tempDate.getMonth() + 1) +
+      "/" +
+      tempDate.getFullYear();
       setProxD(tempDate);
       setText(fDate);
       console.log(fDate);

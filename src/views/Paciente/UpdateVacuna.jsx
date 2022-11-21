@@ -38,6 +38,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useHeaderHeight } from "@react-navigation/elements";
 
+import { checkDates, addDays, timestampToDate } from "../../../utils/utils";
+
 export default function UpdateVacuna({ navigation, route }) {
   const { idPaciente } = route.params;
   const { id } = route.params.vacuna;
@@ -79,21 +81,6 @@ export default function UpdateVacuna({ navigation, route }) {
 
   const form = useRef();
 
-  const checkDates = (date1, date2) => {
-    let control;
-    date1 > date2 ? (control = true) : (control = false);
-    return control;
-  };
-
-  const timestampToDate = (valorTimestamp) => {
-    return new Date(valorTimestamp * 1000).toLocaleDateString("es");
-  };
-
-  function addDays(date, days) {
-    var result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  }
 
   useFocusEffect(
     React.useCallback(() => {
@@ -106,9 +93,11 @@ export default function UpdateVacuna({ navigation, route }) {
             setVacuna(doc.data());
             setTextActual(timestampToDate(doc.data().fecha.seconds));
             setDateActual(new Date(doc.data().fecha.seconds * 1000));
+            setFecActual(new Date(doc.data().fecha.seconds * 1000))
             //Proxima Dosis
             setTextProxima(timestampToDate(doc.data().proximaDosis.seconds));
             setDateProxima(new Date(doc.data().proximaDosis.seconds * 1000));
+            setFecProxima(new Date(doc.data().proximaDosis.seconds * 1000))
             setLoading(false);
           } else {
             setVacuna(null);
@@ -146,11 +135,11 @@ export default function UpdateVacuna({ navigation, route }) {
     if (event.type === "set") {
       let tempDate = new Date(currentDate);
       let fDate =
-        tempDate.getDate() +
-        "/" +
-        (tempDate.getMonth() + 1) +
-        "/" +
-        tempDate.getFullYear();
+      (tempDate.getDate() < 10 ? `0${tempDate.getDate()}` : tempDate.getDate()) +
+      "/" +
+      ((tempDate.getMonth() + 1) < 10 ? `0${tempDate.getMonth() + 1}` : tempDate.getMonth() + 1) +
+      "/" +
+      tempDate.getFullYear();
       setFecActual(tempDate);
       setTextActual(fDate);
       console.log("Fecha Actual", fDate);
@@ -171,11 +160,11 @@ export default function UpdateVacuna({ navigation, route }) {
     if (event.type === "set") {
       let tempDate = new Date(currentDate);
       let fDate =
-        tempDate.getDate() +
-        "/" +
-        (tempDate.getMonth() + 1) +
-        "/" +
-        tempDate.getFullYear();
+      (tempDate.getDate() < 10 ? `0${tempDate.getDate()}` : tempDate.getDate()) +
+      "/" +
+      ((tempDate.getMonth() + 1) < 10 ? `0${tempDate.getMonth() + 1}` : tempDate.getMonth() + 1) +
+      "/" +
+      tempDate.getFullYear();
       setFecProxima(tempDate);
       setTextProxima(fDate);
       console.log("Fecha Proxima", fDate);

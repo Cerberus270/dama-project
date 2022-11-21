@@ -92,9 +92,9 @@ const CreateAtenciones = ({ navigation, route }) => {
     if (event.type == "set") {
       let tempDate = new Date(currentDate);
       let fDate =
-        tempDate.getDate() +
+        (tempDate.getDate() < 10 ? `0${tempDate.getDate()}` : tempDate.getDate()) +
         "/" +
-        (tempDate.getMonth() + 1) +
+        ((tempDate.getMonth() + 1) < 10 ? `0${tempDate.getMonth() + 1}` : tempDate.getMonth() + 1) +
         "/" +
         tempDate.getFullYear();
       setProximaCita(tempDate);
@@ -487,7 +487,7 @@ const CreateAtenciones = ({ navigation, route }) => {
                         Tipo de Atención:
                       </FormControl.Label>
                       <Select
-                      fontSize={15}
+                        fontSize={15}
                         minWidth="200"
                         accessibilityLabel="Seleccione tipo de atencion"
                         placeholder="Seleccione tipo de atencion"

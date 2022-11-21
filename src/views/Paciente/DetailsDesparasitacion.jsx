@@ -13,6 +13,7 @@ import { ListItem, Avatar } from "react-native-elements";
 import { useFocusEffect } from "@react-navigation/native";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../../config/firebase";
+import { timestampToDate } from "../../../utils/utils";
 
 export default function DetailsDesparasitacion({ navigation, route }) {
   const { idPaciente } = route.params;
@@ -20,26 +21,6 @@ export default function DetailsDesparasitacion({ navigation, route }) {
   const [desparasitacion, setDesparasitacion] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const avatarPic = (typePaciente) => {
-    const avatar = {
-      Canino: require("../../../assets/avatars-tipo/perro.png"),
-      Felino: require("../../../assets/avatars-tipo/gato.png"),
-      Ave: require("../../../assets/avatars-tipo/aguila.png"),
-      Roedor: require("../../../assets/avatars-tipo/rata.png"),
-      Reptil: require("../../../assets/avatars-tipo/reptil.png"),
-      Anfibio: require("../../../assets/avatars-tipo/rana.png"),
-      Insecto: require("../../../assets/avatars-tipo/insecto.png"),
-    };
-    return avatar[typePaciente];
-  };
-
-  const avatarSexo = (sexoPaciente) => {
-    const avatar = {
-      Macho: require("../../../assets/gender-macho.png"),
-      Hembra: require("../../../assets/gender-hembra.png"),
-    };
-    return avatar[sexoPaciente];
-  };
 
   useFocusEffect(
     React.useCallback(() => {
