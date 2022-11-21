@@ -68,7 +68,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
   };
 
   const timestampToDate = (valorTimestamp) => {
-    return new Date(valorTimestamp * 1000).toLocaleDateString("en-US");
+    return new Date(valorTimestamp * 1000).toLocaleDateString("es");
   };
 
   function addDays(date, days) {
@@ -100,7 +100,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
     } else {
       Alert.alert(
         "Confirmación",
-        "Desea modificar la informacion del desparasitación",
+        "Desea modificar la informacion de la desparasitación?",
         [
           {
             text: "Aceptar",
@@ -115,7 +115,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                 .then((ocRef) => {
                   Alert.alert(
                     "Exito",
-                    "Se actualizo el desparasitación correctamente",
+                    "Se actualizo la desparasitación correctamente",
                     [
                       {
                         text: "Aceptar",
@@ -127,7 +127,7 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                     ]
                   );
                   if (Platform.OS === "web") {
-                    alert("Se actualizo el desparasitacion correctamente");
+                    alert("Se actualizo la desparasitacion correctamente");
                     setLoading(false);
                   }
                 })
@@ -135,10 +135,10 @@ export default function UpdateDesparasitacion({ navigation, route }) {
                   setLoading(false);
                   Alert.alert(
                     "Error",
-                    "Ocurrio un error al actualizar el desparasitación"
+                    "Ocurrio un error al actualizar la desparasitación"
                   );
                   if (Platform.OS === "web") {
-                    alert("Ocurrio un error al actualizar el desparasitación");
+                    alert("Ocurrio un error al actualizar la desparasitación");
                     setLoading(false);
                   }
                 });
@@ -199,6 +199,8 @@ export default function UpdateDesparasitacion({ navigation, route }) {
         unsuscribe();
         setDesparasitacion(null);
         setLoading(false);
+        setDateActual(null);
+        setDateProxima(null);
       };
     }, [])
   );
@@ -219,7 +221,6 @@ export default function UpdateDesparasitacion({ navigation, route }) {
       setFecActual(tempDate);
       setTextActual(fDate);
       console.log("Fecha Actual", fDate);
-      setDateProxima(su);
     }
   };
 
